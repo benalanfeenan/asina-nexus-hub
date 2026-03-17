@@ -39,6 +39,8 @@ import MeetingMinutes from "./pages/MeetingMinutes";
 import ReportIncidentTrends from "./pages/ReportIncidentTrends";
 import ReportRPTrends from "./pages/ReportRPTrends";
 import ReportMonthlySummary from "./pages/ReportMonthlySummary";
+import InternalAudits from "./pages/InternalAudits";
+import Safeguarding from "./pages/Safeguarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
