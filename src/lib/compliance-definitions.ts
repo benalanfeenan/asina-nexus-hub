@@ -206,6 +206,49 @@ export async function upsertComplianceItem(
       .from("staff_compliance_items")
       .insert({ staff_id: staffId, item_key: itemKey, ...data });
   }
+
+  // Bi-directional sync: if this item has a linked parent, sync to parent too
+  const currentDef = COMPLIANCE_ITEMS.find((i) => i.item_key === itemKey);
+  if (currentDef?.linked_to) {
+    const parentKey = currentDef.linked_to;
+    const { data: parentExisting } = await supabase
+      .from("staff_compliance_items")
+      .select("id")
+      .eq("staff_id", staffId)
+      .eq("item_key", parentKey)
+      .maybeSingle();
+    if (parentExisting) {
+      await supabase
+        .from("staff_compliance_items")
+        .update({ ...data, updated_at: new Date().toISOString() })
+        .eq("id", parentExisting.id);
+    } else {
+      await supabase
+        .from("staff_compliance_items")
+        .insert({ staff_id: staffId, item_key: parentKey, ...data });
+    }
+  }
+
+  // Also sync parent → children
+  const linkedChildren = COMPLIANCE_ITEMS.filter((i) => i.linked_to === itemKey);
+  for (const child of linkedChildren) {
+    const { data: childExisting } = await supabase
+      .from("staff_compliance_items")
+      .select("id")
+      .eq("staff_id", staffId)
+      .eq("item_key", child.item_key)
+      .maybeSingle();
+    if (childExisting) {
+      await supabase
+        .from("staff_compliance_items")
+        .update({ ...data, updated_at: new Date().toISOString() })
+        .eq("id", childExisting.id);
+    } else {
+      await supabase
+        .from("staff_compliance_items")
+        .insert({ staff_id: staffId, item_key: child.item_key, ...data });
+    }
+  }
 }
 
 /** Calculate expiry date from a completion date and expiry_months */

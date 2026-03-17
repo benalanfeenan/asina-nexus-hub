@@ -115,8 +115,9 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
         const { error } = await supabase.from("staff_compliance_items").insert({ staff_id: staffId, ...payload });
         if (error) throw error;
       }
-      const linkedItems = COMPLIANCE_ITEMS.filter((i) => i.linked_to === payload.item_key);
-      for (const linked of linkedItems) {
+      // Sync parent → children
+      const linkedChildren = COMPLIANCE_ITEMS.filter((i) => i.linked_to === payload.item_key);
+      for (const linked of linkedChildren) {
         const existingLinked = recordsMap.get(linked.item_key);
         const syncPayload = {
           item_key: linked.item_key, status: payload.status, date_completed: payload.date_completed,
@@ -127,6 +128,22 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
           await supabase.from("staff_compliance_items").update({ ...syncPayload, updated_at: new Date().toISOString() }).eq("id", existingLinked.id);
         } else {
           await supabase.from("staff_compliance_items").insert({ staff_id: staffId, ...syncPayload });
+        }
+      }
+      // Sync child → parent
+      const currentDef = COMPLIANCE_ITEMS.find((i) => i.item_key === payload.item_key);
+      if (currentDef?.linked_to) {
+        const parentKey = currentDef.linked_to;
+        const existingParent = recordsMap.get(parentKey);
+        const parentPayload = {
+          item_key: parentKey, status: payload.status, date_completed: payload.date_completed,
+          expiry_date: payload.expiry_date, document_url: payload.document_url,
+          verified_by: payload.verified_by, verified_date: payload.verified_date,
+        };
+        if (existingParent) {
+          await supabase.from("staff_compliance_items").update({ ...parentPayload, updated_at: new Date().toISOString() }).eq("id", existingParent.id);
+        } else {
+          await supabase.from("staff_compliance_items").insert({ staff_id: staffId, ...parentPayload });
         }
       }
     },
