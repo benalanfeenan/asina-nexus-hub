@@ -134,10 +134,10 @@ export default function Rostering() {
         title="Rostering"
         action={canEdit && selectedHouse ? (
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10" onClick={() => setShowHandover(true)}><ArrowRightLeft className="mr-1 h-4 w-4" />Handovers</Button>
-            <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10" onClick={() => setShowSleepover(true)}><Moon className="mr-1 h-4 w-4" />Sleepover Logs</Button>
-            <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10" onClick={() => setShowPatterns(true)}><Settings2 className="mr-1 h-4 w-4" />Patterns</Button>
-            <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10" onClick={() => generateWeekMutation.mutate()} disabled={generateWeekMutation.isPending}>
+            <Button variant="ghost-light" size="sm" onClick={() => setShowHandover(true)}><ArrowRightLeft className="mr-1 h-4 w-4" />Handovers</Button>
+            <Button variant="ghost-light" size="sm" onClick={() => setShowSleepover(true)}><Moon className="mr-1 h-4 w-4" />Sleepover Logs</Button>
+            <Button variant="ghost-light" size="sm" onClick={() => setShowPatterns(true)}><Settings2 className="mr-1 h-4 w-4" />Patterns</Button>
+            <Button variant="ghost-light" size="sm" onClick={() => generateWeekMutation.mutate()} disabled={generateWeekMutation.isPending}>
               <Wand2 className="mr-1 h-4 w-4" />{generateWeekMutation.isPending ? "Generating…" : "Generate Week"}
             </Button>
             <Button variant="accent" onClick={() => { setPrefillDate(""); setPrefillType(""); setShowAdd(true); }}><Plus className="mr-1 h-4 w-4" />Add Shift</Button>

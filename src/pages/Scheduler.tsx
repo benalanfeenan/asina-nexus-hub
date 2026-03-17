@@ -153,10 +153,10 @@ export default function Scheduler() {
   return (
     <div className="space-y-6">
       <PageHeader title="Scheduler" subtitle="Staff scheduling across all services">
-        <Button variant="outline" className="text-white border-white/30 hover:bg-white/10" onClick={publishAll}>
+        <Button variant="ghost-light" onClick={publishAll}>
           <Send className="h-4 w-4 mr-1" /> Publish Drafts
         </Button>
-        <Button className="bg-white text-primary hover:bg-white/90" onClick={() => openAdd()}>
+        <Button variant="accent" onClick={() => openAdd()}>
           <Plus className="h-4 w-4 mr-1" /> Add Shift
         </Button>
       </PageHeader>
