@@ -132,6 +132,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         alerts: {
           allergies: form.allergies, bsp: form.bsp, mealtime_plan: form.mealtimePlan,
           restrictive_practices: form.restrictivePractices, high_intensity: form.highIntensity, medications: form.medications,
+          manual_handling: form.manualHandling,
         },
       };
       if (isEdit) {
