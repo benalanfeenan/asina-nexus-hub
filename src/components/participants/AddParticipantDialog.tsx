@@ -75,7 +75,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         address: address.trim() || null,
         sil_house_id: silHouseId === "none" ? null : silHouseId,
         notes: notes.trim() || null,
-        alerts: { allergies, bsp, mealtime_plan: mealtimePlan, restrictive_practices: restrictivePractices, high_intensity: highIntensity },
+        alerts: { allergies, bsp, mealtime_plan: mealtimePlan, restrictive_practices: restrictivePractices, high_intensity: highIntensity, medications },
       };
       if (isEdit) {
         const { error } = await supabase.from("participants").update(payload).eq("id", editParticipant.id);
