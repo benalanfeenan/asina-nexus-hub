@@ -84,6 +84,7 @@ export default function ParticipantDetail() {
           <TabsTrigger value="support">Support Needs</TabsTrigger>
           <TabsTrigger value="medications">Medications</TabsTrigger>
           <TabsTrigger value="mar">MAR</TabsTrigger>
+          <TabsTrigger value="abc">ABC Data</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
