@@ -138,7 +138,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         const { error } = await supabase.from("participants").update(payload).eq("id", editParticipant.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("participants").insert(payload);
+        const { error } = await supabase.from("participants").insert(payload as any);
         if (error) throw error;
       }
     },

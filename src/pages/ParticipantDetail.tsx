@@ -92,16 +92,7 @@ export default function ParticipantDetail() {
         </TabsList>
 
         <TabsContent value="overview">
-          <Card>
-            <CardContent className="pt-6">
-              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                <div><dt className="text-muted-foreground">Phone</dt><dd>{participant.phone || "—"}</dd></div>
-                <div><dt className="text-muted-foreground">Email</dt><dd>{participant.email || "—"}</dd></div>
-                <div className="sm:col-span-2"><dt className="text-muted-foreground">Address</dt><dd>{participant.address || "—"}</dd></div>
-                <div className="sm:col-span-2"><dt className="text-muted-foreground">Notes</dt><dd>{participant.notes || "—"}</dd></div>
-              </dl>
-            </CardContent>
-          </Card>
+          <ParticipantOverviewTab participant={participant} />
         </TabsContent>
 
         <TabsContent value="compliance"><ParticipantComplianceTab participantId={id!} canEdit={canEdit} alerts={alerts} /></TabsContent>
