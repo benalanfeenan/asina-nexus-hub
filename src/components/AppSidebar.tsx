@@ -115,19 +115,9 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border p-4 bg-brand-gradient-dark">
         {!collapsed ? (
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient shadow-brand text-primary-foreground font-heading font-bold text-sm">
-              A
-            </div>
-            <div>
-              <h2 className="font-heading text-sm font-bold leading-none text-sidebar-foreground">Asina</h2>
-              <p className="text-xs text-sidebar-foreground/60">NDIS All in One</p>
-            </div>
-          </div>
+          <img src={asinaLogo} alt="Asina" className="h-8 w-auto" />
         ) : (
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient shadow-brand text-primary-foreground font-heading font-bold text-sm mx-auto">
-            A
-          </div>
+          <img src={asinaFavicon} alt="Asina" className="h-8 w-8 mx-auto" />
         )}
       </SidebarHeader>
 

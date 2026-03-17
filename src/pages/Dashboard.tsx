@@ -91,9 +91,12 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome banner */}
-      <div className="rounded-xl bg-brand-gradient p-6 text-primary-foreground shadow-brand">
-        <h1 className="text-3xl font-heading font-bold">Dashboard</h1>
-        <p className="text-primary-foreground/80 mt-1">Welcome back to Asina — NDIS All in One</p>
+      <div className="rounded-xl bg-brand-gradient p-6 text-primary-foreground shadow-brand flex items-center gap-4">
+        <img src={asinaLogo} alt="Asina" className="h-10 w-auto brightness-0 invert" />
+        <div>
+          <h1 className="text-3xl font-heading font-bold">Dashboard</h1>
+          <p className="text-primary-foreground/80 mt-1">Welcome back to Asina — NDIS All in One</p>
+        </div>
       </div>
 
       {/* Stat cards */}
