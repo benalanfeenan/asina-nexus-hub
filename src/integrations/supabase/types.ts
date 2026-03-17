@@ -58,6 +58,39 @@ export type Database = {
           },
         ]
       }
+      alerts: {
+        Row: {
+          created_at: string
+          due_date: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          is_read: boolean
+          message: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          due_date?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_read?: boolean
+          message: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_read?: boolean
+          message?: string
+          type?: string
+        }
+        Relationships: []
+      }
       auto_reference_sequences: {
         Row: {
           id: string
@@ -120,6 +153,47 @@ export type Database = {
           },
         ]
       }
+      cleaning_schedules: {
+        Row: {
+          completed_by: string | null
+          created_at: string
+          frequency: string
+          id: string
+          last_completed: string | null
+          sil_house_id: string
+          task: string
+          updated_at: string
+        }
+        Insert: {
+          completed_by?: string | null
+          created_at?: string
+          frequency?: string
+          id?: string
+          last_completed?: string | null
+          sil_house_id: string
+          task: string
+          updated_at?: string
+        }
+        Update: {
+          completed_by?: string | null
+          created_at?: string
+          frequency?: string
+          id?: string
+          last_completed?: string | null
+          sil_house_id?: string
+          task?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cleaning_schedules_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       complaints: {
         Row: {
           acknowledgement_date: string | null
@@ -176,6 +250,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      conflict_of_interest: {
+        Row: {
+          created_at: string
+          declaration_date: string
+          description: string
+          id: string
+          management_strategy: string | null
+          staff_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          declaration_date?: string
+          description: string
+          id?: string
+          management_strategy?: string | null
+          staff_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          declaration_date?: string
+          description?: string
+          id?: string
+          management_strategy?: string | null
+          staff_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conflict_of_interest_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       daily_house_logs: {
         Row: {
@@ -381,6 +496,47 @@ export type Database = {
           },
         ]
       }
+      hazardous_substances: {
+        Row: {
+          created_at: string
+          id: string
+          location: string | null
+          risk_level: string
+          sds_url: string | null
+          sil_house_id: string
+          substance_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location?: string | null
+          risk_level?: string
+          sds_url?: string | null
+          sil_house_id: string
+          substance_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string | null
+          risk_level?: string
+          sds_url?: string | null
+          sil_house_id?: string
+          substance_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hazardous_substances_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hazards: {
         Row: {
           control_measures: string | null
@@ -427,6 +583,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "hazards_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      house_keys: {
+        Row: {
+          created_at: string
+          id: string
+          issued_date: string | null
+          issued_to: string | null
+          key_number: string
+          returned_date: string | null
+          sil_house_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issued_date?: string | null
+          issued_to?: string | null
+          key_number: string
+          returned_date?: string | null
+          sil_house_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issued_date?: string | null
+          issued_to?: string | null
+          key_number?: string
+          returned_date?: string | null
+          sil_house_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "house_keys_sil_house_id_fkey"
             columns: ["sil_house_id"]
             isOneToOne: false
             referencedRelation: "sil_houses"
@@ -635,6 +832,48 @@ export type Database = {
           },
         ]
       }
+      insurance_register: {
+        Row: {
+          certificate_url: string | null
+          created_at: string
+          expiry_date: string | null
+          id: string
+          notes: string | null
+          policy_number: string | null
+          policy_type: string
+          provider: string | null
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          certificate_url?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          notes?: string | null
+          policy_number?: string | null
+          policy_type: string
+          provider?: string | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          certificate_url?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          notes?: string | null
+          policy_number?: string | null
+          policy_type?: string
+          provider?: string | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoice_line_items: {
         Row: {
           amount: number
@@ -728,6 +967,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      legislative_compliance: {
+        Row: {
+          applicable_to: string | null
+          created_at: string
+          description: string | null
+          id: string
+          legislation_name: string
+          review_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          applicable_to?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          legislation_name: string
+          review_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          applicable_to?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          legislation_name?: string
+          review_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       mar_records: {
         Row: {
@@ -915,6 +1187,56 @@ export type Database = {
           },
         ]
       }
+      meeting_minutes: {
+        Row: {
+          actions: string | null
+          agenda: string | null
+          attendees: string | null
+          created_at: string
+          created_by: string | null
+          date: string
+          id: string
+          meeting_type: string
+          minutes: string
+          sil_house_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          actions?: string | null
+          agenda?: string | null
+          attendees?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          id?: string
+          meeting_type?: string
+          minutes: string
+          sil_house_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actions?: string | null
+          agenda?: string | null
+          attendees?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          id?: string
+          meeting_type?: string
+          minutes?: string
+          sil_house_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_minutes_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ndis_price_list: {
         Row: {
           category: string | null
@@ -1069,6 +1391,53 @@ export type Database = {
           },
         ]
       }
+      participant_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          expiry_date: string | null
+          file_url: string | null
+          id: string
+          participant_id: string
+          status: string
+          title: string
+          uploaded_date: string
+          version: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          expiry_date?: string | null
+          file_url?: string | null
+          id?: string
+          participant_id: string
+          status?: string
+          title: string
+          uploaded_date?: string
+          version?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          expiry_date?: string | null
+          file_url?: string | null
+          id?: string
+          participant_id?: string
+          status?: string
+          title?: string
+          uploaded_date?: string
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_documents_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       participant_goals: {
         Row: {
           created_at: string
@@ -1141,6 +1510,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "participant_support_needs_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participant_surveys: {
+        Row: {
+          actioned_by: string | null
+          actions_taken: string | null
+          created_at: string
+          date: string
+          id: string
+          participant_id: string
+          responses: Json | null
+          survey_type: string
+        }
+        Insert: {
+          actioned_by?: string | null
+          actions_taken?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          participant_id: string
+          responses?: Json | null
+          survey_type?: string
+        }
+        Update: {
+          actioned_by?: string | null
+          actions_taken?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          participant_id?: string
+          responses?: Json | null
+          survey_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_surveys_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
             referencedRelation: "participants"
@@ -1977,6 +2387,85 @@ export type Database = {
           },
         ]
       }
+      staff_acknowledgements: {
+        Row: {
+          created_at: string
+          document_type: string
+          document_url: string | null
+          id: string
+          signed_date: string
+          staff_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          document_url?: string | null
+          id?: string
+          signed_date?: string
+          staff_id: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          document_url?: string | null
+          id?: string
+          signed_date?: string
+          staff_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_acknowledgements_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_competency_assessments: {
+        Row: {
+          assessor: string | null
+          competency_type: string
+          created_at: string
+          date: string
+          id: string
+          next_due: string | null
+          notes: string | null
+          result: string
+          staff_id: string
+        }
+        Insert: {
+          assessor?: string | null
+          competency_type: string
+          created_at?: string
+          date?: string
+          id?: string
+          next_due?: string | null
+          notes?: string | null
+          result?: string
+          staff_id: string
+        }
+        Update: {
+          assessor?: string | null
+          competency_type?: string
+          created_at?: string
+          date?: string
+          id?: string
+          next_due?: string | null
+          notes?: string | null
+          result?: string
+          staff_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_competency_assessments_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_compliance: {
         Row: {
           check_type: Database["public"]["Enums"]["compliance_check_type"]
@@ -2017,6 +2506,88 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "staff_compliance_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          expiry_date: string | null
+          file_url: string | null
+          id: string
+          staff_id: string
+          title: string
+          uploaded_date: string
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          expiry_date?: string | null
+          file_url?: string | null
+          id?: string
+          staff_id: string
+          title: string
+          uploaded_date?: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          expiry_date?: string | null
+          file_url?: string | null
+          id?: string
+          staff_id?: string
+          title?: string
+          uploaded_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_documents_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_supervisions: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          next_due: string | null
+          notes: string | null
+          staff_id: string
+          supervisor_id: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          next_due?: string | null
+          notes?: string | null
+          staff_id: string
+          supervisor_id?: string | null
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          next_due?: string | null
+          notes?: string | null
+          staff_id?: string
+          supervisor_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_supervisions_staff_id_fkey"
             columns: ["staff_id"]
             isOneToOne: false
             referencedRelation: "staff"
@@ -2157,6 +2728,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vehicle_inspections: {
+        Row: {
+          checklist: Json | null
+          created_at: string
+          date: string
+          id: string
+          inspector_id: string | null
+          issues: string | null
+          status: string
+          vehicle_id: string
+        }
+        Insert: {
+          checklist?: Json | null
+          created_at?: string
+          date?: string
+          id?: string
+          inspector_id?: string | null
+          issues?: string | null
+          status?: string
+          vehicle_id: string
+        }
+        Update: {
+          checklist?: Json | null
+          created_at?: string
+          date?: string
+          id?: string
+          inspector_id?: string | null
+          issues?: string | null
+          status?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
+      visitor_log: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          purpose: string | null
+          sil_house_id: string
+          time_in: string | null
+          time_out: string | null
+          visitor_name: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          purpose?: string | null
+          sil_house_id: string
+          time_in?: string | null
+          time_out?: string | null
+          visitor_name: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          purpose?: string | null
+          sil_house_id?: string
+          time_in?: string | null
+          time_out?: string | null
+          visitor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visitor_log_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workplace_inspections: {
         Row: {
