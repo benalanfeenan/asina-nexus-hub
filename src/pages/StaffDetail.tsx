@@ -93,7 +93,6 @@ export default function StaffDetail() {
       delivers_high_intensity: roleFlags.delivers_high_intensity,
       uses_restrictive_practices: roleFlags.uses_restrictive_practices,
       transports_in_own_vehicle: roleFlags.transports_in_own_vehicle,
-      supports_under_18: roleFlags.supports_under_18,
     };
   }, [roleFlags]);
 
