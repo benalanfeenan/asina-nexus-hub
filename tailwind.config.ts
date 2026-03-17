@@ -74,6 +74,14 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      backgroundImage: {
+        "brand-gradient": "linear-gradient(135deg, hsl(173 72% 36%), hsl(187 50% 25%))",
+        "brand-gradient-horizontal": "linear-gradient(90deg, hsl(173 72% 36%), hsl(187 50% 25%))",
+      },
+      boxShadow: {
+        brand: "0 4px 24px -4px hsl(173 72% 36% / 0.12)",
+        "brand-lg": "0 8px 32px -6px hsl(173 72% 36% / 0.18)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
