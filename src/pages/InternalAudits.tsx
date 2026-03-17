@@ -90,7 +90,7 @@ export default function InternalAudits() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Internal Audits" description="NDIS Practice Standards self-assessment register">
+      <PageHeader title="Internal Audits" subtitle="NDIS Practice Standards self-assessment register">
         {canEdit && <Button onClick={() => setShowAdd(true)}><Plus className="h-4 w-4 mr-1" />Schedule Audit</Button>}
       </PageHeader>
 

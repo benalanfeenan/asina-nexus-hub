@@ -107,7 +107,7 @@ export default function Safeguarding() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Safeguarding Register" description="Track and manage safeguarding concerns, abuse, neglect, and exploitation reports">
+      <PageHeader title="Safeguarding Register" subtitle="Track and manage safeguarding concerns, abuse, neglect, and exploitation reports">
         {canEdit && <Button onClick={() => setShowAdd(true)}><Plus className="h-4 w-4 mr-1" />Report Concern</Button>}
       </PageHeader>
 
