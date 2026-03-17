@@ -16,6 +16,7 @@ import StaffDetail from "./pages/StaffDetail";
 import ParticipantDetail from "./pages/ParticipantDetail";
 import SILHouses from "./pages/SILHouses";
 import SILHouseDetail from "./pages/SILHouseDetail";
+import Scheduler from "./pages/Scheduler";
 import Rostering from "./pages/Rostering";
 import Timesheets from "./pages/Timesheets";
 import ProgressNotes from "./pages/ProgressNotes";
@@ -69,6 +70,7 @@ const App = () => (
             <Route path="/sil-houses" element={<ProtectedPage><SILHouses /></ProtectedPage>} />
             <Route path="/sil-houses/:id" element={<ProtectedPage><SILHouseDetail /></ProtectedPage>} />
             <Route path="/rostering" element={<ProtectedPage><Rostering /></ProtectedPage>} />
+            <Route path="/scheduler" element={<ProtectedPage><Scheduler /></ProtectedPage>} />
             <Route path="/timesheets" element={<ProtectedPage><Timesheets /></ProtectedPage>} />
             <Route path="/progress-notes" element={<ProtectedPage><ProgressNotes /></ProtectedPage>} />
             <Route path="/invoicing" element={<ProtectedPage><Invoicing /></ProtectedPage>} />

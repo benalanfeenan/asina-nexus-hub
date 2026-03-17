@@ -2590,6 +2590,76 @@ export type Database = {
           },
         ]
       }
+      scheduler_shifts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          date: string
+          end_time: string
+          id: string
+          notes: string | null
+          participant_id: string | null
+          service_type: string
+          sil_house_id: string | null
+          staff_id: string
+          start_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          date: string
+          end_time: string
+          id?: string
+          notes?: string | null
+          participant_id?: string | null
+          service_type?: string
+          sil_house_id?: string | null
+          staff_id: string
+          start_time: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          end_time?: string
+          id?: string
+          notes?: string | null
+          participant_id?: string | null
+          service_type?: string
+          sil_house_id?: string | null
+          staff_id?: string
+          start_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduler_shifts_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_shifts_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduler_shifts_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shift_handovers: {
         Row: {
           acknowledged: boolean | null
