@@ -17,7 +17,8 @@ import { useBatchHouseCompetencyFlags } from "@/hooks/use-merged-role-flags";
 function computeComplianceFromItems(
   items: { staff_id: string; item_key: string; status: string; expiry_date: string | null }[],
   allFlags: { staff_id: string; [key: string]: any }[],
-  staffId: string
+  staffId: string,
+  getMergedFlags?: (staffId: string, personalFlags: RoleFlags) => RoleFlags,
 ): { status: "green" | "amber" | "red" | "none"; score: number } {
   const staffItems = items.filter((i) => i.staff_id === staffId);
   const flagRow = allFlags.find((f) => f.staff_id === staffId);
