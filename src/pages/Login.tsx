@@ -43,19 +43,23 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary text-primary-foreground font-heading text-2xl font-bold">
+    <div className="min-h-screen flex items-center justify-center bg-brand-gradient p-4 relative overflow-hidden">
+      {/* Decorative circles */}
+      <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-primary-foreground/5" />
+      <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-primary-foreground/5" />
+
+      <Card className="w-full max-w-md border-0 shadow-brand-lg backdrop-blur-sm bg-card/95 relative z-10">
+        <CardHeader className="text-center pb-2">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gradient shadow-brand text-primary-foreground font-heading text-3xl font-bold">
             A
           </div>
           <CardTitle className="text-2xl font-heading">
             {showForgot ? "Reset Password" : "Welcome Back"}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-base">
             {showForgot
               ? "Enter your email to receive a reset link"
-              : "Sign in to NDIS All in One"}
+              : "Sign in to Asina — NDIS All in One"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -72,7 +76,7 @@ export default function Login() {
                   placeholder="you@example.com"
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full rounded-full" disabled={loading}>
                 {loading ? "Sending…" : "Send Reset Link"}
               </Button>
               <Button
@@ -108,7 +112,7 @@ export default function Login() {
                   placeholder="••••••••"
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full rounded-full" disabled={loading}>
                 {loading ? "Signing in…" : "Sign In"}
               </Button>
               <Button

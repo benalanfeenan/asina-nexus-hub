@@ -76,52 +76,44 @@ export default function Dashboard() {
   });
 
   const severityColors: Record<string, string> = {
-    low: "bg-green-100 text-green-800", medium: "bg-yellow-100 text-yellow-800",
-    high: "bg-orange-100 text-orange-800", critical: "bg-red-100 text-red-800",
+    low: "bg-success/15 text-success", medium: "bg-warning/15 text-warning",
+    high: "bg-accent/20 text-accent-foreground", critical: "bg-destructive/15 text-destructive",
   };
+
+  const statCards = [
+    { label: "Active Participants", value: participantCount, icon: Users, path: "/participants" },
+    { label: "Active Staff", value: staffCount, icon: UserCog, path: "/staff" },
+    { label: "Open Incidents", value: openIncidents, icon: AlertTriangle, path: "/incidents" },
+    { label: "Pending Timesheets", value: pendingTimesheets, icon: Clock, path: "/timesheets" },
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
+      {/* Welcome banner */}
+      <div className="rounded-xl bg-brand-gradient p-6 text-primary-foreground shadow-brand">
         <h1 className="text-3xl font-heading font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back to NDIS All in One</p>
+        <p className="text-primary-foreground/80 mt-1">Welcome back to Asina — NDIS All in One</p>
       </div>
 
+      {/* Stat cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/participants")}>
-          <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Participants</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent><p className="text-2xl font-bold">{participantCount}</p></CardContent>
-        </Card>
-        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/staff")}>
-          <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Staff</CardTitle>
-            <UserCog className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent><p className="text-2xl font-bold">{staffCount}</p></CardContent>
-        </Card>
-        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/incidents")}>
-          <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Open Incidents</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent><p className="text-2xl font-bold">{openIncidents}</p></CardContent>
-        </Card>
-        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/timesheets")}>
-          <CardHeader className="pb-2 flex flex-row items-center justify-between">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Timesheets</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent><p className="text-2xl font-bold">{pendingTimesheets}</p></CardContent>
-        </Card>
+        {statCards.map((s) => (
+          <Card key={s.path} className="cursor-pointer group border-l-4 border-l-primary" onClick={() => navigate(s.path)}>
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{s.label}</CardTitle>
+              <div className="h-8 w-8 rounded-lg bg-brand-gradient-subtle flex items-center justify-center">
+                <s.icon className="h-4 w-4 text-primary" />
+              </div>
+            </CardHeader>
+            <CardContent><p className="text-2xl font-bold">{s.value}</p></CardContent>
+          </Card>
+        ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent Incidents */}
         <Card>
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4" />Recent Incidents</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-primary" />Recent Incidents</CardTitle></CardHeader>
           <CardContent>
             {recentIncidents.length === 0 ? <p className="text-sm text-muted-foreground">No recent incidents</p> : (
               <div className="space-y-3">
@@ -141,7 +133,7 @@ export default function Dashboard() {
 
         {/* Today's Shifts */}
         <Card>
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><CalendarDays className="h-4 w-4" />Today's Shifts</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Today's Shifts</CardTitle></CardHeader>
           <CardContent>
             {todayShifts.length === 0 ? <p className="text-sm text-muted-foreground">No shifts today</p> : (
               <div className="space-y-3">
@@ -161,7 +153,7 @@ export default function Dashboard() {
 
         {/* Compliance Alerts */}
         <Card>
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><ShieldAlert className="h-4 w-4" />Compliance Alerts</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><ShieldAlert className="h-4 w-4 text-primary" />Compliance Alerts</CardTitle></CardHeader>
           <CardContent>
             {expiringCompliance.length === 0 ? <p className="text-sm text-muted-foreground">All clear</p> : (
               <div className="space-y-3">
@@ -173,7 +165,7 @@ export default function Dashboard() {
                         <p className="font-medium">{(c.staff as any)?.profiles?.full_name}</p>
                         <p className="text-xs text-muted-foreground capitalize">{c.check_type.replace("_", " ")}</p>
                       </div>
-                      <Badge variant="secondary" className={isExpired ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}>
+                      <Badge variant="secondary" className={isExpired ? "bg-destructive/15 text-destructive" : "bg-warning/15 text-warning"}>
                         {isExpired ? "Expired" : format(new Date(c.expiry_date), "dd/MM")}
                       </Badge>
                     </div>

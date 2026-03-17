@@ -111,31 +111,31 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border p-4">
+      <SidebarHeader className="border-b border-sidebar-border p-4 bg-brand-gradient-dark">
         {!collapsed ? (
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-heading font-bold text-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient shadow-brand text-primary-foreground font-heading font-bold text-sm">
               A
             </div>
             <div>
-              <h2 className="font-heading text-sm font-bold leading-none">Asina</h2>
+              <h2 className="font-heading text-sm font-bold leading-none text-sidebar-foreground">Asina</h2>
               <p className="text-xs text-sidebar-foreground/60">NDIS All in One</p>
             </div>
           </div>
         ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-heading font-bold text-sm mx-auto">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient shadow-brand text-primary-foreground font-heading font-bold text-sm mx-auto">
             A
           </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-brand-gradient-dark">
         {navGroups.map((group) => {
           const visibleItems = group.items.filter(canSee);
           if (visibleItems.length === 0) return null;
           return (
             <SidebarGroup key={group.label}>
-              <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[10px] tracking-wider">{group.label}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {visibleItems.map((item) => (
@@ -144,8 +144,8 @@ export function AppSidebar() {
                         <NavLink
                           to={item.url}
                           end={item.url === "/"}
-                          className="hover:bg-sidebar-accent/50"
-                          activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
+                          className="hover:bg-sidebar-accent/60 rounded-lg transition-colors"
+                          activeClassName="bg-sidebar-accent text-sidebar-primary font-medium border-l-2 border-sidebar-primary"
                         >
                           <item.icon className="h-4 w-4" />
                           {!collapsed && <span>{item.title}</span>}
@@ -160,7 +160,7 @@ export function AppSidebar() {
         })}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-2">
+      <SidebarFooter className="border-t border-sidebar-border p-2 bg-brand-gradient-dark">
         <Button
           variant="ghost"
           size={collapsed ? "icon" : "default"}
