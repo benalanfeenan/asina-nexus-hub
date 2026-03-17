@@ -82,8 +82,8 @@ export default function Scheduler() {
   const { data: participantMap } = useQuery({
     queryKey: ["participants-map"],
     queryFn: async () => {
-      const { data } = await supabase.from("participants").select("id, first_name, last_name");
-      return Object.fromEntries((data || []).map(p => [p.id, `${p.first_name} ${p.last_name}`]));
+      const { data } = await supabase.from("participants").select("id, first_name, last_name") as any;
+      return Object.fromEntries(((data || []) as any[]).map((p: any) => [p.id, `${p.first_name} ${p.last_name}`]));
     },
   });
 
