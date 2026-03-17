@@ -2597,6 +2597,7 @@ export type Database = {
           date: string
           end_time: string
           id: string
+          ndis_line_item_id: string | null
           notes: string | null
           participant_id: string | null
           service_type: string
@@ -2612,6 +2613,7 @@ export type Database = {
           date: string
           end_time: string
           id?: string
+          ndis_line_item_id?: string | null
           notes?: string | null
           participant_id?: string | null
           service_type?: string
@@ -2627,6 +2629,7 @@ export type Database = {
           date?: string
           end_time?: string
           id?: string
+          ndis_line_item_id?: string | null
           notes?: string | null
           participant_id?: string | null
           service_type?: string
@@ -2637,6 +2640,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "scheduler_shifts_ndis_line_item_id_fkey"
+            columns: ["ndis_line_item_id"]
+            isOneToOne: false
+            referencedRelation: "ndis_price_list"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "scheduler_shifts_participant_id_fkey"
             columns: ["participant_id"]

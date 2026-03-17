@@ -1,0 +1,1 @@
+ALTER TABLE public.scheduler_shifts ADD COLUMN ndis_line_item_id uuid REFERENCES public.ndis_price_list(id) ON DELETE SET NULL;
