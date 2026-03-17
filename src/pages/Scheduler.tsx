@@ -71,7 +71,7 @@ export default function Scheduler() {
       const to = format(weekDates[6], "yyyy-MM-dd");
       const { data } = await supabase
         .from("scheduler_shifts")
-        .select("*, participants(first_name, last_name), sil_houses(name)")
+        .select("*, participants(first_name, last_name), sil_houses(name), ndis_price_list(item_code)")
         .gte("date", from)
         .lte("date", to)
         .order("start_time");
