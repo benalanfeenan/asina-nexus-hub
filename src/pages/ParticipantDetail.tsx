@@ -75,7 +75,7 @@ export default function ParticipantDetail() {
               <Badge variant={participant.is_active ? "default" : "secondary"}>{participant.is_active ? "Active" : "Inactive"}</Badge>
               {alerts.allergies && <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />Allergies</Badge>}
               {alerts.bsp && <Badge className="gap-1"><FileText className="h-3 w-3" />BSP</Badge>}
-              {alerts.mealtime_plan && <Badge variant="outline" className="gap-1 border-orange-500 text-orange-600"><UtensilsCrossed className="h-3 w-3" />Mealtime Plan</Badge>}
+              {alerts.mealtime_plan && <Badge variant="outline" className="gap-1"><UtensilsCrossed className="h-3 w-3" />Mealtime Plan</Badge>}
             </div>
           </div>
           {canEdit && <Button variant="outline" onClick={() => setShowEdit(true)}>Edit</Button>}

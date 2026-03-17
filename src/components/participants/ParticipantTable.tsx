@@ -24,9 +24,9 @@ function AlertIcons({ alerts }: { alerts: Json }) {
   const a = alerts as Record<string, boolean>;
   return (
     <div className="flex gap-1">
-      {a.allergies && <AlertTriangle className="h-4 w-4 text-destructive" title="Allergies" />}
-      {a.bsp && <FileText className="h-4 w-4 text-primary" title="BSP" />}
-      {a.mealtime_plan && <UtensilsCrossed className="h-4 w-4 text-orange-500" title="Mealtime Plan" />}
+      {a.allergies && <span title="Allergies"><AlertTriangle className="h-4 w-4 text-destructive" /></span>}
+      {a.bsp && <span title="BSP"><FileText className="h-4 w-4 text-primary" /></span>}
+      {a.mealtime_plan && <span title="Mealtime Plan"><UtensilsCrossed className="h-4 w-4 text-accent-foreground" /></span>}
     </div>
   );
 }
