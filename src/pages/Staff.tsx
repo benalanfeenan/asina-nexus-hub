@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StaffTable, type StaffWithProfile } from "@/components/staff/StaffTable";
 import { AddStaffDialog } from "@/components/staff/AddStaffDialog";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { useToast } from "@/hooks/use-toast";
@@ -56,7 +55,7 @@ export default function Staff() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [empFilter, setEmpFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  
 
   const handleToggleActive = useCallback(async (id: string, currentlyActive: boolean) => {
     const { error } = await supabase.from("staff").update({ is_active: !currentlyActive }).eq("id", id);
@@ -68,17 +67,6 @@ export default function Staff() {
     }
   }, [queryClient, toast]);
 
-  const handleDelete = useCallback(async () => {
-    if (!deleteId) return;
-    const { error } = await supabase.from("staff").delete().eq("id", deleteId);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Staff member deleted" });
-      queryClient.invalidateQueries({ queryKey: ["staff"] });
-    }
-    setDeleteId(null);
-  }, [deleteId, queryClient, toast]);
 
   const { data: staffRaw = [] } = useQuery({
     queryKey: ["staff"],
@@ -170,16 +158,8 @@ export default function Staff() {
         </Select>
       </div>
 
-      <StaffTable staff={filtered} canEdit={canEdit} onToggleActive={handleToggleActive} onDelete={setDeleteId} />
+      <StaffTable staff={filtered} canEdit={canEdit} onToggleActive={handleToggleActive} />
       <AddStaffDialog open={showAdd} onOpenChange={setShowAdd} />
-      <ConfirmDialog
-        open={!!deleteId}
-        onOpenChange={(open) => !open && setDeleteId(null)}
-        title="Delete Staff Member"
-        description="This will permanently remove this staff member and all associated records. This action cannot be undone."
-        onConfirm={handleDelete}
-        confirmText="Delete"
-      />
     </div>
   );
 }

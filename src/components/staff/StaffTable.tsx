@@ -7,7 +7,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Eye, MoreHorizontal, Archive, ArchiveRestore, Trash2 } from "lucide-react";
+import { Eye, MoreHorizontal, Archive, ArchiveRestore } from "lucide-react";
 
 export interface StaffWithProfile {
   id: string;
@@ -47,10 +47,9 @@ interface StaffTableProps {
   staff: StaffWithProfile[];
   canEdit?: boolean;
   onToggleActive?: (id: string, currentlyActive: boolean) => void;
-  onDelete?: (id: string) => void;
 }
 
-export function StaffTable({ staff, canEdit, onToggleActive, onDelete }: StaffTableProps) {
+export function StaffTable({ staff, canEdit, onToggleActive }: StaffTableProps) {
   const navigate = useNavigate();
 
   return (
@@ -109,9 +108,6 @@ export function StaffTable({ staff, canEdit, onToggleActive, onDelete }: StaffTa
                       <DropdownMenuItem onClick={() => onToggleActive?.(s.id, s.is_active)}>
                         {s.is_active ? <Archive className="mr-2 h-4 w-4" /> : <ArchiveRestore className="mr-2 h-4 w-4" />}
                         {s.is_active ? "Archive" : "Reactivate"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => onDelete?.(s.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" />Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
