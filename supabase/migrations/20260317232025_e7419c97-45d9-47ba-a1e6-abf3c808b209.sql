@@ -1,0 +1,1 @@
+ALTER TABLE public.scheduler_shifts ADD COLUMN invoice_id uuid REFERENCES public.invoices(id) ON DELETE SET NULL;
