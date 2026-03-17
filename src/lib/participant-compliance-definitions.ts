@@ -38,12 +38,17 @@ export const PARTICIPANT_COMPLIANCE_ITEMS: ParticipantComplianceItem[] = [
   { item_key: "allergy_action_plan", name: "Allergy Action Plan on File", description: "Allergy action plan on file with emergency protocols", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "allergies", display_order: 25 },
   { item_key: "epipen_protocols", name: "Medication/EpiPen Protocols", description: "EpiPen and medication emergency protocols documented", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "allergies", display_order: 26 },
   { item_key: "high_intensity_plan", name: "High Intensity Support Plan", description: "High intensity support plan on file", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "high_intensity", display_order: 27 },
+  { item_key: "medication_prescriptions", name: "Medication Authority/Prescriptions on File", description: "Current prescriptions and medication authority on file", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "medications", display_order: 28 },
+  { item_key: "medication_admin_plan", name: "Medication Administration Plan", description: "Medication administration plan documented with dose, route, frequency", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "medications", display_order: 29 },
+  { item_key: "medication_staff_signoff", name: "Medication Competency Staff Sign-Off", description: "Staff competency sign-off for administering participant's medications", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "medications", display_order: 30 },
+  { item_key: "medication_storage", name: "Medication Storage Requirements Documented", description: "Safe storage requirements documented (e.g. fridge, locked cupboard)", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "medications", display_order: 31 },
+  { item_key: "prn_protocol", name: "PRN Protocol on File", description: "PRN (as needed) medication protocol documented with triggers and limits", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "medications", display_order: 32 },
 
   // Ongoing Review
-  { item_key: "service_agreement_review", name: "Service Agreement Review (annual)", description: "Annual review of service agreement", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: null, display_order: 30 },
-  { item_key: "support_plan_review", name: "Support Plan Review (6-monthly)", description: "6-monthly review of individual support plan", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 6, is_mandatory: true, conditional_on: null, display_order: 31 },
-  { item_key: "risk_assessment_review", name: "Risk Assessment Review (annual)", description: "Annual review of risk assessment", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: null, display_order: 32 },
-  { item_key: "goal_progress_review", name: "Goal Progress Review (quarterly)", description: "Quarterly review of participant goal progress", category: "Ongoing Review", requires_document: false, has_expiry: true, expiry_months: 3, is_mandatory: true, conditional_on: null, display_order: 33 },
+  { item_key: "service_agreement_review", name: "Service Agreement Review (annual)", description: "Annual review of service agreement", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: null, display_order: 35 },
+  { item_key: "support_plan_review", name: "Support Plan Review (6-monthly)", description: "6-monthly review of individual support plan", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 6, is_mandatory: true, conditional_on: null, display_order: 36 },
+  { item_key: "risk_assessment_review", name: "Risk Assessment Review (annual)", description: "Annual review of risk assessment", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: null, display_order: 37 },
+  { item_key: "goal_progress_review", name: "Goal Progress Review (quarterly)", description: "Quarterly review of participant goal progress", category: "Ongoing Review", requires_document: false, has_expiry: true, expiry_months: 3, is_mandatory: true, conditional_on: null, display_order: 38 },
 ];
 
 export const PARTICIPANT_COMPLIANCE_CATEGORIES = ["Pre-Support", "Onboarding", "Higher Needs", "Ongoing Review"] as const;
@@ -54,6 +59,7 @@ export const PARTICIPANT_NEEDS_FLAG_LABELS: Record<string, string> = {
   mealtime_plan: "Mealtime Plan",
   restrictive_practices: "Restrictive Practices",
   high_intensity: "High Intensity Supports",
+  medications: "Medications",
 };
 
 export const PARTICIPANT_NEEDS_FLAG_KEYS = Object.keys(PARTICIPANT_NEEDS_FLAG_LABELS);

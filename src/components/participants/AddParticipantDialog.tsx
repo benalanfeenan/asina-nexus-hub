@@ -35,6 +35,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
   const [mealtimePlan, setMealtimePlan] = useState(false);
   const [restrictivePractices, setRestrictivePractices] = useState(false);
   const [highIntensity, setHighIntensity] = useState(false);
+  const [medications, setMedications] = useState(false);
 
   useEffect(() => {
     if (editParticipant) {
@@ -53,11 +54,12 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
       setMealtimePlan(alerts?.mealtime_plan || false);
       setRestrictivePractices(alerts?.restrictive_practices || false);
       setHighIntensity(alerts?.high_intensity || false);
+      setMedications(alerts?.medications || false);
     } else {
       setFirstName(""); setLastName(""); setDob(""); setNdisNumber("");
       setPhone(""); setEmail(""); setAddress(""); setSilHouseId("none");
       setNotes(""); setAllergies(false); setBsp(false); setMealtimePlan(false);
-      setRestrictivePractices(false); setHighIntensity(false);
+      setRestrictivePractices(false); setHighIntensity(false); setMedications(false);
     }
   }, [editParticipant, open]);
 
@@ -73,7 +75,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         address: address.trim() || null,
         sil_house_id: silHouseId === "none" ? null : silHouseId,
         notes: notes.trim() || null,
-        alerts: { allergies, bsp, mealtime_plan: mealtimePlan, restrictive_practices: restrictivePractices, high_intensity: highIntensity },
+        alerts: { allergies, bsp, mealtime_plan: mealtimePlan, restrictive_practices: restrictivePractices, high_intensity: highIntensity, medications },
       };
       if (isEdit) {
         const { error } = await supabase.from("participants").update(payload).eq("id", editParticipant.id);
@@ -130,6 +132,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={mealtimePlan} onCheckedChange={(v) => setMealtimePlan(!!v)} />Mealtime Plan</label>
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={restrictivePractices} onCheckedChange={(v) => setRestrictivePractices(!!v)} />Restrictive Practices</label>
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={highIntensity} onCheckedChange={(v) => setHighIntensity(!!v)} />High Intensity</label>
+              <label className="flex items-center gap-2 text-sm"><Checkbox checked={medications} onCheckedChange={(v) => setMedications(!!v)} />Medications</label>
             </div>
           </div>
           <div><Label>Notes</Label><Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional notes" /></div>
