@@ -42,6 +42,7 @@ const navGroups: NavGroup[] = [
     { title: "Fire Safety", url: "/fire-safety", icon: Flame },
     { title: "Restrictive Practices", url: "/restrictive-practices", icon: Ban },
     { title: "Quality Improvement", url: "/quality-improvement", icon: TrendingUp, roles: ["admin", "house_manager"] },
+    { title: "Safeguarding", url: "/safeguarding", icon: ShieldAlert, roles: ["admin", "house_manager"] },
     { title: "Compliance Dashboard", url: "/compliance-dashboard", icon: ClipboardCheck, roles: ["admin"] },
   ]},
   { label: "Governance", items: [
@@ -49,6 +50,7 @@ const navGroups: NavGroup[] = [
     { title: "Legislative Compliance", url: "/legislative-compliance", icon: Landmark, roles: ["admin"] },
     { title: "Insurance", url: "/insurance", icon: Shield, roles: ["admin"] },
     { title: "Meeting Minutes", url: "/meetings", icon: BookOpen, roles: ["admin", "house_manager"] },
+    { title: "Internal Audits", url: "/internal-audits", icon: ClipboardCheck, roles: ["admin", "house_manager"] },
   ]},
   { label: "Reports", items: [
     { title: "Incident Trends", url: "/reports/incidents", icon: BarChart3, roles: ["admin", "house_manager"] },

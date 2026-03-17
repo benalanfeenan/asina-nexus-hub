@@ -39,6 +39,8 @@ import MeetingMinutes from "./pages/MeetingMinutes";
 import ReportIncidentTrends from "./pages/ReportIncidentTrends";
 import ReportRPTrends from "./pages/ReportRPTrends";
 import ReportMonthlySummary from "./pages/ReportMonthlySummary";
+import InternalAudits from "./pages/InternalAudits";
+import Safeguarding from "./pages/Safeguarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -86,6 +88,8 @@ const App = () => (
             <Route path="/reports/incidents" element={<ProtectedPage><ReportIncidentTrends /></ProtectedPage>} />
             <Route path="/reports/restrictive-practices" element={<ProtectedPage><ReportRPTrends /></ProtectedPage>} />
             <Route path="/reports/summary" element={<ProtectedPage><ReportMonthlySummary /></ProtectedPage>} />
+            <Route path="/internal-audits" element={<ProtectedPage><InternalAudits /></ProtectedPage>} />
+            <Route path="/safeguarding" element={<ProtectedPage><Safeguarding /></ProtectedPage>} />
             <Route path="/documents" element={<ProtectedPage><Documents /></ProtectedPage>} />
             <Route path="/ndis-price-list" element={<ProtectedPage><NDISPriceList /></ProtectedPage>} />
             <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />

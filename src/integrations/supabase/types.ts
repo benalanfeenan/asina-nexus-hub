@@ -718,6 +718,53 @@ export type Database = {
           },
         ]
       }
+      incident_commission_reports: {
+        Row: {
+          acknowledgement_date: string | null
+          acknowledgement_received: boolean
+          commission_reference: string | null
+          created_at: string
+          document_url: string | null
+          id: string
+          incident_id: string
+          report_type: string
+          submitted_at: string | null
+          submitted_by: string | null
+        }
+        Insert: {
+          acknowledgement_date?: string | null
+          acknowledgement_received?: boolean
+          commission_reference?: string | null
+          created_at?: string
+          document_url?: string | null
+          id?: string
+          incident_id: string
+          report_type?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+        }
+        Update: {
+          acknowledgement_date?: string | null
+          acknowledgement_received?: boolean
+          commission_reference?: string | null
+          created_at?: string
+          document_url?: string | null
+          id?: string
+          incident_id?: string
+          report_type?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_commission_reports_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       incident_debriefs: {
         Row: {
           actions: string | null
@@ -958,6 +1005,45 @@ export type Database = {
           start_date?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      internal_audits: {
+        Row: {
+          audit_date: string
+          auditor_id: string | null
+          corrective_actions: string | null
+          created_at: string
+          findings: string | null
+          id: string
+          next_audit_date: string | null
+          non_conformances: string | null
+          practice_standard: string
+          status: string
+        }
+        Insert: {
+          audit_date?: string
+          auditor_id?: string | null
+          corrective_actions?: string | null
+          created_at?: string
+          findings?: string | null
+          id?: string
+          next_audit_date?: string | null
+          non_conformances?: string | null
+          practice_standard: string
+          status?: string
+        }
+        Update: {
+          audit_date?: string
+          auditor_id?: string | null
+          corrective_actions?: string | null
+          created_at?: string
+          findings?: string | null
+          id?: string
+          next_audit_date?: string | null
+          non_conformances?: string | null
+          practice_standard?: string
+          status?: string
         }
         Relationships: []
       }
@@ -1692,6 +1778,62 @@ export type Database = {
           },
         ]
       }
+      participant_transitions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          destination_provider: string | null
+          documents_transferred: boolean
+          exit_date: string | null
+          exit_interview_completed: boolean
+          exit_interview_notes: string | null
+          final_progress_note_id: string | null
+          handover_summary: string | null
+          id: string
+          participant_id: string
+          reason: string | null
+          transition_type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          destination_provider?: string | null
+          documents_transferred?: boolean
+          exit_date?: string | null
+          exit_interview_completed?: boolean
+          exit_interview_notes?: string | null
+          final_progress_note_id?: string | null
+          handover_summary?: string | null
+          id?: string
+          participant_id: string
+          reason?: string | null
+          transition_type?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          destination_provider?: string | null
+          documents_transferred?: boolean
+          exit_date?: string | null
+          exit_interview_completed?: boolean
+          exit_interview_notes?: string | null
+          final_progress_note_id?: string | null
+          handover_summary?: string | null
+          id?: string
+          participant_id?: string
+          reason?: string | null
+          transition_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_transitions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       participants: {
         Row: {
           address: string | null
@@ -2317,6 +2459,62 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      safeguarding_concerns: {
+        Row: {
+          actions_taken: string | null
+          authority_reported_to: string | null
+          concern_type: string
+          created_at: string
+          date_identified: string
+          id: string
+          investigation_status: string
+          mandatory_report_made: boolean
+          outcome: string | null
+          participant_id: string | null
+          reference_number: string
+          report_date: string | null
+          reported_by: string | null
+        }
+        Insert: {
+          actions_taken?: string | null
+          authority_reported_to?: string | null
+          concern_type?: string
+          created_at?: string
+          date_identified?: string
+          id?: string
+          investigation_status?: string
+          mandatory_report_made?: boolean
+          outcome?: string | null
+          participant_id?: string | null
+          reference_number?: string
+          report_date?: string | null
+          reported_by?: string | null
+        }
+        Update: {
+          actions_taken?: string | null
+          authority_reported_to?: string | null
+          concern_type?: string
+          created_at?: string
+          date_identified?: string
+          id?: string
+          investigation_status?: string
+          mandatory_report_made?: boolean
+          outcome?: string | null
+          participant_id?: string | null
+          reference_number?: string
+          report_date?: string | null
+          reported_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "safeguarding_concerns_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shift_handovers: {
         Row: {

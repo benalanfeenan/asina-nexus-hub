@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle } from "lucide-react";
 import { IncidentSubRecordsTab } from "./IncidentSubRecordsTab";
+import { IncidentCommissionReports } from "./IncidentCommissionReports";
 
 interface Props {
   incident: any;
@@ -122,6 +123,14 @@ export function IncidentDetailDialog({ incident, onClose }: Props) {
               {incident.root_cause && <div><span className="text-muted-foreground font-medium">Root Cause:</span><p className="mt-1">{incident.root_cause}</p></div>}
               {incident.investigation_findings && <div><span className="text-muted-foreground font-medium">Findings:</span><p className="mt-1">{incident.investigation_findings}</p></div>}
               {incident.corrective_actions && <div><span className="text-muted-foreground font-medium">Corrective Actions:</span><p className="mt-1">{incident.corrective_actions}</p></div>}
+            </>
+          )}
+
+          {incident.is_reportable && (
+            <>
+              <hr className="border-border" />
+              <h4 className="font-medium">Commission Reporting</h4>
+              <IncidentCommissionReports incidentId={incident.id} />
             </>
           )}
 
