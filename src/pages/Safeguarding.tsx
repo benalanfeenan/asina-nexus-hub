@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, ShieldCheck } from "lucide-react";
+import { Plus, ShieldCheck, ExternalLink } from "lucide-react";
 
 const CONCERN_TYPES = [
   { value: "abuse", label: "Abuse" },
@@ -31,6 +31,7 @@ export default function Safeguarding() {
   const [showAdd, setShowAdd] = useState(false);
   const [showDetail, setShowDetail] = useState<any>(null);
   const [filter, setFilter] = useState("all");
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const [concernType, setConcernType] = useState("other");
   const [dateId, setDateId] = useState("");
@@ -63,6 +64,14 @@ export default function Safeguarding() {
 
   const addMutation = useMutation({
     mutationFn: async () => {
+      let document_url: string | null = null;
+      const file = fileRef.current?.files?.[0];
+      if (file) {
+        const path = `safeguarding/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
+        if (uploadErr) throw uploadErr;
+        document_url = supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
+      }
       const { error } = await supabase.from("safeguarding_concerns").insert({
         concern_type: concernType,
         date_identified: dateId || new Date().toISOString().split("T")[0],
@@ -73,6 +82,7 @@ export default function Safeguarding() {
         outcome: outcome || null,
         actions_taken: actions || null,
         participant_id: participantId || null,
+        document_url,
       });
       if (error) throw error;
     },
@@ -94,6 +104,7 @@ export default function Safeguarding() {
     setOutcome("");
     setActions("");
     setParticipantId("");
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   const filtered = filter === "all" ? concerns : concerns.filter((c: any) => c.investigation_status === filter);
@@ -136,6 +147,7 @@ export default function Safeguarding() {
                   <TableHead>Participant</TableHead>
                   <TableHead>Mandatory Report</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>File</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -147,6 +159,13 @@ export default function Safeguarding() {
                     <TableCell>{c.participants ? `${c.participants.first_name} ${c.participants.last_name}` : "—"}</TableCell>
                     <TableCell>{c.mandatory_report_made ? <Badge className="bg-emerald-500/15 text-emerald-700">Yes</Badge> : <Badge variant="secondary">No</Badge>}</TableCell>
                     <TableCell><Badge variant="outline">{c.investigation_status}</Badge></TableCell>
+                    <TableCell>
+                      {c.document_url ? (
+                        <a href={c.document_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                          <ExternalLink className="h-4 w-4 text-primary" />
+                        </a>
+                      ) : "—"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -187,6 +206,7 @@ export default function Safeguarding() {
             )}
             <div><Label>Actions Taken</Label><Textarea value={actions} onChange={e => setActions(e.target.value)} placeholder="Describe actions taken" /></div>
             <div><Label>Outcome</Label><Textarea value={outcome} onChange={e => setOutcome(e.target.value)} placeholder="Outcome (if known)" /></div>
+            <div><Label>Attach Document</Label><Input type="file" ref={fileRef} /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
@@ -210,6 +230,9 @@ export default function Safeguarding() {
               {showDetail.actions_taken && <div><span className="text-muted-foreground">Actions:</span><p className="mt-1">{showDetail.actions_taken}</p></div>}
               {showDetail.outcome && <div><span className="text-muted-foreground">Outcome:</span><p className="mt-1">{showDetail.outcome}</p></div>}
               <div><span className="text-muted-foreground">Status:</span> <Badge variant="outline">{showDetail.investigation_status}</Badge></div>
+              {showDetail.document_url && (
+                <div><span className="text-muted-foreground">Document:</span> <a href={showDetail.document_url} target="_blank" rel="noopener noreferrer" className="text-primary inline-flex items-center gap-1">View <ExternalLink className="h-3.5 w-3.5" /></a></div>
+              )}
             </div>
           )}
           <DialogFooter><Button variant="outline" onClick={() => setShowDetail(null)}>Close</Button></DialogFooter>

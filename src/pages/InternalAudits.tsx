@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, ClipboardList } from "lucide-react";
+import { Plus, ClipboardList, ExternalLink } from "lucide-react";
 
 const PRACTICE_STANDARDS = [
   "Rights & Responsibilities",
@@ -32,6 +32,7 @@ export default function InternalAudits() {
   const qc = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
   const [showDetail, setShowDetail] = useState<any>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const [auditDate, setAuditDate] = useState("");
   const [standard, setStandard] = useState("");
@@ -52,6 +53,14 @@ export default function InternalAudits() {
 
   const addMutation = useMutation({
     mutationFn: async () => {
+      let document_url: string | null = null;
+      const file = fileRef.current?.files?.[0];
+      if (file) {
+        const path = `audits/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
+        if (uploadErr) throw uploadErr;
+        document_url = supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
+      }
       const { error } = await supabase.from("internal_audits").insert({
         audit_date: auditDate || new Date().toISOString().split("T")[0],
         practice_standard: standard,
@@ -60,6 +69,7 @@ export default function InternalAudits() {
         corrective_actions: corrective || null,
         status,
         next_audit_date: nextDate || null,
+        document_url,
       });
       if (error) throw error;
     },
@@ -80,6 +90,7 @@ export default function InternalAudits() {
     setCorrective("");
     setStatus("scheduled");
     setNextDate("");
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   const statusColor = (s: string) => {
@@ -112,6 +123,7 @@ export default function InternalAudits() {
                   <TableHead>Status</TableHead>
                   <TableHead>Non-Conformances</TableHead>
                   <TableHead>Next Audit</TableHead>
+                  <TableHead>File</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -122,6 +134,13 @@ export default function InternalAudits() {
                     <TableCell><Badge variant="outline" className={statusColor(a.status)}>{a.status}</Badge></TableCell>
                     <TableCell className="max-w-[200px] truncate">{a.non_conformances || "—"}</TableCell>
                     <TableCell>{a.next_audit_date ? new Date(a.next_audit_date).toLocaleDateString() : "—"}</TableCell>
+                    <TableCell>
+                      {a.document_url ? (
+                        <a href={a.document_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                          <ExternalLink className="h-4 w-4 text-primary" />
+                        </a>
+                      ) : "—"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -156,6 +175,7 @@ export default function InternalAudits() {
             <div><Label>Non-Conformances</Label><Textarea value={nonConf} onChange={e => setNonConf(e.target.value)} placeholder="Issues identified" /></div>
             <div><Label>Corrective Actions</Label><Textarea value={corrective} onChange={e => setCorrective(e.target.value)} placeholder="Actions to address" /></div>
             <div><Label>Next Audit Date</Label><Input type="date" value={nextDate} onChange={e => setNextDate(e.target.value)} /></div>
+            <div><Label>Attach Document</Label><Input type="file" ref={fileRef} /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
@@ -177,6 +197,9 @@ export default function InternalAudits() {
               {showDetail.non_conformances && <div><span className="text-muted-foreground">Non-Conformances:</span><p className="mt-1">{showDetail.non_conformances}</p></div>}
               {showDetail.corrective_actions && <div><span className="text-muted-foreground">Corrective Actions:</span><p className="mt-1">{showDetail.corrective_actions}</p></div>}
               {showDetail.next_audit_date && <div><span className="text-muted-foreground">Next Audit:</span> {new Date(showDetail.next_audit_date).toLocaleDateString()}</div>}
+              {showDetail.document_url && (
+                <div><span className="text-muted-foreground">Document:</span> <a href={showDetail.document_url} target="_blank" rel="noopener noreferrer" className="text-primary inline-flex items-center gap-1">View <ExternalLink className="h-3.5 w-3.5" /></a></div>
+              )}
             </div>
           )}
           <DialogFooter><Button variant="outline" onClick={() => setShowDetail(null)}>Close</Button></DialogFooter>

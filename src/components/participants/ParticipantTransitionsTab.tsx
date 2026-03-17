@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, ArrowRightLeft } from "lucide-react";
+import { Plus, ArrowRightLeft, ExternalLink } from "lucide-react";
 
 interface Props {
   participantId: string;
@@ -25,6 +25,7 @@ export function ParticipantTransitionsTab({ participantId, canEdit }: Props) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const [type, setType] = useState("exit");
   const [reason, setReason] = useState("");
@@ -50,6 +51,14 @@ export function ParticipantTransitionsTab({ participantId, canEdit }: Props) {
 
   const addMutation = useMutation({
     mutationFn: async () => {
+      let document_url: string | null = null;
+      const file = fileRef.current?.files?.[0];
+      if (file) {
+        const path = `transitions/${participantId}/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
+        if (uploadErr) throw uploadErr;
+        document_url = supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
+      }
       const { error } = await supabase.from("participant_transitions").insert({
         participant_id: participantId,
         transition_type: type,
@@ -60,6 +69,7 @@ export function ParticipantTransitionsTab({ participantId, canEdit }: Props) {
         exit_interview_completed: interviewDone,
         exit_interview_notes: interviewNotes || null,
         documents_transferred: docsTransferred,
+        document_url,
         created_by: user?.id,
       });
       if (error) throw error;
@@ -82,6 +92,7 @@ export function ParticipantTransitionsTab({ participantId, canEdit }: Props) {
     setInterviewDone(false);
     setInterviewNotes("");
     setDocsTransferred(false);
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   const typeLabel = (t: string) => {
@@ -110,6 +121,7 @@ export function ParticipantTransitionsTab({ participantId, canEdit }: Props) {
                 <TableHead>Destination</TableHead>
                 <TableHead>Interview</TableHead>
                 <TableHead>Docs Transferred</TableHead>
+                <TableHead>File</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -121,6 +133,13 @@ export function ParticipantTransitionsTab({ participantId, canEdit }: Props) {
                   <TableCell>{t.destination_provider || "—"}</TableCell>
                   <TableCell>{t.exit_interview_completed ? <Badge className="bg-emerald-500/15 text-emerald-700">Done</Badge> : <Badge variant="secondary">No</Badge>}</TableCell>
                   <TableCell>{t.documents_transferred ? <Badge className="bg-emerald-500/15 text-emerald-700">Yes</Badge> : <Badge variant="secondary">No</Badge>}</TableCell>
+                  <TableCell>
+                    {t.document_url ? (
+                      <a href={t.document_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                        <ExternalLink className="h-4 w-4 text-primary" />
+                      </a>
+                    ) : "—"}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -155,6 +174,7 @@ export function ParticipantTransitionsTab({ participantId, canEdit }: Props) {
               <Switch checked={docsTransferred} onCheckedChange={setDocsTransferred} />
               <Label>Documents Transferred</Label>
             </div>
+            <div><Label>Attach Document</Label><Input type="file" ref={fileRef} /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>

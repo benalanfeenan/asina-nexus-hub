@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Plus, CheckCircle2, Clock, AlertCircle, ExternalLink } from "lucide-react";
 
 interface Props {
   incidentId: string;
@@ -32,7 +32,7 @@ export function IncidentCommissionReports({ incidentId }: Props) {
   const [commRef, setCommRef] = useState("");
   const [ackReceived, setAckReceived] = useState(false);
   const [ackDate, setAckDate] = useState("");
-  const [docUrl, setDocUrl] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: reports = [] } = useQuery({
     queryKey: ["incident-commission-reports", incidentId],
@@ -49,6 +49,14 @@ export function IncidentCommissionReports({ incidentId }: Props) {
 
   const addMutation = useMutation({
     mutationFn: async () => {
+      let document_url: string | null = null;
+      const file = fileRef.current?.files?.[0];
+      if (file) {
+        const path = `commission-reports/${incidentId}/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
+        if (uploadErr) throw uploadErr;
+        document_url = supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
+      }
       const { error } = await supabase.from("incident_commission_reports").insert({
         incident_id: incidentId,
         report_type: reportType,
@@ -57,7 +65,7 @@ export function IncidentCommissionReports({ incidentId }: Props) {
         commission_reference: commRef || null,
         acknowledgement_received: ackReceived,
         acknowledgement_date: ackDate || null,
-        document_url: docUrl || null,
+        document_url,
       });
       if (error) throw error;
     },
@@ -69,7 +77,7 @@ export function IncidentCommissionReports({ incidentId }: Props) {
       setCommRef("");
       setAckReceived(false);
       setAckDate("");
-      setDocUrl("");
+      if (fileRef.current) fileRef.current.value = "";
     },
     onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
@@ -122,10 +130,15 @@ export function IncidentCommissionReports({ incidentId }: Props) {
         <div className="space-y-2 text-xs">
           {reports.map((r: any) => (
             <div key={r.id} className="flex items-center justify-between border rounded-md p-2">
-              <div>
+              <div className="flex items-center gap-2">
                 <span className="font-medium">{REPORT_TYPES.find(t => t.value === r.report_type)?.label}</span>
-                <span className="text-muted-foreground ml-2">{new Date(r.submitted_at).toLocaleDateString()}</span>
-                {r.commission_reference && <span className="ml-2 text-muted-foreground">Ref: {r.commission_reference}</span>}
+                <span className="text-muted-foreground">{new Date(r.submitted_at).toLocaleDateString()}</span>
+                {r.commission_reference && <span className="text-muted-foreground">Ref: {r.commission_reference}</span>}
+                {r.document_url && (
+                  <a href={r.document_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
+                    <ExternalLink className="h-3.5 w-3.5 text-primary" />
+                  </a>
+                )}
               </div>
               <Badge variant={r.acknowledgement_received ? "default" : "secondary"}>
                 {r.acknowledgement_received ? "Acknowledged" : "Awaiting"}
@@ -155,7 +168,7 @@ export function IncidentCommissionReports({ incidentId }: Props) {
               <Label>Acknowledgement Received</Label>
             </div>
             {ackReceived && <div><Label>Acknowledgement Date</Label><Input type="date" value={ackDate} onChange={e => setAckDate(e.target.value)} /></div>}
-            <div><Label>Document URL</Label><Input value={docUrl} onChange={e => setDocUrl(e.target.value)} placeholder="Link to submitted document" /></div>
+            <div><Label>Attach Document</Label><Input type="file" ref={fileRef} /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
