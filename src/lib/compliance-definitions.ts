@@ -91,7 +91,6 @@ export const DEFAULT_ROLE_FLAGS: RoleFlags = {
   delivers_high_intensity: false,
   uses_restrictive_practices: false,
   transports_in_own_vehicle: false,
-  supports_under_18: false,
 };
 
 export function isItemApplicable(item: ComplianceItemDefinition, flags: RoleFlags): boolean {
