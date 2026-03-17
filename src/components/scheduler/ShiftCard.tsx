@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 
 const SERVICE_COLORS: Record<string, string> = {
   SIL: "bg-violet-500/15 text-violet-700 border-violet-300 dark:text-violet-300",
@@ -11,6 +12,8 @@ const SERVICE_COLORS: Record<string, string> = {
   "Social & Community": "bg-lime-500/15 text-lime-700 border-lime-300 dark:text-lime-300",
   Other: "bg-gray-500/15 text-gray-700 border-gray-300 dark:text-gray-300",
 };
+
+const COMPLETED_COLOR = "bg-blue-500/20 text-blue-800 border-blue-400 dark:text-blue-300 dark:border-blue-500";
 
 export { SERVICE_COLORS };
 
