@@ -189,7 +189,12 @@ export default function Documents() {
     <div className="space-y-6">
       <PageHeader
         title="Documents"
-        action={canManage ? <Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Document</Button> : undefined}
+        action={canManage ? (
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowBulk(true)}><Upload className="mr-1 h-4 w-4" />Bulk Upload</Button>
+            <Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Document</Button>
+          </div>
+        ) : undefined}
       />
 
       <div className="flex flex-wrap gap-3">
