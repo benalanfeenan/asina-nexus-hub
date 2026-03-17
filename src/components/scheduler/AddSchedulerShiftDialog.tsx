@@ -74,24 +74,24 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
   const { data: staffList } = useQuery({
     queryKey: ["staff-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("staff").select("id, first_name, last_name").eq("status", "active").order("first_name");
-      return data || [];
+      const { data } = await supabase.from("staff").select("id, first_name, last_name").eq("status", "active").order("first_name") as any;
+      return (data || []) as { id: string; first_name: string; last_name: string }[];
     },
   });
 
   const { data: participants } = useQuery({
     queryKey: ["participants-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("participants").select("id, first_name, last_name").eq("status", "active").order("first_name") as { data: { id: string; first_name: string; last_name: string }[] | null };
-      return data || [];
+      const { data } = await supabase.from("participants").select("id, first_name, last_name").eq("status", "active").order("first_name") as any;
+      return (data || []) as { id: string; first_name: string; last_name: string }[];
     },
   });
 
   const { data: houses } = useQuery({
     queryKey: ["sil-houses-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("sil_houses").select("id, name").order("name");
-      return data || [];
+      const { data } = await supabase.from("sil_houses").select("id, name").order("name") as any;
+      return (data || []) as { id: string; name: string }[];
     },
   });
 
