@@ -371,18 +371,23 @@ function ComplianceItemForm({
           size="sm"
           variant="outline"
           className="text-xs"
+          disabled={isUploading}
           onClick={() => {
             const input = document.createElement("input");
             input.type = "file";
             input.accept = ".pdf,.jpg,.jpeg,.png";
-            input.onchange = (e) => {
+            input.onchange = async (e) => {
               const file = (e.target as HTMLInputElement).files?.[0];
-              if (file) onUpload(file);
+              if (file) {
+                setIsUploading(true);
+                await onUpload(file);
+                setIsUploading(false);
+              }
             };
             input.click();
           }}
         >
-          <Upload className="h-3 w-3 mr-1" />Upload Document
+          <Upload className="h-3 w-3 mr-1" />{isUploading ? "Uploading..." : "Upload Document"}
         </Button>
         {record?.document_url && (
           <a href={record.document_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
