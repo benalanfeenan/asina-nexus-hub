@@ -15,7 +15,7 @@ export interface ComplianceItemDefinition {
 export const COMPLIANCE_ITEMS: ComplianceItemDefinition[] = [
   // Pre-Employment
   { item_key: "ndis_wsc", name: "NDIS Worker Screening Check (Cleared)", description: "NDIS Worker Screening Check must be cleared before participant contact", category: "Pre-Employment", requires_document: true, has_expiry: true, expiry_months: 60, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 1 },
-  { item_key: "wwcc", name: "Working With Children Check", description: "Required if supporting participants under 18", category: "Pre-Employment", requires_document: true, has_expiry: true, expiry_months: 60, is_mandatory: true, conditional_on: "supports_under_18", linked_to: null, display_order: 2 },
+  { item_key: "wwcc", name: "Working With Children Check", description: "Working With Children Check must be cleared", category: "Pre-Employment", requires_document: true, has_expiry: true, expiry_months: 60, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 2 },
   { item_key: "right_to_work", name: "Right to Work in Australia Verification", description: "Verification of right to work in Australia", category: "Pre-Employment", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 3 },
   { item_key: "reference_check_1", name: "Reference Check 1 (completed)", description: "First professional reference check completed", category: "Pre-Employment", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 4 },
   { item_key: "reference_check_2", name: "Reference Check 2 (completed)", description: "Second professional reference check completed", category: "Pre-Employment", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 5 },
@@ -71,7 +71,6 @@ export const ROLE_FLAG_LABELS: Record<string, string> = {
   delivers_high_intensity: "Delivers high intensity supports",
   uses_restrictive_practices: "Uses restrictive practices (trained)",
   transports_in_own_vehicle: "Transports clients in own vehicle",
-  supports_under_18: "Supports participants under 18",
 };
 
 export const ROLE_FLAG_KEYS = Object.keys(ROLE_FLAG_LABELS);
@@ -83,7 +82,6 @@ export type RoleFlags = {
   delivers_high_intensity: boolean;
   uses_restrictive_practices: boolean;
   transports_in_own_vehicle: boolean;
-  supports_under_18: boolean;
 };
 
 export const DEFAULT_ROLE_FLAGS: RoleFlags = {
@@ -93,7 +91,6 @@ export const DEFAULT_ROLE_FLAGS: RoleFlags = {
   delivers_high_intensity: false,
   uses_restrictive_practices: false,
   transports_in_own_vehicle: false,
-  supports_under_18: false,
 };
 
 export function isItemApplicable(item: ComplianceItemDefinition, flags: RoleFlags): boolean {

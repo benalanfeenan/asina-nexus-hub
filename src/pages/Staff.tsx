@@ -28,7 +28,6 @@ function computeComplianceFromItems(
         delivers_high_intensity: flagRow.delivers_high_intensity,
         uses_restrictive_practices: flagRow.uses_restrictive_practices,
         transports_in_own_vehicle: flagRow.transports_in_own_vehicle,
-        supports_under_18: flagRow.supports_under_18,
       }
     : DEFAULT_ROLE_FLAGS;
 
