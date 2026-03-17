@@ -6,14 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, AlertTriangle } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Pencil } from "lucide-react";
 import { StaffTrainingTab } from "@/components/staff/StaffTrainingTab";
 import { StaffComplianceTab } from "@/components/staff/StaffComplianceTab";
 import { StaffSupervisionsTab } from "@/components/staff/StaffSupervisionsTab";
 import { StaffCompetenciesTab } from "@/components/staff/StaffCompetenciesTab";
 import { StaffAcknowledgementsTab } from "@/components/staff/StaffAcknowledgementsTab";
 import { StaffDocumentsTab } from "@/components/staff/StaffDocumentsTab";
-import { useMemo } from "react";
+import { StaffOverviewTab } from "@/components/staff/StaffOverviewTab";
+import { AddStaffDialog } from "@/components/staff/AddStaffDialog";
+import { useMemo, useState } from "react";
 import { addMonths } from "date-fns";
 import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
@@ -22,6 +24,7 @@ import {
 export default function StaffDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [editOpen, setEditOpen] = useState(false);
 
   const { data: staff, isLoading } = useQuery({
     queryKey: ["staff", id],
@@ -66,7 +69,6 @@ export default function StaffDetail() {
     enabled: !!id,
   });
 
-  // Fetch latest supervision for overdue check
   const { data: latestSupervision } = useQuery({
     queryKey: ["staff-latest-supervision", id],
     queryFn: async () => {
@@ -125,8 +127,8 @@ export default function StaffDetail() {
   }
 
   const profile = staff.profiles as { full_name: string; email: string | null; phone: string | null } | null;
-  const displayName = (staff as any).first_name || (staff as any).last_name
-    ? [(staff as any).first_name, (staff as any).last_name].filter(Boolean).join(" ")
+  const displayName = staff.first_name || staff.last_name
+    ? [staff.first_name, staff.last_name].filter(Boolean).join(" ")
     : profile?.full_name || "Unknown";
 
   return (
@@ -138,9 +140,14 @@ export default function StaffDetail() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl">{displayName}</CardTitle>
-              <p className="text-muted-foreground">{staff.position || "No position"} · {staff.employment_type?.replace("_", " ") || "Casual"}</p>
+            <div className="flex items-center gap-3">
+              <div>
+                <CardTitle className="text-2xl">{displayName}</CardTitle>
+                <p className="text-muted-foreground">{staff.position || "No position"} · {staff.employment_type?.replace("_", " ") || "Casual"}</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setEditOpen(true)}>
+                <Pencil className="h-4 w-4" />
+              </Button>
             </div>
             <div className="flex items-center gap-4">
               {isSupervisionOverdue && (
@@ -161,8 +168,8 @@ export default function StaffDetail() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div><span className="text-muted-foreground">Email:</span> {profile?.email || "—"}</div>
-            <div><span className="text-muted-foreground">Phone:</span> {(staff as any).phone || profile?.phone || "—"}</div>
+            <div><span className="text-muted-foreground">Email:</span> {staff.email || profile?.email || "—"}</div>
+            <div><span className="text-muted-foreground">Phone:</span> {staff.phone || profile?.phone || "—"}</div>
             <div><span className="text-muted-foreground">Start Date:</span> {staff.start_date || "—"}</div>
           </div>
           <div className="mt-3">
@@ -171,7 +178,7 @@ export default function StaffDetail() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="compliance">
+      <Tabs defaultValue="overview">
         <TabsList className="flex-wrap">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
@@ -186,26 +193,7 @@ export default function StaffDetail() {
         </TabsList>
 
         <TabsContent value="overview">
-          <Card>
-            <CardHeader><CardTitle>Linked SIL Houses</CardTitle></CardHeader>
-            <CardContent>
-              {linkedHouses.length === 0 ? (
-                <p className="text-muted-foreground text-sm">Not assigned to any SIL houses.</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {linkedHouses.map((h, i) => (
-                    <Badge key={i} variant="outline">{(h.sil_houses as any)?.name}</Badge>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          {staff.notes && (
-            <Card className="mt-4">
-              <CardHeader><CardTitle>Notes</CardTitle></CardHeader>
-              <CardContent><p className="text-sm">{staff.notes}</p></CardContent>
-            </Card>
-          )}
+          <StaffOverviewTab staff={staff} linkedHouses={linkedHouses} profile={profile} />
         </TabsContent>
 
         <TabsContent value="compliance"><StaffComplianceTab staffId={id!} /></TabsContent>
@@ -221,6 +209,8 @@ export default function StaffDetail() {
         <TabsContent value="acknowledgements"><StaffAcknowledgementsTab staffId={id!} /></TabsContent>
         <TabsContent value="documents"><StaffDocumentsTab staffId={id!} /></TabsContent>
       </Tabs>
+
+      <AddStaffDialog open={editOpen} onOpenChange={setEditOpen} editStaff={staff as any} />
     </div>
   );
 }
