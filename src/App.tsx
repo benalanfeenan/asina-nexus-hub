@@ -12,6 +12,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Participants from "./pages/Participants";
 import Staff from "./pages/Staff";
+import StaffDetail from "./pages/StaffDetail";
 import SILHouses from "./pages/SILHouses";
 import Rostering from "./pages/Rostering";
 import Timesheets from "./pages/Timesheets";
