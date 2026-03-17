@@ -17,6 +17,7 @@ import {
   calculateComplianceScore, type ComplianceItemDefinition,
 } from "@/lib/compliance-definitions";
 import { Upload, FileText, ChevronRight, ChevronDown } from "lucide-react";
+import { useMergedRoleFlags } from "@/hooks/use-merged-role-flags";
 
 const STATUS_DOT: Record<string, string> = {
   completed: "bg-emerald-500",
@@ -59,7 +60,7 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
     },
   });
 
-  const flags: RoleFlags = useMemo(() => {
+  const personalFlags: RoleFlags = useMemo(() => {
     if (!roleFlags) return DEFAULT_ROLE_FLAGS;
     return {
       administers_medication: roleFlags.administers_medication,
@@ -70,6 +71,8 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
       transports_in_own_vehicle: roleFlags.transports_in_own_vehicle,
     };
   }, [roleFlags]);
+
+  const flags = useMergedRoleFlags(staffId, personalFlags);
 
   const { data: complianceRecords = [] } = useQuery({
     queryKey: ["staff-compliance-items", staffId],

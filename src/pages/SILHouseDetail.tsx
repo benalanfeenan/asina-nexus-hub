@@ -15,6 +15,7 @@ import { SILHouseVisitorLogTab } from "@/components/sil-houses/SILHouseVisitorLo
 import { SILHouseHazSubsTab } from "@/components/sil-houses/SILHouseHazSubsTab";
 import { SILHouseCleaningTab } from "@/components/sil-houses/SILHouseCleaningTab";
 import { SILHouseKeysTab } from "@/components/sil-houses/SILHouseKeysTab";
+import { SILHouseCompetencyCard } from "@/components/sil-houses/SILHouseCompetencyCard";
 
 export default function SILHouseDetail() {
   const { id } = useParams<{ id: string }>();
@@ -61,6 +62,8 @@ export default function SILHouseDetail() {
           </div>
         </CardContent>
       </Card>
+
+      <SILHouseCompetencyCard houseId={id!} />
 
       <Tabs defaultValue="participants">
         <TabsList className="flex-wrap">

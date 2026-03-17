@@ -13,6 +13,7 @@ import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore,
   getItemStatus, isItemApplicable, type RoleFlags,
 } from "@/lib/compliance-definitions";
+import { useBatchHouseCompetencyFlags } from "@/hooks/use-merged-role-flags";
 
 const DASHBOARD_COLUMNS = [
   "ndis_wsc", "wwcc", "first_aid", "cpr", "ndis_orientation",
@@ -69,6 +70,8 @@ export default function ComplianceDashboard() {
     },
   });
 
+  const getMergedFlags = useBatchHouseCompetencyFlags();
+
   const staffRows = useMemo(() => {
     return staff.map((s: any) => {
       const items = complianceItems.filter((c: any) => c.staff_id === s.id);
@@ -84,24 +87,26 @@ export default function ComplianceDashboard() {
           }
         : DEFAULT_ROLE_FLAGS;
 
+      const mergedFlags = getMergedFlags(s.id, flags);
+
       const map = new Map<string, any>();
       items.forEach((i: any) => map.set(i.item_key, i));
-      const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
+      const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, mergedFlags);
 
       const colStatuses: Record<string, string> = {};
       for (const key of DASHBOARD_COLUMNS) {
         const def = COMPLIANCE_ITEMS.find((d) => d.item_key === key);
         if (!def) { colStatuses[key] = "not_started"; continue; }
-        colStatuses[key] = getItemStatus(def, map.get(key), flags);
+        colStatuses[key] = getItemStatus(def, map.get(key), mergedFlags);
       }
 
       const name = s.first_name || s.last_name
         ? [s.first_name, s.last_name].filter(Boolean).join(" ")
         : (s.profiles as any)?.full_name || "Unknown";
 
-      return { ...s, name, score, colStatuses, flags };
+      return { ...s, name, score, colStatuses, flags: mergedFlags };
     });
-  }, [staff, complianceItems, allFlags]);
+  }, [staff, complianceItems, allFlags, getMergedFlags]);
 
   // Alerts
   const alerts = useMemo(() => {

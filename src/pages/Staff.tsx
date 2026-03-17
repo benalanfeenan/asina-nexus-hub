@@ -12,11 +12,13 @@ import { PageHeader } from "@/components/PageHeader";
 import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
 } from "@/lib/compliance-definitions";
+import { useBatchHouseCompetencyFlags } from "@/hooks/use-merged-role-flags";
 
 function computeComplianceFromItems(
   items: { staff_id: string; item_key: string; status: string; expiry_date: string | null }[],
   allFlags: { staff_id: string; [key: string]: any }[],
-  staffId: string
+  staffId: string,
+  getMergedFlags?: (staffId: string, personalFlags: RoleFlags) => RoleFlags,
 ): { status: "green" | "amber" | "red" | "none"; score: number } {
   const staffItems = items.filter((i) => i.staff_id === staffId);
   const flagRow = allFlags.find((f) => f.staff_id === staffId);
@@ -31,9 +33,11 @@ function computeComplianceFromItems(
       }
     : DEFAULT_ROLE_FLAGS;
 
+  const mergedFlags = getMergedFlags ? getMergedFlags(staffId, flags) : flags;
+
   const map = new Map<string, { status: string; expiry_date: string | null }>();
   staffItems.forEach((i) => map.set(i.item_key, i));
-  const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
+  const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, mergedFlags);
 
   if (staffItems.length === 0) return { status: "none", score: 0 };
   if (score === 100) return { status: "green", score };
@@ -76,9 +80,11 @@ export default function Staff() {
     },
   });
 
+  const getMergedFlags = useBatchHouseCompetencyFlags();
+
   const staff: StaffWithProfile[] = useMemo(() => {
     return staffRaw.map((s) => {
-      const { status, score } = computeComplianceFromItems(complianceItems, allFlags, s.id);
+      const { status, score } = computeComplianceFromItems(complianceItems, allFlags, s.id, getMergedFlags);
       return {
         ...s,
         profiles: s.profiles as { full_name: string; email: string | null } | null,
@@ -86,7 +92,7 @@ export default function Staff() {
         complianceScore: score,
       };
     });
-  }, [staffRaw, complianceItems, allFlags]);
+  }, [staffRaw, complianceItems, allFlags, getMergedFlags]);
 
   const filtered = useMemo(() => {
     return staff.filter((s) => {

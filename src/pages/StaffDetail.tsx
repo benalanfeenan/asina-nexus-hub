@@ -20,6 +20,7 @@ import { addMonths } from "date-fns";
 import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
 } from "@/lib/compliance-definitions";
+import { useMergedRoleFlags } from "@/hooks/use-merged-role-flags";
 
 export default function StaffDetail() {
   const { id } = useParams<{ id: string }>();
@@ -84,7 +85,7 @@ export default function StaffDetail() {
     enabled: !!id,
   });
 
-  const flags: RoleFlags = useMemo(() => {
+  const personalFlags: RoleFlags = useMemo(() => {
     if (!roleFlags) return DEFAULT_ROLE_FLAGS;
     return {
       administers_medication: roleFlags.administers_medication,
@@ -95,6 +96,8 @@ export default function StaffDetail() {
       transports_in_own_vehicle: roleFlags.transports_in_own_vehicle,
     };
   }, [roleFlags]);
+
+  const flags = useMergedRoleFlags(id!, personalFlags);
 
   const score = useMemo(() => {
     const map = new Map<string, any>();
