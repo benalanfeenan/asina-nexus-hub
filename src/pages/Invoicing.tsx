@@ -89,7 +89,7 @@ export default function Invoicing() {
       const to = format(invoiceWeekEnd, "yyyy-MM-dd");
       const { data } = await supabase
         .from("scheduler_shifts")
-        .select("*, participants(first_name, last_name), ndis_price_list(id, item_code, description, rate, unit)")
+        .select("*, participants(id, first_name, last_name), ndis_price_list(id, item_code, description, rate, unit)")
         .eq("status", "completed")
         .is("invoice_id", null)
         .not("participant_id", "is", null)
