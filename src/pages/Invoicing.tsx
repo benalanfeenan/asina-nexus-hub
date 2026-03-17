@@ -128,6 +128,7 @@ export default function Invoicing() {
 
   const generateInvoiceMutation = useMutation({
     mutationFn: async (group: { participant: { id: string; first_name: string; last_name: string }; shifts: any[]; totalCost: number }) => {
+      if (!group.participant?.id) throw new Error("Cannot generate invoice: Participant information is missing from one or more shifts.");
       const { data: refData, error: refError } = await supabase.rpc("next_reference", { ref_type: "invoice" });
       if (refError) throw refError;
       const { data: invData, error: invError } = await supabase.from("invoices").insert({
