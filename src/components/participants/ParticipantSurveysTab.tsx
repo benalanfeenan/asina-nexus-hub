@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Star } from "lucide-react";
+import { Plus, Star, ExternalLink } from "lucide-react";
 
 interface Props {
   participantId: string;
@@ -32,6 +32,7 @@ export function ParticipantSurveysTab({ participantId, canEdit }: Props) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const [surveyDate, setSurveyDate] = useState("");
   const [surveyType, setSurveyType] = useState("satisfaction");
@@ -56,6 +57,14 @@ export function ParticipantSurveysTab({ participantId, canEdit }: Props) {
 
   const addMutation = useMutation({
     mutationFn: async () => {
+      let document_url: string | null = null;
+      const file = fileRef.current?.files?.[0];
+      if (file) {
+        const path = `surveys/${participantId}/${Date.now()}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
+        if (uploadErr) throw uploadErr;
+        document_url = supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
+      }
       const responses = {
         overall_rating: overall ? parseInt(overall) : null,
         feel_safe: safe ? parseInt(safe) : null,
@@ -69,6 +78,7 @@ export function ParticipantSurveysTab({ participantId, canEdit }: Props) {
         responses,
         actioned_by: user?.id,
         actions_taken: comments || null,
+        document_url,
       });
       if (error) throw error;
     },
@@ -89,6 +99,7 @@ export function ParticipantSurveysTab({ participantId, canEdit }: Props) {
     setRespectful("");
     setChoice("");
     setComments("");
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   const getResponses = (r: any) => {
@@ -117,6 +128,7 @@ export function ParticipantSurveysTab({ participantId, canEdit }: Props) {
                 <TableHead>Feel Safe</TableHead>
                 <TableHead>Respectful</TableHead>
                 <TableHead>Choice & Control</TableHead>
+                <TableHead>File</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,6 +142,13 @@ export function ParticipantSurveysTab({ participantId, canEdit }: Props) {
                     <TableCell><RatingBadge value={r.feel_safe ?? null} /></TableCell>
                     <TableCell><RatingBadge value={r.staff_respectful ?? null} /></TableCell>
                     <TableCell><RatingBadge value={r.choice_and_control ?? null} /></TableCell>
+                    <TableCell>
+                      {s.document_url ? (
+                        <a href={s.document_url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4 text-primary" />
+                        </a>
+                      ) : "—"}
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -167,6 +186,7 @@ export function ParticipantSurveysTab({ participantId, canEdit }: Props) {
               </div>
             ))}
             <div><Label>Comments / Actions</Label><Textarea value={comments} onChange={e => setComments(e.target.value)} placeholder="Any comments or follow-up actions" /></div>
+            <div><Label>Attach Document</Label><Input type="file" ref={fileRef} /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>

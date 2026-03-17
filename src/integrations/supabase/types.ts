@@ -1014,6 +1014,7 @@ export type Database = {
           auditor_id: string | null
           corrective_actions: string | null
           created_at: string
+          document_url: string | null
           findings: string | null
           id: string
           next_audit_date: string | null
@@ -1026,6 +1027,7 @@ export type Database = {
           auditor_id?: string | null
           corrective_actions?: string | null
           created_at?: string
+          document_url?: string | null
           findings?: string | null
           id?: string
           next_audit_date?: string | null
@@ -1038,6 +1040,7 @@ export type Database = {
           auditor_id?: string | null
           corrective_actions?: string | null
           created_at?: string
+          document_url?: string | null
           findings?: string | null
           id?: string
           next_audit_date?: string | null
@@ -1743,6 +1746,7 @@ export type Database = {
           actions_taken: string | null
           created_at: string
           date: string
+          document_url: string | null
           id: string
           participant_id: string
           responses: Json | null
@@ -1753,6 +1757,7 @@ export type Database = {
           actions_taken?: string | null
           created_at?: string
           date?: string
+          document_url?: string | null
           id?: string
           participant_id: string
           responses?: Json | null
@@ -1763,6 +1768,7 @@ export type Database = {
           actions_taken?: string | null
           created_at?: string
           date?: string
+          document_url?: string | null
           id?: string
           participant_id?: string
           responses?: Json | null
@@ -1783,6 +1789,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           destination_provider: string | null
+          document_url: string | null
           documents_transferred: boolean
           exit_date: string | null
           exit_interview_completed: boolean
@@ -1798,6 +1805,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           destination_provider?: string | null
+          document_url?: string | null
           documents_transferred?: boolean
           exit_date?: string | null
           exit_interview_completed?: boolean
@@ -1813,6 +1821,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           destination_provider?: string | null
+          document_url?: string | null
           documents_transferred?: boolean
           exit_date?: string | null
           exit_interview_completed?: boolean
@@ -2467,6 +2476,7 @@ export type Database = {
           concern_type: string
           created_at: string
           date_identified: string
+          document_url: string | null
           id: string
           investigation_status: string
           mandatory_report_made: boolean
@@ -2482,6 +2492,7 @@ export type Database = {
           concern_type?: string
           created_at?: string
           date_identified?: string
+          document_url?: string | null
           id?: string
           investigation_status?: string
           mandatory_report_made?: boolean
@@ -2497,6 +2508,7 @@ export type Database = {
           concern_type?: string
           created_at?: string
           date_identified?: string
+          document_url?: string | null
           id?: string
           investigation_status?: string
           mandatory_report_made?: boolean
