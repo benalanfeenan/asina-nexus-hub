@@ -319,11 +319,13 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
 function ComplianceItemForm({
   item,
   record,
+  isSaving,
   onSave,
   onUpload,
 }: {
   item: ComplianceItemDefinition;
   record: any;
+  isSaving?: boolean;
   onSave: (data: any) => void;
   onUpload: (file: File) => void;
 }) {
@@ -331,6 +333,7 @@ function ComplianceItemForm({
   const [dateCompleted, setDateCompleted] = useState(record?.date_completed || "");
   const [expiryDate, setExpiryDate] = useState(record?.expiry_date || "");
   const [notes, setNotes] = useState(record?.notes || "");
+  const [isUploading, setIsUploading] = useState(false);
 
   return (
     <div className="p-3 ml-7 space-y-3 border-l-2 border-border">
