@@ -212,6 +212,10 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center gap-3 pt-1">
+                <Switch checked={form.clientPortalEnabled} onCheckedChange={setBool("clientPortalEnabled")} />
+                <Label>Client Portal Access</Label>
+              </div>
             </CollapsibleContent>
           </Collapsible>
 
