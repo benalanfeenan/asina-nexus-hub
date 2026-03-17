@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      abc_data_sheets: {
+        Row: {
+          antecedent: string
+          behaviour: string
+          consequence: string
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          participant_id: string
+          staff_id: string | null
+        }
+        Insert: {
+          antecedent: string
+          behaviour: string
+          consequence: string
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          participant_id: string
+          staff_id?: string | null
+        }
+        Update: {
+          antecedent?: string
+          behaviour?: string
+          consequence?: string
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          participant_id?: string
+          staff_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abc_data_sheets_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       auto_reference_sequences: {
         Row: {
           id: string
@@ -86,6 +130,8 @@ export type Database = {
           created_by: string
           description: string
           id: string
+          outcome_letter_date: string | null
+          outcome_letter_url: string | null
           reference_number: string
           resolution_date: string | null
           resolution_details: string | null
@@ -102,6 +148,8 @@ export type Database = {
           created_by: string
           description: string
           id?: string
+          outcome_letter_date?: string | null
+          outcome_letter_url?: string | null
           reference_number?: string
           resolution_date?: string | null
           resolution_details?: string | null
@@ -118,6 +166,8 @@ export type Database = {
           created_by?: string
           description?: string
           id?: string
+          outcome_letter_date?: string | null
+          outcome_letter_url?: string | null
           reference_number?: string
           resolution_date?: string | null
           resolution_details?: string | null
@@ -126,6 +176,41 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      daily_house_logs: {
+        Row: {
+          content: string
+          created_at: string
+          date: string
+          id: string
+          sil_house_id: string
+          staff_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          date?: string
+          id?: string
+          sil_house_id: string
+          staff_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          date?: string
+          id?: string
+          sil_house_id?: string
+          staff_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_house_logs_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       documents: {
         Row: {
@@ -165,6 +250,136 @@ export type Database = {
           version?: string | null
         }
         Relationships: []
+      }
+      feedback: {
+        Row: {
+          action_taken: string | null
+          created_at: string
+          created_by: string | null
+          date: string
+          description: string
+          id: string
+          source: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          action_taken?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          description: string
+          id?: string
+          source?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          action_taken?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          description?: string
+          id?: string
+          source?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fire_drills: {
+        Row: {
+          actions: string | null
+          conducted_by: string | null
+          created_at: string
+          date: string
+          evacuation_time_seconds: number | null
+          id: string
+          issues: string | null
+          next_due: string | null
+          participants_count: number | null
+          sil_house_id: string
+          staff_present: string | null
+        }
+        Insert: {
+          actions?: string | null
+          conducted_by?: string | null
+          created_at?: string
+          date?: string
+          evacuation_time_seconds?: number | null
+          id?: string
+          issues?: string | null
+          next_due?: string | null
+          participants_count?: number | null
+          sil_house_id: string
+          staff_present?: string | null
+        }
+        Update: {
+          actions?: string | null
+          conducted_by?: string | null
+          created_at?: string
+          date?: string
+          evacuation_time_seconds?: number | null
+          id?: string
+          issues?: string | null
+          next_due?: string | null
+          participants_count?: number | null
+          sil_house_id?: string
+          staff_present?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fire_drills_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fire_equipment_tests: {
+        Row: {
+          actions: string | null
+          created_at: string
+          date: string
+          equipment_type: string
+          id: string
+          result: string
+          sil_house_id: string
+          tested_by: string | null
+        }
+        Insert: {
+          actions?: string | null
+          created_at?: string
+          date?: string
+          equipment_type: string
+          id?: string
+          result?: string
+          sil_house_id: string
+          tested_by?: string | null
+        }
+        Update: {
+          actions?: string | null
+          created_at?: string
+          date?: string
+          equipment_type?: string
+          id?: string
+          result?: string
+          sil_house_id?: string
+          tested_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fire_equipment_tests_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hazards: {
         Row: {
@@ -215,6 +430,120 @@ export type Database = {
             columns: ["sil_house_id"]
             isOneToOne: false
             referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_debriefs: {
+        Row: {
+          actions: string | null
+          attendees: string | null
+          created_at: string
+          date: string
+          id: string
+          incident_id: string
+          lessons_identified: string | null
+        }
+        Insert: {
+          actions?: string | null
+          attendees?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          incident_id: string
+          lessons_identified?: string | null
+        }
+        Update: {
+          actions?: string | null
+          attendees?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          incident_id?: string
+          lessons_identified?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_debriefs_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_follow_ups: {
+        Row: {
+          content: string
+          created_at: string
+          follow_up_date: string
+          id: string
+          incident_id: string
+          submitted_by: string | null
+          submitted_to_commission: boolean | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          follow_up_date?: string
+          id?: string
+          incident_id: string
+          submitted_by?: string | null
+          submitted_to_commission?: boolean | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          follow_up_date?: string
+          id?: string
+          incident_id?: string
+          submitted_by?: string | null
+          submitted_to_commission?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_follow_ups_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_witness_statements: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          incident_id: string
+          signed: boolean | null
+          statement: string
+          witness_name: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          incident_id: string
+          signed?: boolean | null
+          statement: string
+          witness_name: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          incident_id?: string
+          signed?: boolean | null
+          statement?: string
+          witness_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_witness_statements_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
             referencedColumns: ["id"]
           },
         ]
@@ -437,6 +766,98 @@ export type Database = {
             columns: ["medication_id"]
             isOneToOne: false
             referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medication_audits: {
+        Row: {
+          actions: string | null
+          auditor_id: string | null
+          created_at: string
+          date: string
+          findings: string | null
+          id: string
+          sil_house_id: string
+          status: string
+        }
+        Insert: {
+          actions?: string | null
+          auditor_id?: string | null
+          created_at?: string
+          date?: string
+          findings?: string | null
+          id?: string
+          sil_house_id: string
+          status?: string
+        }
+        Update: {
+          actions?: string | null
+          auditor_id?: string | null
+          created_at?: string
+          date?: string
+          findings?: string | null
+          id?: string
+          sil_house_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_audits_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medication_errors: {
+        Row: {
+          actions_taken: string | null
+          created_at: string
+          date: string
+          description: string
+          error_type: string
+          id: string
+          medication_id: string | null
+          participant_id: string
+          reported_by: string | null
+        }
+        Insert: {
+          actions_taken?: string | null
+          created_at?: string
+          date?: string
+          description: string
+          error_type: string
+          id?: string
+          medication_id?: string | null
+          participant_id: string
+          reported_by?: string | null
+        }
+        Update: {
+          actions_taken?: string | null
+          created_at?: string
+          date?: string
+          description?: string
+          error_type?: string
+          id?: string
+          medication_id?: string | null
+          participant_id?: string
+          reported_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_errors_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medication_errors_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
             referencedColumns: ["id"]
           },
         ]
@@ -1093,6 +1514,42 @@ export type Database = {
           },
         ]
       }
+      restrictive_practice_reports: {
+        Row: {
+          created_at: string
+          id: string
+          month: number
+          notes: string | null
+          report_url: string | null
+          status: string
+          submitted_by: string | null
+          submitted_date: string | null
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          month: number
+          notes?: string | null
+          report_url?: string | null
+          status?: string
+          submitted_by?: string | null
+          submitted_date?: string | null
+          year: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          month?: number
+          notes?: string | null
+          report_url?: string | null
+          status?: string
+          submitted_by?: string | null
+          submitted_date?: string | null
+          year?: number
+        }
+        Relationships: []
+      }
       restrictive_practices: {
         Row: {
           antecedent: string | null
@@ -1700,6 +2157,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      workplace_inspections: {
+        Row: {
+          actions: string | null
+          created_at: string
+          date: string
+          findings: string | null
+          id: string
+          inspector_id: string | null
+          next_due: string | null
+          sil_house_id: string
+          status: string
+        }
+        Insert: {
+          actions?: string | null
+          created_at?: string
+          date?: string
+          findings?: string | null
+          id?: string
+          inspector_id?: string | null
+          next_due?: string | null
+          sil_house_id: string
+          status?: string
+        }
+        Update: {
+          actions?: string | null
+          created_at?: string
+          date?: string
+          findings?: string | null
+          id?: string
+          inspector_id?: string | null
+          next_due?: string | null
+          sil_house_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workplace_inspections_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: false
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
