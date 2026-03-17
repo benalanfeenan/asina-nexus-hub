@@ -26,6 +26,7 @@ export default function Documents() {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
+  const [showBulk, setShowBulk] = useState(false);
   const [ackStatusDocId, setAckStatusDocId] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
