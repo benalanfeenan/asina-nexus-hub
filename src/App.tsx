@@ -12,6 +12,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Participants from "./pages/Participants";
 import Staff from "./pages/Staff";
+import StaffDetail from "./pages/StaffDetail";
 import SILHouses from "./pages/SILHouses";
 import Rostering from "./pages/Rostering";
 import Timesheets from "./pages/Timesheets";
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/" element={<ProtectedPage><Dashboard /></ProtectedPage>} />
             <Route path="/participants" element={<ProtectedPage><Participants /></ProtectedPage>} />
             <Route path="/staff" element={<ProtectedPage><Staff /></ProtectedPage>} />
+            <Route path="/staff/:id" element={<ProtectedPage><StaffDetail /></ProtectedPage>} />
             <Route path="/sil-houses" element={<ProtectedPage><SILHouses /></ProtectedPage>} />
             <Route path="/rostering" element={<ProtectedPage><Rostering /></ProtectedPage>} />
             <Route path="/timesheets" element={<ProtectedPage><Timesheets /></ProtectedPage>} />
