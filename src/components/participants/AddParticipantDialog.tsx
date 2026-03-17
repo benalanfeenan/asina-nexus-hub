@@ -131,6 +131,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         has_guardianship_order: form.hasGuardianshipOrder,
         advocate_name: form.advocateName || null, advocate_phone: form.advocatePhone || null,
         notes: form.notes.trim() || null,
+        client_portal_enabled: form.clientPortalEnabled,
         alerts: {
           allergies: form.allergies, bsp: form.bsp, mealtime_plan: form.mealtimePlan,
           restrictive_practices: form.restrictivePractices, high_intensity: form.highIntensity, medications: form.medications,
