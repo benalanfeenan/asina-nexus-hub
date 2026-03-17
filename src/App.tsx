@@ -32,6 +32,13 @@ import NDISPriceList from "./pages/NDISPriceList";
 import Settings from "./pages/Settings";
 import Feedback from "./pages/Feedback";
 import FireSafety from "./pages/FireSafety";
+import ConflictOfInterest from "./pages/ConflictOfInterest";
+import LegislativeCompliance from "./pages/LegislativeCompliance";
+import Insurance from "./pages/Insurance";
+import MeetingMinutes from "./pages/MeetingMinutes";
+import ReportIncidentTrends from "./pages/ReportIncidentTrends";
+import ReportRPTrends from "./pages/ReportRPTrends";
+import ReportMonthlySummary from "./pages/ReportMonthlySummary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +79,13 @@ const App = () => (
             <Route path="/restrictive-practices" element={<ProtectedPage><RestrictivePractices /></ProtectedPage>} />
             <Route path="/quality-improvement" element={<ProtectedPage><QualityImprovement /></ProtectedPage>} />
             <Route path="/compliance-dashboard" element={<ProtectedPage><ComplianceDashboard /></ProtectedPage>} />
+            <Route path="/conflict-of-interest" element={<ProtectedPage><ConflictOfInterest /></ProtectedPage>} />
+            <Route path="/legislative-compliance" element={<ProtectedPage><LegislativeCompliance /></ProtectedPage>} />
+            <Route path="/insurance" element={<ProtectedPage><Insurance /></ProtectedPage>} />
+            <Route path="/meetings" element={<ProtectedPage><MeetingMinutes /></ProtectedPage>} />
+            <Route path="/reports/incidents" element={<ProtectedPage><ReportIncidentTrends /></ProtectedPage>} />
+            <Route path="/reports/restrictive-practices" element={<ProtectedPage><ReportRPTrends /></ProtectedPage>} />
+            <Route path="/reports/summary" element={<ProtectedPage><ReportMonthlySummary /></ProtectedPage>} />
             <Route path="/documents" element={<ProtectedPage><Documents /></ProtectedPage>} />
             <Route path="/ndis-price-list" element={<ProtectedPage><NDISPriceList /></ProtectedPage>} />
             <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />

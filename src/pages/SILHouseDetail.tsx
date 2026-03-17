@@ -10,6 +10,11 @@ import { SILHouseParticipantsTab } from "@/components/sil-houses/SILHousePartici
 import { SILHouseStaffTab } from "@/components/sil-houses/SILHouseStaffTab";
 import { SILHouseMaintenanceTab } from "@/components/sil-houses/SILHouseMaintenanceTab";
 import { SILHouseDailyLogsTab } from "@/components/sil-houses/SILHouseDailyLogsTab";
+import { SILHouseWorkplaceInspectionsTab } from "@/components/sil-houses/SILHouseWorkplaceInspectionsTab";
+import { SILHouseVisitorLogTab } from "@/components/sil-houses/SILHouseVisitorLogTab";
+import { SILHouseHazSubsTab } from "@/components/sil-houses/SILHouseHazSubsTab";
+import { SILHouseCleaningTab } from "@/components/sil-houses/SILHouseCleaningTab";
+import { SILHouseKeysTab } from "@/components/sil-houses/SILHouseKeysTab";
 
 export default function SILHouseDetail() {
   const { id } = useParams<{ id: string }>();
@@ -58,16 +63,26 @@ export default function SILHouseDetail() {
       </Card>
 
       <Tabs defaultValue="participants">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="participants">Participants</TabsTrigger>
           <TabsTrigger value="staff">Staff</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
           <TabsTrigger value="daily-logs">Daily Logs</TabsTrigger>
+          <TabsTrigger value="inspections">Inspections</TabsTrigger>
+          <TabsTrigger value="visitors">Visitors</TabsTrigger>
+          <TabsTrigger value="hazardous">Haz. Substances</TabsTrigger>
+          <TabsTrigger value="cleaning">Cleaning</TabsTrigger>
+          <TabsTrigger value="keys">Keys</TabsTrigger>
         </TabsList>
         <TabsContent value="participants"><SILHouseParticipantsTab houseId={id!} /></TabsContent>
         <TabsContent value="staff"><SILHouseStaffTab houseId={id!} /></TabsContent>
         <TabsContent value="maintenance"><SILHouseMaintenanceTab houseId={id!} /></TabsContent>
         <TabsContent value="daily-logs"><SILHouseDailyLogsTab houseId={id!} /></TabsContent>
+        <TabsContent value="inspections"><SILHouseWorkplaceInspectionsTab houseId={id!} /></TabsContent>
+        <TabsContent value="visitors"><SILHouseVisitorLogTab houseId={id!} /></TabsContent>
+        <TabsContent value="hazardous"><SILHouseHazSubsTab houseId={id!} /></TabsContent>
+        <TabsContent value="cleaning"><SILHouseCleaningTab houseId={id!} /></TabsContent>
+        <TabsContent value="keys"><SILHouseKeysTab houseId={id!} /></TabsContent>
       </Tabs>
     </div>
   );
