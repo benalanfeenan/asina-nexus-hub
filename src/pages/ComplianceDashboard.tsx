@@ -106,7 +106,7 @@ export default function ComplianceDashboard() {
 
       return { ...s, name, score, colStatuses, flags: mergedFlags };
     });
-  }, [staff, complianceItems, allFlags]);
+  }, [staff, complianceItems, allFlags, getMergedFlags]);
 
   // Alerts
   const alerts = useMemo(() => {
