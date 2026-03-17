@@ -45,6 +45,8 @@ export default function Scheduler() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editShift, setEditShift] = useState<SchedulerShift | null>(null);
+  const [detailShift, setDetailShift] = useState<any>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [prefillStaff, setPrefillStaff] = useState<string | undefined>();
   const [prefillDate, setPrefillDate] = useState<string | undefined>();
   const [viewMode, setViewMode] = useState<"week" | "day">("week");
