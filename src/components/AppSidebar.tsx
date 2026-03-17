@@ -121,7 +121,7 @@ export function AppSidebar() {
         )}
       </SidebarHeader>
 
-      <SidebarContent className="overflow-y-auto overflow-x-hidden">
+      <SidebarContent className="overflow-y-auto overflow-x-hidden scrollbar-hidden">
         {navGroups.map((group) => {
           const visibleItems = group.items.filter(canSee);
           if (visibleItems.length === 0) return null;
