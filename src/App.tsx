@@ -69,6 +69,7 @@ const App = () => (
             <Route path="/quality-improvement" element={<ProtectedPage><QualityImprovement /></ProtectedPage>} />
             <Route path="/compliance-dashboard" element={<ProtectedPage><ComplianceDashboard /></ProtectedPage>} />
             <Route path="/documents" element={<ProtectedPage><Documents /></ProtectedPage>} />
+            <Route path="/ndis-price-list" element={<ProtectedPage><NDISPriceList /></ProtectedPage>} />
             <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
