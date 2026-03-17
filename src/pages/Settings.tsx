@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PageHeader } from "@/components/PageHeader";
 
 interface UserProfile {
   id: string;
