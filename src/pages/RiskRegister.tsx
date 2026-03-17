@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 const likelihoodValues = ["rare", "unlikely", "possible", "likely", "almost_certain"] as const;
 const consequenceValues = ["insignificant", "minor", "moderate", "major", "catastrophic"] as const;
