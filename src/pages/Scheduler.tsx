@@ -160,8 +160,20 @@ export default function Scheduler() {
     setDialogOpen(true);
   };
 
+  const openDetail = (shift: any) => {
+    setDetailShift(shift);
+    setDetailOpen(true);
+  };
+
   const openEdit = (shift: SchedulerShift) => {
     setEditShift(shift);
+    setDialogOpen(true);
+  };
+
+  const openDuplicate = (shift: any) => {
+    setEditShift(null);
+    setPrefillStaff(shift.staff_id);
+    setPrefillDate(shift.date);
     setDialogOpen(true);
   };
 
