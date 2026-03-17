@@ -1695,53 +1695,167 @@ export type Database = {
       participants: {
         Row: {
           address: string | null
+          advocate_name: string | null
+          advocate_phone: string | null
           alerts: Json | null
+          allergies_detail: string | null
+          ambulance_cover: boolean | null
+          communication_aids: string | null
+          communication_needs: string | null
+          country_of_birth: string | null
           created_at: string
           date_of_birth: string | null
+          decision_making: string | null
+          diagnosis: string | null
+          dietary_requirements: string | null
           email: string | null
           first_name: string
+          funding_type: string | null
+          gender: string | null
+          gp_address: string | null
+          gp_name: string | null
+          gp_phone: string | null
+          guardian_name: string | null
+          guardian_phone: string | null
+          guardian_relationship: string | null
+          has_guardianship_order: boolean | null
+          hospital_preference: string | null
           id: string
+          indigenous_status: string | null
+          interpreter_required: boolean | null
           is_active: boolean
+          is_cald: boolean | null
+          languages_spoken: string | null
           last_name: string
+          medical_conditions: string | null
+          medicare_number: string | null
           ndis_number: string | null
+          ndis_plan_end: string | null
+          ndis_plan_start: string | null
           notes: string | null
+          pharmacy_name: string | null
+          pharmacy_phone: string | null
           phone: string | null
           photo_url: string | null
+          plan_manager: string | null
+          plan_manager_email: string | null
+          plan_manager_phone: string | null
+          pronouns: string | null
+          sexuality: string | null
           sil_house_id: string | null
+          support_coordinator: string | null
+          support_coordinator_email: string | null
+          support_coordinator_phone: string | null
           updated_at: string
         }
         Insert: {
           address?: string | null
+          advocate_name?: string | null
+          advocate_phone?: string | null
           alerts?: Json | null
+          allergies_detail?: string | null
+          ambulance_cover?: boolean | null
+          communication_aids?: string | null
+          communication_needs?: string | null
+          country_of_birth?: string | null
           created_at?: string
           date_of_birth?: string | null
+          decision_making?: string | null
+          diagnosis?: string | null
+          dietary_requirements?: string | null
           email?: string | null
           first_name: string
+          funding_type?: string | null
+          gender?: string | null
+          gp_address?: string | null
+          gp_name?: string | null
+          gp_phone?: string | null
+          guardian_name?: string | null
+          guardian_phone?: string | null
+          guardian_relationship?: string | null
+          has_guardianship_order?: boolean | null
+          hospital_preference?: string | null
           id?: string
+          indigenous_status?: string | null
+          interpreter_required?: boolean | null
           is_active?: boolean
+          is_cald?: boolean | null
+          languages_spoken?: string | null
           last_name: string
+          medical_conditions?: string | null
+          medicare_number?: string | null
           ndis_number?: string | null
+          ndis_plan_end?: string | null
+          ndis_plan_start?: string | null
           notes?: string | null
+          pharmacy_name?: string | null
+          pharmacy_phone?: string | null
           phone?: string | null
           photo_url?: string | null
+          plan_manager?: string | null
+          plan_manager_email?: string | null
+          plan_manager_phone?: string | null
+          pronouns?: string | null
+          sexuality?: string | null
           sil_house_id?: string | null
+          support_coordinator?: string | null
+          support_coordinator_email?: string | null
+          support_coordinator_phone?: string | null
           updated_at?: string
         }
         Update: {
           address?: string | null
+          advocate_name?: string | null
+          advocate_phone?: string | null
           alerts?: Json | null
+          allergies_detail?: string | null
+          ambulance_cover?: boolean | null
+          communication_aids?: string | null
+          communication_needs?: string | null
+          country_of_birth?: string | null
           created_at?: string
           date_of_birth?: string | null
+          decision_making?: string | null
+          diagnosis?: string | null
+          dietary_requirements?: string | null
           email?: string | null
           first_name?: string
+          funding_type?: string | null
+          gender?: string | null
+          gp_address?: string | null
+          gp_name?: string | null
+          gp_phone?: string | null
+          guardian_name?: string | null
+          guardian_phone?: string | null
+          guardian_relationship?: string | null
+          has_guardianship_order?: boolean | null
+          hospital_preference?: string | null
           id?: string
+          indigenous_status?: string | null
+          interpreter_required?: boolean | null
           is_active?: boolean
+          is_cald?: boolean | null
+          languages_spoken?: string | null
           last_name?: string
+          medical_conditions?: string | null
+          medicare_number?: string | null
           ndis_number?: string | null
+          ndis_plan_end?: string | null
+          ndis_plan_start?: string | null
           notes?: string | null
+          pharmacy_name?: string | null
+          pharmacy_phone?: string | null
           phone?: string | null
           photo_url?: string | null
+          plan_manager?: string | null
+          plan_manager_email?: string | null
+          plan_manager_phone?: string | null
+          pronouns?: string | null
+          sexuality?: string | null
           sil_house_id?: string | null
+          support_coordinator?: string | null
+          support_coordinator_email?: string | null
+          support_coordinator_phone?: string | null
           updated_at?: string
         }
         Relationships: [
