@@ -25,6 +25,7 @@ interface ShiftData {
   service_type: string;
   status: string;
   notes?: string | null;
+  ndis_line_item_id?: string | null;
 }
 
 interface Props {
@@ -34,6 +35,14 @@ interface Props {
   defaultStaffId?: string;
   defaultDate?: string;
   editShift?: ShiftData | null;
+}
+
+function getHoursFromTime(start: string, end: string) {
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  let diff = (eh * 60 + em) - (sh * 60 + sm);
+  if (diff < 0) diff += 24 * 60;
+  return diff / 60;
 }
 
 export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultStaffId, defaultDate, editShift }: Props) {
@@ -51,6 +60,7 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
     notes: "",
     participant_id: null,
     sil_house_id: null,
+    ndis_line_item_id: null,
   });
 
   useEffect(() => {
@@ -67,6 +77,7 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
         notes: "",
         participant_id: null,
         sil_house_id: null,
+        ndis_line_item_id: null,
       });
     }
   }, [editShift, defaultStaffId, defaultDate, open]);
@@ -82,9 +93,8 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
   const { data: participants } = useQuery({
     queryKey: ["participants-list"],
     queryFn: async () => {
-      const query = supabase.from("participants").select("id, first_name, last_name");
-      const result = await (query as any).eq("status", "active").order("first_name");
-      return (result.data || []) as { id: string; first_name: string; last_name: string }[];
+      const { data } = await supabase.from("participants").select("id, first_name, last_name").eq("is_active", true).order("first_name") as any;
+      return (data || []) as { id: string; first_name: string; last_name: string }[];
     },
   });
 
@@ -95,6 +105,21 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
       return (data || []) as { id: string; name: string }[];
     },
   });
+
+  const { data: ndisLineItems } = useQuery({
+    queryKey: ["ndis-line-items-active"],
+    queryFn: async () => {
+      const { data } = await supabase.from("ndis_price_list").select("id, item_code, description, rate, unit").eq("is_active", true).order("item_code") as any;
+      return (data || []) as { id: string; item_code: string; description: string; rate: number; unit: string | null }[];
+    },
+  });
+
+  const selectedLineItem = ndisLineItems?.find(li => li.id === form.ndis_line_item_id);
+  const estimatedCost = selectedLineItem
+    ? (selectedLineItem.unit === "hour" || selectedLineItem.unit === "H"
+      ? selectedLineItem.rate * getHoursFromTime(form.start_time, form.end_time)
+      : selectedLineItem.rate)
+    : null;
 
   const handleSave = async () => {
     if (!form.staff_id || !form.date || !form.start_time || !form.end_time) {
@@ -114,6 +139,7 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
         status: form.status,
         notes: form.notes || null,
         created_by: user?.id || null,
+        ndis_line_item_id: form.ndis_line_item_id || null,
       };
 
       if (editShift?.id) {
@@ -153,7 +179,7 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editShift ? "Edit Shift" : "Add Shift"}</DialogTitle>
         </DialogHeader>
@@ -236,6 +262,27 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
               </Select>
             </div>
           )}
+
+          <div className="space-y-1.5">
+            <Label>NDIS Line Item (optional)</Label>
+            <Select value={form.ndis_line_item_id || "__none__"} onValueChange={v => set("ndis_line_item_id", v === "__none__" ? null : v)}>
+              <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">None</SelectItem>
+                {ndisLineItems?.map(li => (
+                  <SelectItem key={li.id} value={li.id}>
+                    {li.item_code} – {li.description} (${Number(li.rate).toFixed(2)}/{li.unit || "ea"})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {estimatedCost !== null && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Est. cost: <span className="font-medium">${estimatedCost.toFixed(2)}</span>
+                {" "}({getHoursFromTime(form.start_time, form.end_time).toFixed(1)}h × ${Number(selectedLineItem!.rate).toFixed(2)})
+              </p>
+            )}
+          </div>
 
           <div className="space-y-1.5">
             <Label>Notes</Label>
