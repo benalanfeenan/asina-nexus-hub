@@ -288,11 +288,10 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
           </div>
 
           <div className="space-y-1.5">
-            <Label>Participant (optional)</Label>
-            <Select value={form.participant_id || "__none__"} onValueChange={v => set("participant_id", v === "__none__" ? null : v)}>
-              <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+            <Label>Participant *</Label>
+            <Select value={form.participant_id || ""} onValueChange={v => set("participant_id", v)}>
+              <SelectTrigger><SelectValue placeholder="Select participant" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none__">None</SelectItem>
                 {participants?.map(p => (
                   <SelectItem key={p.id} value={p.id}>{p.first_name} {p.last_name}</SelectItem>
                 ))}
