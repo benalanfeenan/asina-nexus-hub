@@ -1,0 +1,1 @@
+ALTER TABLE public.participants ADD COLUMN client_portal_enabled boolean NOT NULL DEFAULT false;

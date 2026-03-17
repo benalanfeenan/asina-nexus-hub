@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, AlertTriangle, FileText, UtensilsCrossed } from "lucide-react";
+import { ArrowLeft, AlertTriangle, FileText, UtensilsCrossed, Globe } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { AddParticipantDialog } from "@/components/participants/AddParticipantDialog";
 import { ParticipantOverviewTab } from "@/components/participants/ParticipantOverviewTab";
@@ -60,7 +61,14 @@ export default function ParticipantDetail() {
       <Button variant="ghost" onClick={() => navigate("/participants")} className="gap-1"><ArrowLeft className="h-4 w-4" />Back to Participants</Button>
       <Card>
         <CardHeader className="flex flex-row items-start justify-between">
-          <div>
+          <div className="flex items-start gap-4">
+            <Avatar className="h-14 w-14">
+              {participant.photo_url && <AvatarImage src={participant.photo_url} alt={`${participant.first_name} ${participant.last_name}`} />}
+              <AvatarFallback className="text-lg font-semibold bg-primary/10 text-primary">
+                {participant.first_name.charAt(0)}{participant.last_name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
             <CardTitle className="text-2xl">{participant.first_name} {participant.last_name}</CardTitle>
             <div className="flex flex-wrap gap-2 mt-2 text-sm text-muted-foreground">
               {participant.ndis_number && <span>NDIS: {participant.ndis_number}</span>}
@@ -72,7 +80,13 @@ export default function ParticipantDetail() {
               {alerts.allergies && <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />Allergies</Badge>}
               {alerts.bsp && <Badge className="gap-1"><FileText className="h-3 w-3" />BSP</Badge>}
               {alerts.mealtime_plan && <Badge variant="outline" className="gap-1"><UtensilsCrossed className="h-3 w-3" />Mealtime Plan</Badge>}
+              {(participant as any).client_portal_enabled ? (
+                <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200 hover:bg-emerald-500/15 gap-1"><Globe className="h-3 w-3" />Portal On</Badge>
+              ) : (
+                <Badge variant="outline" className="text-muted-foreground gap-1"><Globe className="h-3 w-3" />Portal Off</Badge>
+              )}
             </div>
+          </div>
           </div>
           {canEdit && <Button variant="outline" onClick={() => setShowEdit(true)}>Edit</Button>}
         </CardHeader>

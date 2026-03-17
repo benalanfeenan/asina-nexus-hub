@@ -1700,6 +1700,7 @@ export type Database = {
           alerts: Json | null
           allergies_detail: string | null
           ambulance_cover: boolean | null
+          client_portal_enabled: boolean
           communication_aids: string | null
           communication_needs: string | null
           country_of_birth: string | null
@@ -1755,6 +1756,7 @@ export type Database = {
           alerts?: Json | null
           allergies_detail?: string | null
           ambulance_cover?: boolean | null
+          client_portal_enabled?: boolean
           communication_aids?: string | null
           communication_needs?: string | null
           country_of_birth?: string | null
@@ -1810,6 +1812,7 @@ export type Database = {
           alerts?: Json | null
           allergies_detail?: string | null
           ambulance_cover?: boolean | null
+          client_portal_enabled?: boolean
           communication_aids?: string | null
           communication_needs?: string | null
           country_of_birth?: string | null

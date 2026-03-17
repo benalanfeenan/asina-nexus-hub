@@ -42,6 +42,7 @@ const INITIAL_FORM = {
   guardianName: "", guardianPhone: "", guardianRelationship: "", hasGuardianshipOrder: false,
   advocateName: "", advocatePhone: "",
   allergies: false, bsp: false, mealtimePlan: false, restrictivePractices: false, highIntensity: false, medications: false, manualHandling: false,
+  clientPortalEnabled: false,
   notes: "",
 };
 
@@ -83,6 +84,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         allergies: alerts.allergies || false, bsp: alerts.bsp || false, mealtimePlan: alerts.mealtime_plan || false,
         restrictivePractices: alerts.restrictive_practices || false, highIntensity: alerts.high_intensity || false,
         medications: alerts.medications || false, manualHandling: alerts.manual_handling || false,
+        clientPortalEnabled: p.client_portal_enabled || false,
         notes: p.notes || "",
       });
     } else {
@@ -129,6 +131,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         has_guardianship_order: form.hasGuardianshipOrder,
         advocate_name: form.advocateName || null, advocate_phone: form.advocatePhone || null,
         notes: form.notes.trim() || null,
+        client_portal_enabled: form.clientPortalEnabled,
         alerts: {
           allergies: form.allergies, bsp: form.bsp, mealtime_plan: form.mealtimePlan,
           restrictive_practices: form.restrictivePractices, high_intensity: form.highIntensity, medications: form.medications,
@@ -208,6 +211,10 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
                     {silHouses.map((h) => (<SelectItem key={h.id} value={h.id}>{h.name}</SelectItem>))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="flex items-center gap-3 pt-1">
+                <Switch checked={form.clientPortalEnabled} onCheckedChange={setBool("clientPortalEnabled")} />
+                <Label>Client Portal Access</Label>
               </div>
             </CollapsibleContent>
           </Collapsible>
