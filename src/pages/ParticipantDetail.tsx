@@ -106,6 +106,8 @@ export default function ParticipantDetail() {
           <TabsTrigger value="mar">MAR</TabsTrigger>
           <TabsTrigger value="abc">ABC Data</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="transitions">Transitions</TabsTrigger>
+          <TabsTrigger value="surveys">Surveys</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
