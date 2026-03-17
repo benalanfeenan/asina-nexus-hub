@@ -171,6 +171,7 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["staff-compliance-items", staffId] });
+      setExpandedItem(null);
       toast({ title: "Compliance item updated" });
     },
     onError: (e: Error) => {
@@ -281,6 +282,7 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
                         <ComplianceItemForm
                           item={item}
                           record={record}
+                          isSaving={upsertItem.isPending}
                           onSave={(data) => upsertItem.mutate({ item_key: item.item_key, ...data })}
                           onUpload={async (file) => {
                             const url = await uploadDocument(file, item.item_key);
@@ -317,11 +319,13 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
 function ComplianceItemForm({
   item,
   record,
+  isSaving,
   onSave,
   onUpload,
 }: {
   item: ComplianceItemDefinition;
   record: any;
+  isSaving?: boolean;
   onSave: (data: any) => void;
   onUpload: (file: File) => void;
 }) {
@@ -329,6 +333,7 @@ function ComplianceItemForm({
   const [dateCompleted, setDateCompleted] = useState(record?.date_completed || "");
   const [expiryDate, setExpiryDate] = useState(record?.expiry_date || "");
   const [notes, setNotes] = useState(record?.notes || "");
+  const [isUploading, setIsUploading] = useState(false);
 
   return (
     <div className="p-3 ml-7 space-y-3 border-l-2 border-border">
@@ -366,18 +371,23 @@ function ComplianceItemForm({
           size="sm"
           variant="outline"
           className="text-xs"
+          disabled={isUploading}
           onClick={() => {
             const input = document.createElement("input");
             input.type = "file";
             input.accept = ".pdf,.jpg,.jpeg,.png";
-            input.onchange = (e) => {
+            input.onchange = async (e) => {
               const file = (e.target as HTMLInputElement).files?.[0];
-              if (file) onUpload(file);
+              if (file) {
+                setIsUploading(true);
+                await onUpload(file);
+                setIsUploading(false);
+              }
             };
             input.click();
           }}
         >
-          <Upload className="h-3 w-3 mr-1" />Upload Document
+          <Upload className="h-3 w-3 mr-1" />{isUploading ? "Uploading..." : "Upload Document"}
         </Button>
         {record?.document_url && (
           <a href={record.document_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
@@ -387,6 +397,7 @@ function ComplianceItemForm({
       </div>
       <Button
         size="sm"
+        disabled={isSaving}
         onClick={() => onSave({
           status,
           date_completed: dateCompleted || null,
@@ -394,7 +405,7 @@ function ComplianceItemForm({
           notes: notes || null,
         })}
       >
-        Save
+        {isSaving ? "Saving..." : "Save"}
       </Button>
     </div>
   );
