@@ -306,7 +306,7 @@ export default function Scheduler() {
           houseMap={houseMap || {}}
           staffMap={staffMap}
           perspective={perspective}
-          onShiftClick={openEdit}
+          onShiftClick={openDetail}
           onCellClick={(entityId, date) => openAdd(entityId, date)}
         />
       )}
