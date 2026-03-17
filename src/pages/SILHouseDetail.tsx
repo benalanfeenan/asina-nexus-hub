@@ -67,6 +67,7 @@ export default function SILHouseDetail() {
         <TabsContent value="participants"><SILHouseParticipantsTab houseId={id!} /></TabsContent>
         <TabsContent value="staff"><SILHouseStaffTab houseId={id!} /></TabsContent>
         <TabsContent value="maintenance"><SILHouseMaintenanceTab houseId={id!} /></TabsContent>
+        <TabsContent value="daily-logs"><SILHouseDailyLogsTab houseId={id!} /></TabsContent>
       </Tabs>
     </div>
   );
