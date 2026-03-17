@@ -67,17 +67,6 @@ export default function Staff() {
     }
   }, [queryClient, toast]);
 
-  const handleDelete = useCallback(async () => {
-    if (!deleteId) return;
-    const { error } = await supabase.from("staff").delete().eq("id", deleteId);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Staff member deleted" });
-      queryClient.invalidateQueries({ queryKey: ["staff"] });
-    }
-    setDeleteId(null);
-  }, [deleteId, queryClient, toast]);
 
   const { data: staffRaw = [] } = useQuery({
     queryKey: ["staff"],
