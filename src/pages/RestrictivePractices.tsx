@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { format } from "date-fns";
 
 const practiceTypes = ["chemical", "mechanical", "physical", "seclusion", "environmental"] as const;
