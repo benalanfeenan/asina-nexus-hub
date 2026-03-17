@@ -408,6 +408,17 @@ export default function Scheduler() {
         </DragDropContext>
       )}
 
+      <ShiftDetailDialog
+        shift={detailShift}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        staffMap={staffMap}
+        participantMap={participantMap}
+        houseMap={houseMap || {}}
+        onEdit={openEdit}
+        onDuplicate={openDuplicate}
+      />
+
       <AddSchedulerShiftDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
