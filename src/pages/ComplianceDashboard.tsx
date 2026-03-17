@@ -13,6 +13,7 @@ import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore,
   getItemStatus, isItemApplicable, type RoleFlags,
 } from "@/lib/compliance-definitions";
+import { useBatchHouseCompetencyFlags } from "@/hooks/use-merged-role-flags";
 
 const DASHBOARD_COLUMNS = [
   "ndis_wsc", "wwcc", "first_aid", "cpr", "ndis_orientation",
