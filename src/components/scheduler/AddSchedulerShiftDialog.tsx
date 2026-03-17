@@ -179,6 +179,54 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
     }
   };
 
+  const handleDuplicate = async () => {
+    if (!editShift) return;
+    setSaving(true);
+    try {
+      const payload = {
+        staff_id: form.staff_id,
+        participant_id: form.participant_id || null,
+        sil_house_id: form.sil_house_id || null,
+        start_time: form.start_time,
+        end_time: form.end_time,
+        service_type: form.service_type,
+        status: "draft",
+        notes: form.notes || null,
+        created_by: user?.id || null,
+        ndis_line_item_id: form.ndis_line_item_id || null,
+      };
+
+      if (dupDays.length > 0) {
+        // Duplicate to selected days of week (0=Mon .. 6=Sun)
+        const baseDate = new Date(form.date + "T00:00:00");
+        const baseDay = (baseDate.getDay() + 6) % 7; // convert to Mon=0
+        const rows = dupDays.filter(d => d !== baseDay).map(dayIdx => {
+          const diff = dayIdx - baseDay;
+          const targetDate = new Date(baseDate);
+          targetDate.setDate(targetDate.getDate() + diff);
+          const dateStr = targetDate.toISOString().slice(0, 10);
+          return { ...payload, date: dateStr };
+        });
+        if (rows.length > 0) {
+          const { error } = await supabase.from("scheduler_shifts").insert(rows);
+          if (error) throw error;
+          toast({ title: `${rows.length} shift(s) duplicated` });
+        }
+      } else if (dupDate) {
+        const { error } = await supabase.from("scheduler_shifts").insert({ ...payload, date: dupDate });
+        if (error) throw error;
+        toast({ title: "Shift duplicated" });
+      }
+      onSaved();
+      setShowDuplicate(false);
+      onOpenChange(false);
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const set = (k: keyof ShiftData, v: string | null) => setForm(prev => ({ ...prev, [k]: v }));
 
   return (
