@@ -70,6 +70,8 @@ export default function ComplianceDashboard() {
     },
   });
 
+  const getMergedFlags = useBatchHouseCompetencyFlags();
+
   const staffRows = useMemo(() => {
     return staff.map((s: any) => {
       const items = complianceItems.filter((c: any) => c.staff_id === s.id);
