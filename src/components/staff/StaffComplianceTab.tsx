@@ -397,6 +397,7 @@ function ComplianceItemForm({
       </div>
       <Button
         size="sm"
+        disabled={isSaving}
         onClick={() => onSave({
           status,
           date_completed: dateCompleted || null,
@@ -404,7 +405,7 @@ function ComplianceItemForm({
           notes: notes || null,
         })}
       >
-        Save
+        {isSaving ? "Saving..." : "Save"}
       </Button>
     </div>
   );
