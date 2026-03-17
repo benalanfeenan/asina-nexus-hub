@@ -49,7 +49,7 @@ interface StaffTableProps {
   onToggleActive?: (id: string, currentlyActive: boolean) => void;
 }
 
-export function StaffTable({ staff, canEdit, onToggleActive, onDelete }: StaffTableProps) {
+export function StaffTable({ staff, canEdit, onToggleActive }: StaffTableProps) {
   const navigate = useNavigate();
 
   return (
