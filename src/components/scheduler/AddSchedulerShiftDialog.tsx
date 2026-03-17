@@ -50,6 +50,9 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
   const { user } = useAuth();
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [showDuplicate, setShowDuplicate] = useState(false);
+  const [dupDate, setDupDate] = useState("");
+  const [dupDays, setDupDays] = useState<number[]>([]);
 
   const [form, setForm] = useState<ShiftData>({
     staff_id: "",
