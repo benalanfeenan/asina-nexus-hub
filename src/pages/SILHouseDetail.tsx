@@ -62,6 +62,7 @@ export default function SILHouseDetail() {
           <TabsTrigger value="participants">Participants</TabsTrigger>
           <TabsTrigger value="staff">Staff</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+          <TabsTrigger value="daily-logs">Daily Logs</TabsTrigger>
         </TabsList>
         <TabsContent value="participants"><SILHouseParticipantsTab houseId={id!} /></TabsContent>
         <TabsContent value="staff"><SILHouseStaffTab houseId={id!} /></TabsContent>
