@@ -191,7 +191,7 @@ export default function Documents() {
         title="Documents"
         action={canManage ? (
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setShowBulk(true)}><Upload className="mr-1 h-4 w-4" />Bulk Upload</Button>
+            <Button variant="secondary" onClick={() => setShowBulk(true)}><Upload className="mr-1 h-4 w-4" />Bulk Upload</Button>
             <Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Document</Button>
           </div>
         ) : undefined}
