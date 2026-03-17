@@ -29,6 +29,7 @@ const navGroups: NavGroup[] = [
   { label: "Operations", items: [
     { title: "SIL Houses", url: "/sil-houses", icon: Home },
     { title: "Rostering", url: "/rostering", icon: CalendarDays, roles: ["admin", "house_manager"] },
+    { title: "Scheduler", url: "/scheduler", icon: CalendarDays, roles: ["admin", "house_manager"] },
     { title: "Timesheets", url: "/timesheets", icon: Clock },
     { title: "Progress Notes", url: "/progress-notes", icon: FileText },
     { title: "Invoicing", url: "/invoicing", icon: Receipt, roles: ["admin"] },
