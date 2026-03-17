@@ -15,6 +15,7 @@ import Staff from "./pages/Staff";
 import StaffDetail from "./pages/StaffDetail";
 import ParticipantDetail from "./pages/ParticipantDetail";
 import SILHouses from "./pages/SILHouses";
+import SILHouseDetail from "./pages/SILHouseDetail";
 import Rostering from "./pages/Rostering";
 import Timesheets from "./pages/Timesheets";
 import ProgressNotes from "./pages/ProgressNotes";
