@@ -126,8 +126,8 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
     : null;
 
   const handleSave = async () => {
-    if (!form.staff_id || !form.date || !form.start_time || !form.end_time) {
-      toast({ title: "Missing fields", description: "Staff, date and times are required.", variant: "destructive" });
+    if (!form.staff_id || !form.date || !form.start_time || !form.end_time || !form.participant_id || !form.ndis_line_item_id) {
+      toast({ title: "Missing fields", description: "Staff, date, times, participant and NDIS line item are required.", variant: "destructive" });
       return;
     }
     setSaving(true);
