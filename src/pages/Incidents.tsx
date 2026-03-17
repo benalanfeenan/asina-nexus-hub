@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, AlertTriangle } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { AddIncidentDialog } from "@/components/incidents/AddIncidentDialog";
 import { IncidentDetailDialog } from "@/components/incidents/IncidentDetailDialog";
 
