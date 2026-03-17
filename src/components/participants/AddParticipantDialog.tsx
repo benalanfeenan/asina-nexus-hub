@@ -54,6 +54,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
       setMealtimePlan(alerts?.mealtime_plan || false);
       setRestrictivePractices(alerts?.restrictive_practices || false);
       setHighIntensity(alerts?.high_intensity || false);
+      setMedications(alerts?.medications || false);
     } else {
       setFirstName(""); setLastName(""); setDob(""); setNdisNumber("");
       setPhone(""); setEmail(""); setAddress(""); setSilHouseId("none");
