@@ -87,6 +87,8 @@ export default function ComplianceDashboard() {
           }
         : DEFAULT_ROLE_FLAGS;
 
+      const mergedFlags = getMergedFlags(s.id, flags);
+
       const map = new Map<string, any>();
       items.forEach((i: any) => map.set(i.item_key, i));
       const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
