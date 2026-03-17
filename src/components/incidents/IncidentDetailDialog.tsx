@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle } from "lucide-react";
 import { IncidentSubRecordsTab } from "./IncidentSubRecordsTab";
+import { IncidentCommissionReports } from "./IncidentCommissionReports";
 
 interface Props {
   incident: any;
