@@ -42,6 +42,7 @@ const navGroups: NavGroup[] = [
     { title: "Fire Safety", url: "/fire-safety", icon: Flame },
     { title: "Restrictive Practices", url: "/restrictive-practices", icon: Ban },
     { title: "Quality Improvement", url: "/quality-improvement", icon: TrendingUp, roles: ["admin", "house_manager"] },
+    { title: "Safeguarding", url: "/safeguarding", icon: ShieldAlert, roles: ["admin", "house_manager"] },
     { title: "Compliance Dashboard", url: "/compliance-dashboard", icon: ClipboardCheck, roles: ["admin"] },
   ]},
   { label: "Governance", items: [
