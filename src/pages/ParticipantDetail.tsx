@@ -104,6 +104,7 @@ export default function ParticipantDetail() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="compliance"><ParticipantComplianceTab participantId={id!} canEdit={canEdit} alerts={alerts} /></TabsContent>
         <TabsContent value="contacts"><ParticipantContactsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="goals"><ParticipantGoalsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="routines"><ParticipantRoutinesTab participantId={id!} canEdit={canEdit} /></TabsContent>
@@ -111,7 +112,6 @@ export default function ParticipantDetail() {
         <TabsContent value="medications"><ParticipantMedicationsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="mar"><ParticipantMARTab participantId={id!} /></TabsContent>
         <TabsContent value="abc"><ParticipantABCDataTab participantId={id!} /></TabsContent>
-        <TabsContent value="compliance"><ParticipantComplianceTab participantId={id!} canEdit={canEdit} alerts={alerts} /></TabsContent>
         <TabsContent value="documents"><ParticipantDocumentsTab participantId={id!} /></TabsContent>
       </Tabs>
 
