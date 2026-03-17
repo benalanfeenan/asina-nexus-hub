@@ -17,6 +17,7 @@ import { ParticipantMedicationsTab } from "@/components/participants/Participant
 import { ParticipantMARTab } from "@/components/participants/ParticipantMARTab";
 import { ParticipantABCDataTab } from "@/components/participants/ParticipantABCDataTab";
 import { ParticipantDocumentsTab } from "@/components/participants/ParticipantDocumentsTab";
+import { ParticipantComplianceTab } from "@/components/participants/ParticipantComplianceTab";
 
 export default function ParticipantDetail() {
   const { id } = useParams<{ id: string }>();
@@ -86,6 +87,7 @@ export default function ParticipantDetail() {
           <TabsTrigger value="medications">Medications</TabsTrigger>
           <TabsTrigger value="mar">MAR</TabsTrigger>
           <TabsTrigger value="abc">ABC Data</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
@@ -109,6 +111,7 @@ export default function ParticipantDetail() {
         <TabsContent value="medications"><ParticipantMedicationsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="mar"><ParticipantMARTab participantId={id!} /></TabsContent>
         <TabsContent value="abc"><ParticipantABCDataTab participantId={id!} /></TabsContent>
+        <TabsContent value="compliance"><ParticipantComplianceTab participantId={id!} canEdit={canEdit} alerts={alerts} /></TabsContent>
         <TabsContent value="documents"><ParticipantDocumentsTab participantId={id!} /></TabsContent>
       </Tabs>
 

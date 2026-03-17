@@ -33,6 +33,8 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
   const [allergies, setAllergies] = useState(false);
   const [bsp, setBsp] = useState(false);
   const [mealtimePlan, setMealtimePlan] = useState(false);
+  const [restrictivePractices, setRestrictivePractices] = useState(false);
+  const [highIntensity, setHighIntensity] = useState(false);
 
   useEffect(() => {
     if (editParticipant) {
@@ -49,10 +51,13 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
       setAllergies(alerts?.allergies || false);
       setBsp(alerts?.bsp || false);
       setMealtimePlan(alerts?.mealtime_plan || false);
+      setRestrictivePractices(alerts?.restrictive_practices || false);
+      setHighIntensity(alerts?.high_intensity || false);
     } else {
       setFirstName(""); setLastName(""); setDob(""); setNdisNumber("");
       setPhone(""); setEmail(""); setAddress(""); setSilHouseId("none");
       setNotes(""); setAllergies(false); setBsp(false); setMealtimePlan(false);
+      setRestrictivePractices(false); setHighIntensity(false);
     }
   }, [editParticipant, open]);
 
@@ -68,7 +73,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         address: address.trim() || null,
         sil_house_id: silHouseId === "none" ? null : silHouseId,
         notes: notes.trim() || null,
-        alerts: { allergies, bsp, mealtime_plan: mealtimePlan },
+        alerts: { allergies, bsp, mealtime_plan: mealtimePlan, restrictive_practices: restrictivePractices, high_intensity: highIntensity },
       };
       if (isEdit) {
         const { error } = await supabase.from("participants").update(payload).eq("id", editParticipant.id);
@@ -123,6 +128,8 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={allergies} onCheckedChange={(v) => setAllergies(!!v)} />Allergies</label>
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={bsp} onCheckedChange={(v) => setBsp(!!v)} />BSP</label>
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={mealtimePlan} onCheckedChange={(v) => setMealtimePlan(!!v)} />Mealtime Plan</label>
+              <label className="flex items-center gap-2 text-sm"><Checkbox checked={restrictivePractices} onCheckedChange={(v) => setRestrictivePractices(!!v)} />Restrictive Practices</label>
+              <label className="flex items-center gap-2 text-sm"><Checkbox checked={highIntensity} onCheckedChange={(v) => setHighIntensity(!!v)} />High Intensity</label>
             </div>
           </div>
           <div><Label>Notes</Label><Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional notes" /></div>
