@@ -10,6 +10,7 @@ import { AddSchedulerShiftDialog } from "@/components/scheduler/AddSchedulerShif
 import { SchedulerStatsBar } from "@/components/scheduler/SchedulerStatsBar";
 import { SchedulerDayView } from "@/components/scheduler/SchedulerDayView";
 import { ShiftCard } from "@/components/scheduler/ShiftCard";
+import { ShiftDetailDialog } from "@/components/scheduler/ShiftDetailDialog";
 import { Plus, ChevronLeft, ChevronRight, Send, Search, Users, UserCheck } from "lucide-react";
 import { format, startOfWeek, addDays, addWeeks, subWeeks, isToday } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
@@ -44,6 +45,8 @@ export default function Scheduler() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editShift, setEditShift] = useState<SchedulerShift | null>(null);
+  const [detailShift, setDetailShift] = useState<any>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [prefillStaff, setPrefillStaff] = useState<string | undefined>();
   const [prefillDate, setPrefillDate] = useState<string | undefined>();
   const [viewMode, setViewMode] = useState<"week" | "day">("week");
@@ -157,8 +160,20 @@ export default function Scheduler() {
     setDialogOpen(true);
   };
 
+  const openDetail = (shift: any) => {
+    setDetailShift(shift);
+    setDetailOpen(true);
+  };
+
   const openEdit = (shift: SchedulerShift) => {
     setEditShift(shift);
+    setDialogOpen(true);
+  };
+
+  const openDuplicate = (shift: any) => {
+    setEditShift(null);
+    setPrefillStaff(shift.staff_id);
+    setPrefillDate(shift.date);
     setDialogOpen(true);
   };
 
@@ -291,7 +306,7 @@ export default function Scheduler() {
           houseMap={houseMap || {}}
           staffMap={staffMap}
           perspective={perspective}
-          onShiftClick={openEdit}
+          onShiftClick={openDetail}
           onCellClick={(entityId, date) => openAdd(entityId, date)}
         />
       )}
@@ -373,7 +388,7 @@ export default function Scheduler() {
                                         shift={shift}
                                         label={label}
                                         staffLabel={sLabel}
-                                        onClick={e => { e.stopPropagation(); openEdit(shift); }}
+                                        onClick={e => { e.stopPropagation(); openDetail(shift); }}
                                       />
                                     </div>
                                   )}
@@ -392,6 +407,17 @@ export default function Scheduler() {
           </div>
         </DragDropContext>
       )}
+
+      <ShiftDetailDialog
+        shift={detailShift}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        staffMap={staffMap}
+        participantMap={participantMap}
+        houseMap={houseMap || {}}
+        onEdit={openEdit}
+        onDuplicate={openDuplicate}
+      />
 
       <AddSchedulerShiftDialog
         open={dialogOpen}
