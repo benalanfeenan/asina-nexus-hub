@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle } from "lucide-react";
+import { IncidentSubRecordsTab } from "./IncidentSubRecordsTab";
 
 interface Props {
   incident: any;
@@ -70,7 +71,7 @@ export function IncidentDetailDialog({ incident, onClose }: Props) {
 
   return (
     <Dialog open={!!incident} onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span className="font-mono text-sm text-muted-foreground">{incident.reference_number}</span>
@@ -123,6 +124,10 @@ export function IncidentDetailDialog({ incident, onClose }: Props) {
               {incident.corrective_actions && <div><span className="text-muted-foreground font-medium">Corrective Actions:</span><p className="mt-1">{incident.corrective_actions}</p></div>}
             </>
           )}
+
+          <hr className="border-border" />
+          <h4 className="font-medium">Records</h4>
+          <IncidentSubRecordsTab incidentId={incident.id} />
         </div>
 
         <DialogFooter>

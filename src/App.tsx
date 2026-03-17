@@ -30,6 +30,8 @@ import ComplianceDashboard from "./pages/ComplianceDashboard";
 import Documents from "./pages/Documents";
 import NDISPriceList from "./pages/NDISPriceList";
 import Settings from "./pages/Settings";
+import Feedback from "./pages/Feedback";
+import FireSafety from "./pages/FireSafety";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +65,8 @@ const App = () => (
             <Route path="/invoicing" element={<ProtectedPage><Invoicing /></ProtectedPage>} />
             <Route path="/incidents" element={<ProtectedPage><Incidents /></ProtectedPage>} />
             <Route path="/complaints" element={<ProtectedPage><Complaints /></ProtectedPage>} />
+            <Route path="/feedback" element={<ProtectedPage><Feedback /></ProtectedPage>} />
+            <Route path="/fire-safety" element={<ProtectedPage><FireSafety /></ProtectedPage>} />
             <Route path="/risk-register" element={<ProtectedPage><RiskRegister /></ProtectedPage>} />
             <Route path="/hazards" element={<ProtectedPage><Hazards /></ProtectedPage>} />
             <Route path="/restrictive-practices" element={<ProtectedPage><RestrictivePractices /></ProtectedPage>} />

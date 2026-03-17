@@ -16,6 +16,8 @@ import {
   ClipboardCheck,
   FolderOpen,
   Settings,
+  ThumbsUp,
+  Flame,
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
@@ -79,8 +81,10 @@ const navGroups: NavGroup[] = [
     items: [
       { title: "Incidents", url: "/incidents", icon: AlertTriangle },
       { title: "Complaints", url: "/complaints", icon: MessageSquareWarning },
+      { title: "Feedback", url: "/feedback", icon: ThumbsUp },
       { title: "Risk Register", url: "/risk-register", icon: ShieldAlert, roles: ["admin", "house_manager"] },
       { title: "Hazards", url: "/hazards", icon: HardHat },
+      { title: "Fire Safety", url: "/fire-safety", icon: Flame },
       { title: "Restrictive Practices", url: "/restrictive-practices", icon: Ban },
       { title: "Quality Improvement", url: "/quality-improvement", icon: TrendingUp, roles: ["admin", "house_manager"] },
       { title: "Compliance Dashboard", url: "/compliance-dashboard", icon: ClipboardCheck, roles: ["admin"] },

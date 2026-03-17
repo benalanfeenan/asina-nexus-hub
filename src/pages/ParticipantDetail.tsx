@@ -15,6 +15,7 @@ import { ParticipantRoutinesTab } from "@/components/participants/ParticipantRou
 import { ParticipantSupportNeedsTab } from "@/components/participants/ParticipantSupportNeedsTab";
 import { ParticipantMedicationsTab } from "@/components/participants/ParticipantMedicationsTab";
 import { ParticipantMARTab } from "@/components/participants/ParticipantMARTab";
+import { ParticipantABCDataTab } from "@/components/participants/ParticipantABCDataTab";
 
 export default function ParticipantDetail() {
   const { id } = useParams<{ id: string }>();
@@ -83,6 +84,7 @@ export default function ParticipantDetail() {
           <TabsTrigger value="support">Support Needs</TabsTrigger>
           <TabsTrigger value="medications">Medications</TabsTrigger>
           <TabsTrigger value="mar">MAR</TabsTrigger>
+          <TabsTrigger value="abc">ABC Data</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -104,6 +106,7 @@ export default function ParticipantDetail() {
         <TabsContent value="support"><ParticipantSupportNeedsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="medications"><ParticipantMedicationsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="mar"><ParticipantMARTab participantId={id!} /></TabsContent>
+        <TabsContent value="abc"><ParticipantABCDataTab participantId={id!} /></TabsContent>
       </Tabs>
 
       <AddParticipantDialog open={showEdit} onOpenChange={setShowEdit} silHouses={silHouses} editParticipant={participant} />

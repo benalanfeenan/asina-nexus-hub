@@ -9,6 +9,7 @@ import { ArrowLeft, Home } from "lucide-react";
 import { SILHouseParticipantsTab } from "@/components/sil-houses/SILHouseParticipantsTab";
 import { SILHouseStaffTab } from "@/components/sil-houses/SILHouseStaffTab";
 import { SILHouseMaintenanceTab } from "@/components/sil-houses/SILHouseMaintenanceTab";
+import { SILHouseDailyLogsTab } from "@/components/sil-houses/SILHouseDailyLogsTab";
 
 export default function SILHouseDetail() {
   const { id } = useParams<{ id: string }>();
@@ -61,10 +62,12 @@ export default function SILHouseDetail() {
           <TabsTrigger value="participants">Participants</TabsTrigger>
           <TabsTrigger value="staff">Staff</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+          <TabsTrigger value="daily-logs">Daily Logs</TabsTrigger>
         </TabsList>
         <TabsContent value="participants"><SILHouseParticipantsTab houseId={id!} /></TabsContent>
         <TabsContent value="staff"><SILHouseStaffTab houseId={id!} /></TabsContent>
         <TabsContent value="maintenance"><SILHouseMaintenanceTab houseId={id!} /></TabsContent>
+        <TabsContent value="daily-logs"><SILHouseDailyLogsTab houseId={id!} /></TabsContent>
       </Tabs>
     </div>
   );
