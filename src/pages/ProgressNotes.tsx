@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, AlertCircle } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { AddProgressNoteDialog } from "@/components/progress-notes/AddProgressNoteDialog";
 
 export default function ProgressNotes() {
