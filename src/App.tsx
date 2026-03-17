@@ -50,6 +50,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<ProtectedPage><Dashboard /></ProtectedPage>} />
             <Route path="/participants" element={<ProtectedPage><Participants /></ProtectedPage>} />
+            <Route path="/participants/:id" element={<ProtectedPage><ParticipantDetail /></ProtectedPage>} />
             <Route path="/staff" element={<ProtectedPage><Staff /></ProtectedPage>} />
             <Route path="/staff/:id" element={<ProtectedPage><StaffDetail /></ProtectedPage>} />
             <Route path="/sil-houses" element={<ProtectedPage><SILHouses /></ProtectedPage>} />
