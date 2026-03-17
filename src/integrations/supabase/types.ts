@@ -251,6 +251,54 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_item_definitions: {
+        Row: {
+          category: string
+          conditional_on: string | null
+          created_at: string
+          description: string | null
+          display_order: number
+          expiry_months: number | null
+          has_expiry: boolean
+          id: string
+          is_mandatory: boolean
+          item_key: string
+          linked_to: string | null
+          name: string
+          requires_document: boolean
+        }
+        Insert: {
+          category: string
+          conditional_on?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          expiry_months?: number | null
+          has_expiry?: boolean
+          id?: string
+          is_mandatory?: boolean
+          item_key: string
+          linked_to?: string | null
+          name: string
+          requires_document?: boolean
+        }
+        Update: {
+          category?: string
+          conditional_on?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          expiry_months?: number | null
+          has_expiry?: boolean
+          id?: string
+          is_mandatory?: boolean
+          item_key?: string
+          linked_to?: string | null
+          name?: string
+          requires_document?: boolean
+        }
+        Relationships: []
+      }
       conflict_of_interest: {
         Row: {
           created_at: string
@@ -2345,36 +2393,51 @@ export type Database = {
           created_at: string
           employment_type: string | null
           end_date: string | null
+          first_name: string | null
           id: string
           is_active: boolean
+          last_name: string | null
           notes: string | null
+          phone: string | null
+          photo_url: string | null
           position: string | null
           profile_id: string
           start_date: string | null
+          status: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           employment_type?: string | null
           end_date?: string | null
+          first_name?: string | null
           id?: string
           is_active?: boolean
+          last_name?: string | null
           notes?: string | null
+          phone?: string | null
+          photo_url?: string | null
           position?: string | null
           profile_id: string
           start_date?: string | null
+          status?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           employment_type?: string | null
           end_date?: string | null
+          first_name?: string | null
           id?: string
           is_active?: boolean
+          last_name?: string | null
           notes?: string | null
+          phone?: string | null
+          photo_url?: string | null
           position?: string | null
           profile_id?: string
           start_date?: string | null
+          status?: string
           updated_at?: string
         }
         Relationships: [
@@ -2513,6 +2576,59 @@ export type Database = {
           },
         ]
       }
+      staff_compliance_items: {
+        Row: {
+          created_at: string
+          date_completed: string | null
+          document_url: string | null
+          expiry_date: string | null
+          id: string
+          item_key: string
+          notes: string | null
+          staff_id: string
+          status: string
+          updated_at: string
+          verified_by: string | null
+          verified_date: string | null
+        }
+        Insert: {
+          created_at?: string
+          date_completed?: string | null
+          document_url?: string | null
+          expiry_date?: string | null
+          id?: string
+          item_key: string
+          notes?: string | null
+          staff_id: string
+          status?: string
+          updated_at?: string
+          verified_by?: string | null
+          verified_date?: string | null
+        }
+        Update: {
+          created_at?: string
+          date_completed?: string | null
+          document_url?: string | null
+          expiry_date?: string | null
+          id?: string
+          item_key?: string
+          notes?: string | null
+          staff_id?: string
+          status?: string
+          updated_at?: string
+          verified_by?: string | null
+          verified_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_compliance_items_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_documents: {
         Row: {
           created_at: string
@@ -2549,6 +2665,53 @@ export type Database = {
             foreignKeyName: "staff_documents_staff_id_fkey"
             columns: ["staff_id"]
             isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_role_flags: {
+        Row: {
+          administers_medication: boolean
+          created_at: string
+          delivers_high_intensity: boolean
+          id: string
+          staff_id: string
+          supports_bsp_participants: boolean
+          supports_mealtime_assessed: boolean
+          supports_under_18: boolean
+          transports_participants: boolean
+          uses_restrictive_practices: boolean
+        }
+        Insert: {
+          administers_medication?: boolean
+          created_at?: string
+          delivers_high_intensity?: boolean
+          id?: string
+          staff_id: string
+          supports_bsp_participants?: boolean
+          supports_mealtime_assessed?: boolean
+          supports_under_18?: boolean
+          transports_participants?: boolean
+          uses_restrictive_practices?: boolean
+        }
+        Update: {
+          administers_medication?: boolean
+          created_at?: string
+          delivers_high_intensity?: boolean
+          id?: string
+          staff_id?: string
+          supports_bsp_participants?: boolean
+          supports_mealtime_assessed?: boolean
+          supports_under_18?: boolean
+          transports_participants?: boolean
+          uses_restrictive_practices?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_role_flags_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: true
             referencedRelation: "staff"
             referencedColumns: ["id"]
           },

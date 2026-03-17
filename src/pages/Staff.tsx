@@ -9,22 +9,37 @@ import { StaffTable, type StaffWithProfile } from "@/components/staff/StaffTable
 import { AddStaffDialog } from "@/components/staff/AddStaffDialog";
 import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import {
+  COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
+} from "@/lib/compliance-definitions";
 
-function computeComplianceStatus(
-  checks: { staff_id: string; expiry_date: string | null }[],
+function computeComplianceFromItems(
+  items: { staff_id: string; item_key: string; status: string; expiry_date: string | null }[],
+  allFlags: { staff_id: string; [key: string]: any }[],
   staffId: string
-): "green" | "amber" | "red" | "none" {
-  const staffChecks = checks.filter((c) => c.staff_id === staffId);
-  if (staffChecks.length === 0) return "none";
-  const now = new Date();
-  let worst: "green" | "amber" | "red" = "green";
-  for (const c of staffChecks) {
-    if (!c.expiry_date) continue;
-    const diff = (new Date(c.expiry_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-    if (diff < 0) return "red";
-    if (diff <= 30) worst = "amber";
-  }
-  return worst;
+): { status: "green" | "amber" | "red" | "none"; score: number } {
+  const staffItems = items.filter((i) => i.staff_id === staffId);
+  const flagRow = allFlags.find((f) => f.staff_id === staffId);
+  const flags: RoleFlags = flagRow
+    ? {
+        administers_medication: flagRow.administers_medication,
+        supports_mealtime_assessed: flagRow.supports_mealtime_assessed,
+        supports_bsp_participants: flagRow.supports_bsp_participants,
+        delivers_high_intensity: flagRow.delivers_high_intensity,
+        uses_restrictive_practices: flagRow.uses_restrictive_practices,
+        transports_participants: flagRow.transports_participants,
+        supports_under_18: flagRow.supports_under_18,
+      }
+    : DEFAULT_ROLE_FLAGS;
+
+  const map = new Map<string, { status: string; expiry_date: string | null }>();
+  staffItems.forEach((i) => map.set(i.item_key, i));
+  const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
+
+  if (staffItems.length === 0) return { status: "none", score: 0 };
+  if (score === 100) return { status: "green", score };
+  if (score >= 80) return { status: "amber", score };
+  return { status: "red", score };
 }
 
 export default function Staff() {
@@ -40,27 +55,39 @@ export default function Staff() {
     queryFn: async () => {
       const { data } = await supabase
         .from("staff")
-        .select("id, position, employment_type, is_active, start_date, profile_id, notes, profiles(full_name, email)")
+        .select("id, position, employment_type, is_active, start_date, profile_id, notes, first_name, last_name, phone, profiles(full_name, email)")
         .order("created_at", { ascending: false });
       return data || [];
     },
   });
 
-  const { data: complianceChecks = [] } = useQuery({
-    queryKey: ["staff-compliance-all"],
+  const { data: complianceItems = [] } = useQuery({
+    queryKey: ["staff-compliance-items-all"],
     queryFn: async () => {
-      const { data } = await supabase.from("staff_compliance").select("staff_id, expiry_date");
+      const { data } = await supabase.from("staff_compliance_items").select("staff_id, item_key, status, expiry_date");
+      return data || [];
+    },
+  });
+
+  const { data: allFlags = [] } = useQuery({
+    queryKey: ["staff-role-flags-all"],
+    queryFn: async () => {
+      const { data } = await supabase.from("staff_role_flags").select("*");
       return data || [];
     },
   });
 
   const staff: StaffWithProfile[] = useMemo(() => {
-    return staffRaw.map((s) => ({
-      ...s,
-      profiles: s.profiles as { full_name: string; email: string | null } | null,
-      complianceStatus: computeComplianceStatus(complianceChecks, s.id),
-    }));
-  }, [staffRaw, complianceChecks]);
+    return staffRaw.map((s) => {
+      const { status, score } = computeComplianceFromItems(complianceItems, allFlags, s.id);
+      return {
+        ...s,
+        profiles: s.profiles as { full_name: string; email: string | null } | null,
+        complianceStatus: status,
+        complianceScore: score,
+      };
+    });
+  }, [staffRaw, complianceItems, allFlags]);
 
   const filtered = useMemo(() => {
     return staff.filter((s) => {
@@ -69,7 +96,7 @@ export default function Staff() {
       if (empFilter !== "all" && s.employment_type !== empFilter) return false;
       if (search) {
         const q = search.toLowerCase();
-        const name = s.profiles?.full_name?.toLowerCase() || "";
+        const name = [s.first_name, s.last_name].filter(Boolean).join(" ").toLowerCase() || s.profiles?.full_name?.toLowerCase() || "";
         const email = s.profiles?.email?.toLowerCase() || "";
         const pos = s.position?.toLowerCase() || "";
         if (!name.includes(q) && !email.includes(q) && !pos.includes(q)) return false;

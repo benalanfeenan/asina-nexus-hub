@@ -6,22 +6,33 @@ import {
 
 export interface StaffWithProfile {
   id: string;
+  first_name: string | null;
+  last_name: string | null;
   position: string | null;
   employment_type: string | null;
   is_active: boolean;
   start_date: string | null;
   profiles: { full_name: string; email: string | null } | null;
   complianceStatus: "green" | "amber" | "red" | "none";
+  complianceScore?: number;
 }
 
-const complianceBadge = (status: string) => {
+function getDisplayName(s: StaffWithProfile): string {
+  if (s.first_name || s.last_name) {
+    return [s.first_name, s.last_name].filter(Boolean).join(" ");
+  }
+  return s.profiles?.full_name || "Unknown";
+}
+
+const complianceBadge = (status: string, score?: number) => {
+  const scoreText = score !== undefined ? ` (${score}%)` : "";
   switch (status) {
     case "green":
-      return <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200 hover:bg-emerald-500/15">Current</Badge>;
+      return <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200 hover:bg-emerald-500/15">Current{scoreText}</Badge>;
     case "amber":
-      return <Badge className="bg-amber-500/15 text-amber-700 border-amber-200 hover:bg-amber-500/15">Expiring</Badge>;
+      return <Badge className="bg-amber-500/15 text-amber-700 border-amber-200 hover:bg-amber-500/15">Expiring{scoreText}</Badge>;
     case "red":
-      return <Badge variant="destructive">Expired</Badge>;
+      return <Badge variant="destructive">Expired{scoreText}</Badge>;
     default:
       return <Badge variant="outline">No checks</Badge>;
   }
@@ -56,14 +67,14 @@ export function StaffTable({ staff }: { staff: StaffWithProfile[] }) {
               onClick={() => navigate(`/staff/${s.id}`)}
             >
               <TableCell className="font-medium">
-                {s.profiles?.full_name || "—"}
+                {getDisplayName(s)}
                 {s.profiles?.email && (
                   <span className="block text-xs text-muted-foreground">{s.profiles.email}</span>
                 )}
               </TableCell>
               <TableCell>{s.position || "—"}</TableCell>
               <TableCell className="capitalize">{s.employment_type?.replace("_", " ") || "—"}</TableCell>
-              <TableCell>{complianceBadge(s.complianceStatus)}</TableCell>
+              <TableCell>{complianceBadge(s.complianceStatus, s.complianceScore)}</TableCell>
               <TableCell>
                 <Badge variant={s.is_active ? "default" : "secondary"}>
                   {s.is_active ? "Active" : "Inactive"}

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { ArrowLeft } from "lucide-react";
 import { StaffTrainingTab } from "@/components/staff/StaffTrainingTab";
 import { StaffComplianceTab } from "@/components/staff/StaffComplianceTab";
@@ -12,6 +13,10 @@ import { StaffSupervisionsTab } from "@/components/staff/StaffSupervisionsTab";
 import { StaffCompetenciesTab } from "@/components/staff/StaffCompetenciesTab";
 import { StaffAcknowledgementsTab } from "@/components/staff/StaffAcknowledgementsTab";
 import { StaffDocumentsTab } from "@/components/staff/StaffDocumentsTab";
+import { useMemo } from "react";
+import {
+  COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
+} from "@/lib/compliance-definitions";
 
 export default function StaffDetail() {
   const { id } = useParams<{ id: string }>();
@@ -42,6 +47,45 @@ export default function StaffDetail() {
     enabled: !!id,
   });
 
+  const { data: roleFlags } = useQuery({
+    queryKey: ["staff-role-flags", id],
+    queryFn: async () => {
+      const { data } = await supabase.from("staff_role_flags").select("*").eq("staff_id", id!).maybeSingle();
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  const { data: complianceRecords = [] } = useQuery({
+    queryKey: ["staff-compliance-items", id],
+    queryFn: async () => {
+      const { data } = await supabase.from("staff_compliance_items").select("*").eq("staff_id", id!);
+      return data || [];
+    },
+    enabled: !!id,
+  });
+
+  const flags: RoleFlags = useMemo(() => {
+    if (!roleFlags) return DEFAULT_ROLE_FLAGS;
+    return {
+      administers_medication: roleFlags.administers_medication,
+      supports_mealtime_assessed: roleFlags.supports_mealtime_assessed,
+      supports_bsp_participants: roleFlags.supports_bsp_participants,
+      delivers_high_intensity: roleFlags.delivers_high_intensity,
+      uses_restrictive_practices: roleFlags.uses_restrictive_practices,
+      transports_participants: roleFlags.transports_participants,
+      supports_under_18: roleFlags.supports_under_18,
+    };
+  }, [roleFlags]);
+
+  const score = useMemo(() => {
+    const map = new Map<string, any>();
+    complianceRecords.forEach((r) => map.set(r.item_key, r));
+    return calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
+  }, [complianceRecords, flags]);
+
+  const scoreColor = score === 100 ? "text-emerald-600" : score >= 80 ? "text-amber-600" : "text-destructive";
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -55,6 +99,9 @@ export default function StaffDetail() {
   }
 
   const profile = staff.profiles as { full_name: string; email: string | null; phone: string | null } | null;
+  const displayName = (staff as any).first_name || (staff as any).last_name
+    ? [(staff as any).first_name, (staff as any).last_name].filter(Boolean).join(" ")
+    : profile?.full_name || "Unknown";
 
   return (
     <div className="space-y-6">
@@ -66,28 +113,37 @@ export default function StaffDetail() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl">{profile?.full_name || "Unknown"}</CardTitle>
+              <CardTitle className="text-2xl">{displayName}</CardTitle>
               <p className="text-muted-foreground">{staff.position || "No position"} · {staff.employment_type?.replace("_", " ") || "Casual"}</p>
             </div>
-            <Badge variant={staff.is_active ? "default" : "secondary"}>
-              {staff.is_active ? "Active" : "Inactive"}
-            </Badge>
+            <div className="flex items-center gap-4">
+              <div className="text-center">
+                <div className={`text-2xl font-bold ${scoreColor}`}>{score}%</div>
+                <p className="text-xs text-muted-foreground">Compliance</p>
+              </div>
+              <Badge variant={staff.is_active ? "default" : "secondary"}>
+                {staff.is_active ? "Active" : "Inactive"}
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
             <div><span className="text-muted-foreground">Email:</span> {profile?.email || "—"}</div>
-            <div><span className="text-muted-foreground">Phone:</span> {profile?.phone || "—"}</div>
+            <div><span className="text-muted-foreground">Phone:</span> {(staff as any).phone || profile?.phone || "—"}</div>
             <div><span className="text-muted-foreground">Start Date:</span> {staff.start_date || "—"}</div>
+          </div>
+          <div className="mt-3">
+            <Progress value={score} className="h-2" />
           </div>
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="training">
+      <Tabs defaultValue="compliance">
         <TabsList className="flex-wrap">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="training">Training</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="training">Training</TabsTrigger>
           <TabsTrigger value="supervisions">Supervisions</TabsTrigger>
           <TabsTrigger value="competencies">Competencies</TabsTrigger>
           <TabsTrigger value="acknowledgements">Acknowledgements</TabsTrigger>
@@ -117,8 +173,8 @@ export default function StaffDetail() {
           )}
         </TabsContent>
 
-        <TabsContent value="training"><StaffTrainingTab staffId={id!} /></TabsContent>
         <TabsContent value="compliance"><StaffComplianceTab staffId={id!} /></TabsContent>
+        <TabsContent value="training"><StaffTrainingTab staffId={id!} /></TabsContent>
         <TabsContent value="supervisions"><StaffSupervisionsTab staffId={id!} /></TabsContent>
         <TabsContent value="competencies"><StaffCompetenciesTab staffId={id!} /></TabsContent>
         <TabsContent value="acknowledgements"><StaffAcknowledgementsTab staffId={id!} /></TabsContent>
