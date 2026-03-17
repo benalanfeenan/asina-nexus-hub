@@ -375,6 +375,42 @@ export type Database = {
           },
         ]
       }
+      document_acknowledgements: {
+        Row: {
+          acknowledged_at: string
+          document_id: string
+          id: string
+          staff_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          document_id: string
+          id?: string
+          staff_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          document_id?: string
+          id?: string
+          staff_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_acknowledgements_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_acknowledgements_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           category: Database["public"]["Enums"]["document_category"]
@@ -382,6 +418,7 @@ export type Database = {
           file_url: string | null
           id: string
           notes: string | null
+          requires_acknowledgement: boolean
           review_date: string | null
           title: string
           updated_at: string
@@ -394,6 +431,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           notes?: string | null
+          requires_acknowledgement?: boolean
           review_date?: string | null
           title: string
           updated_at?: string
@@ -406,6 +444,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           notes?: string | null
+          requires_acknowledgement?: boolean
           review_date?: string | null
           title?: string
           updated_at?: string

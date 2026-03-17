@@ -10,8 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Search, ExternalLink } from "lucide-react";
+import { Plus, Search, ExternalLink, CheckCircle2, Clock, Users } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { format } from "date-fns";
 
@@ -24,6 +25,7 @@ export default function Documents() {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
+  const [ackStatusDocId, setAckStatusDocId] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<string>("other");
@@ -31,6 +33,17 @@ export default function Documents() {
   const [reviewDate, setReviewDate] = useState("");
   const [notes, setNotes] = useState("");
   const [fileUrl, setFileUrl] = useState("");
+  const [requiresAck, setRequiresAck] = useState(false);
+
+  // Get current user's staff record
+  const { data: currentStaff } = useQuery({
+    queryKey: ["current-staff", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("staff").select("id").eq("profile_id", user!.id).maybeSingle();
+      return data;
+    },
+    enabled: !!user?.id,
+  });
 
   const { data: docs = [] } = useQuery({
     queryKey: ["documents"],
@@ -39,6 +52,30 @@ export default function Documents() {
       return data || [];
     },
   });
+
+  // All acknowledgements for docs that require it
+  const { data: allAcks = [] } = useQuery({
+    queryKey: ["document-acknowledgements"],
+    queryFn: async () => {
+      const { data } = await supabase.from("document_acknowledgements").select("*");
+      return data || [];
+    },
+  });
+
+  // Staff list for admin ack status view
+  const { data: allStaff = [] } = useQuery({
+    queryKey: ["all-active-staff"],
+    queryFn: async () => {
+      const { data } = await supabase.from("staff").select("id, first_name, last_name").eq("is_active", true).order("first_name");
+      return data || [];
+    },
+    enabled: canManage,
+  });
+
+  const myAckSet = useMemo(() => {
+    if (!currentStaff) return new Set<string>();
+    return new Set(allAcks.filter((a: any) => a.staff_id === currentStaff.id).map((a: any) => a.document_id));
+  }, [allAcks, currentStaff]);
 
   const addMutation = useMutation({
     mutationFn: async () => {
@@ -50,14 +87,31 @@ export default function Documents() {
         notes: notes || null,
         file_url: fileUrl || null,
         uploaded_by: user?.id,
-      });
+        requires_acknowledgement: requiresAck,
+      } as any);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["documents"] });
       setShowAdd(false);
-      setTitle(""); setCategory("other"); setVersion("1.0"); setReviewDate(""); setNotes(""); setFileUrl("");
+      setTitle(""); setCategory("other"); setVersion("1.0"); setReviewDate(""); setNotes(""); setFileUrl(""); setRequiresAck(false);
       toast({ title: "Document added" });
+    },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const ackMutation = useMutation({
+    mutationFn: async (documentId: string) => {
+      if (!currentStaff) throw new Error("Staff record not found for current user");
+      const { error } = await supabase.from("document_acknowledgements").insert({
+        document_id: documentId,
+        staff_id: currentStaff.id,
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["document-acknowledgements"] });
+      toast({ title: "Document acknowledged" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
@@ -69,6 +123,11 @@ export default function Documents() {
       return true;
     });
   }, [docs, search, catFilter]);
+
+  // Ack status for a specific document
+  const ackStatusDoc = docs.find((d: any) => d.id === ackStatusDocId);
+  const ackStatusAcks = allAcks.filter((a: any) => a.document_id === ackStatusDocId);
+  const ackedStaffIds = new Set(ackStatusAcks.map((a: any) => a.staff_id));
 
   return (
     <div className="space-y-6">
@@ -96,30 +155,54 @@ export default function Documents() {
           <TableHeader><TableRow>
             <TableHead>Title</TableHead><TableHead>Category</TableHead><TableHead>Version</TableHead>
             <TableHead>Review Date</TableHead><TableHead>Updated</TableHead><TableHead>Link</TableHead>
+            <TableHead>Acknowledgement</TableHead>
           </TableRow></TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
-              <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No documents found</TableCell></TableRow>
-            ) : filtered.map((d: any) => (
-              <TableRow key={d.id}>
-                <TableCell className="font-medium">{d.title}</TableCell>
-                <TableCell><Badge variant="secondary" className="capitalize">{d.category}</Badge></TableCell>
-                <TableCell>{d.version || "—"}</TableCell>
-                <TableCell>{d.review_date ? format(new Date(d.review_date), "dd/MM/yyyy") : "—"}</TableCell>
-                <TableCell>{format(new Date(d.updated_at), "dd/MM/yyyy")}</TableCell>
-                <TableCell>
-                  {d.file_url ? (
-                    <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
-                      <ExternalLink className="h-3 w-3" />Open
-                    </a>
-                  ) : "—"}
-                </TableCell>
-              </TableRow>
-            ))}
+              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No documents found</TableCell></TableRow>
+            ) : filtered.map((d: any) => {
+              const reqAck = d.requires_acknowledgement;
+              const acked = myAckSet.has(d.id);
+              const docAckCount = allAcks.filter((a: any) => a.document_id === d.id).length;
+
+              return (
+                <TableRow key={d.id}>
+                  <TableCell className="font-medium">{d.title}</TableCell>
+                  <TableCell><Badge variant="secondary" className="capitalize">{d.category}</Badge></TableCell>
+                  <TableCell>{d.version || "—"}</TableCell>
+                  <TableCell>{d.review_date ? format(new Date(d.review_date), "dd/MM/yyyy") : "—"}</TableCell>
+                  <TableCell>{format(new Date(d.updated_at), "dd/MM/yyyy")}</TableCell>
+                  <TableCell>
+                    {d.file_url ? (
+                      <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
+                        <ExternalLink className="h-3 w-3" />Open
+                      </a>
+                    ) : "—"}
+                  </TableCell>
+                  <TableCell>
+                    {!reqAck ? (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    ) : canManage ? (
+                      <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => setAckStatusDocId(d.id)}>
+                        <Users className="h-3 w-3" />
+                        {docAckCount}/{allStaff.length}
+                      </Button>
+                    ) : acked ? (
+                      <span className="inline-flex items-center gap-1 text-xs text-emerald-600"><CheckCircle2 className="h-3 w-3" />Acknowledged</span>
+                    ) : (
+                      <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => ackMutation.mutate(d.id)} disabled={ackMutation.isPending}>
+                        <Clock className="h-3 w-3" />Acknowledge
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
 
+      {/* Add Document Dialog */}
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
         <DialogContent>
           <DialogHeader><DialogTitle>Add Document</DialogTitle><DialogDescription>Register a new document</DialogDescription></DialogHeader>
@@ -138,11 +221,51 @@ export default function Documents() {
             <div className="grid gap-2"><Label>Review Date</Label><Input type="date" value={reviewDate} onChange={(e) => setReviewDate(e.target.value)} /></div>
             <div className="grid gap-2"><Label>File URL</Label><Input value={fileUrl} onChange={(e) => setFileUrl(e.target.value)} placeholder="https://…" /></div>
             <div className="grid gap-2"><Label>Notes</Label><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
+            <div className="flex items-center gap-2">
+              <Checkbox id="requires-ack" checked={requiresAck} onCheckedChange={(v) => setRequiresAck(!!v)} />
+              <Label htmlFor="requires-ack" className="text-sm font-normal">Requires staff acknowledgement</Label>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
             <Button onClick={() => addMutation.mutate()} disabled={!title}>Save</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Acknowledgement Status Dialog (admin) */}
+      <Dialog open={!!ackStatusDocId} onOpenChange={(o) => !o && setAckStatusDocId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Acknowledgement Status</DialogTitle>
+            <DialogDescription>{ackStatusDoc?.title}</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[400px] overflow-y-auto">
+            <Table>
+              <TableHeader><TableRow><TableHead>Staff Member</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {allStaff.map((s: any) => {
+                  const ack = ackStatusAcks.find((a: any) => a.staff_id === s.id);
+                  return (
+                    <TableRow key={s.id}>
+                      <TableCell>{[s.first_name, s.last_name].filter(Boolean).join(" ") || "Unknown"}</TableCell>
+                      <TableCell>
+                        {ack ? (
+                          <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+                            <CheckCircle2 className="h-3 w-3" />{format(new Date(ack.acknowledged_at), "dd/MM/yyyy")}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs text-destructive">
+                            <Clock className="h-3 w-3" />Pending
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
