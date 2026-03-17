@@ -35,6 +35,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
   const [mealtimePlan, setMealtimePlan] = useState(false);
   const [restrictivePractices, setRestrictivePractices] = useState(false);
   const [highIntensity, setHighIntensity] = useState(false);
+  const [medications, setMedications] = useState(false);
 
   useEffect(() => {
     if (editParticipant) {
