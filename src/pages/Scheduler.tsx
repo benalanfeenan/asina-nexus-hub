@@ -10,6 +10,7 @@ import { AddSchedulerShiftDialog } from "@/components/scheduler/AddSchedulerShif
 import { SchedulerStatsBar } from "@/components/scheduler/SchedulerStatsBar";
 import { SchedulerDayView } from "@/components/scheduler/SchedulerDayView";
 import { ShiftCard } from "@/components/scheduler/ShiftCard";
+import { ShiftDetailDialog } from "@/components/scheduler/ShiftDetailDialog";
 import { Plus, ChevronLeft, ChevronRight, Send, Search, Users, UserCheck } from "lucide-react";
 import { format, startOfWeek, addDays, addWeeks, subWeeks, isToday } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
