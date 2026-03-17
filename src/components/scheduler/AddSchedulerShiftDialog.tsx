@@ -342,11 +342,52 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
           </div>
         </div>
 
+        {/* Duplicate section */}
+        {editShift?.id && showDuplicate && (
+          <div className="border rounded-lg p-3 space-y-3 bg-muted/30">
+            <Label className="text-sm font-medium">Duplicate to…</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Specific date</Label>
+              <Input type="date" value={dupDate} onChange={e => { setDupDate(e.target.value); setDupDays([]); }} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Or select days of the week</Label>
+              <div className="flex gap-2 flex-wrap">
+                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, i) => (
+                  <label key={day} className="flex items-center gap-1 text-xs">
+                    <Checkbox
+                      checked={dupDays.includes(i)}
+                      onCheckedChange={checked => {
+                        setDupDate("");
+                        setDupDays(prev => checked ? [...prev, i] : prev.filter(d => d !== i));
+                      }}
+                    />
+                    {day}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleDuplicate} disabled={saving || (!dupDate && dupDays.length === 0)}>
+                {saving ? "Duplicating…" : "Confirm Duplicate"}
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setShowDuplicate(false)}>Cancel</Button>
+            </div>
+          </div>
+        )}
+
         <DialogFooter className="flex justify-between">
           {editShift?.id && (
-            <Button variant="destructive" size="sm" onClick={handleDelete} disabled={saving}>
-              <Trash2 className="h-4 w-4 mr-1" /> Delete
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="destructive" size="sm" onClick={handleDelete} disabled={saving}>
+                <Trash2 className="h-4 w-4 mr-1" /> Delete
+              </Button>
+              {!showDuplicate && (
+                <Button variant="outline" size="sm" onClick={() => setShowDuplicate(true)}>
+                  <Copy className="h-4 w-4 mr-1" /> Duplicate
+                </Button>
+              )}
+            </div>
           )}
           <div className="flex gap-2 ml-auto">
             <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
