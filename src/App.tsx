@@ -50,6 +50,7 @@ const App = () => (
             <Route path="/" element={<ProtectedPage><Dashboard /></ProtectedPage>} />
             <Route path="/participants" element={<ProtectedPage><Participants /></ProtectedPage>} />
             <Route path="/staff" element={<ProtectedPage><Staff /></ProtectedPage>} />
+            <Route path="/staff/:id" element={<ProtectedPage><StaffDetail /></ProtectedPage>} />
             <Route path="/sil-houses" element={<ProtectedPage><SILHouses /></ProtectedPage>} />
             <Route path="/rostering" element={<ProtectedPage><Rostering /></ProtectedPage>} />
             <Route path="/timesheets" element={<ProtectedPage><Timesheets /></ProtectedPage>} />
