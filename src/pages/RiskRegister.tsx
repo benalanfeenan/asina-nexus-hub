@@ -94,10 +94,10 @@ export default function RiskRegister() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">Risk Register</h1>
-        <Button onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Risk</Button>
-      </div>
+      <PageHeader
+        title="Risk Register"
+        action={<Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Risk</Button>}
+      />
 
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

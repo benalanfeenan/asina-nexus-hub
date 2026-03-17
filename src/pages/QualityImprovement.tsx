@@ -88,10 +88,10 @@ export default function QualityImprovement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">Quality Improvement</h1>
-        <Button onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add QI Action</Button>
-      </div>
+      <PageHeader
+        title="Quality Improvement"
+        action={<Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add QI Action</Button>}
+      />
 
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">

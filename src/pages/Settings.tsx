@@ -160,7 +160,7 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-heading font-bold">Settings</h1>
+      <PageHeader title="Settings" />
       <Tabs defaultValue="users">
         <TabsList>
           <TabsTrigger value="users">User Management</TabsTrigger>

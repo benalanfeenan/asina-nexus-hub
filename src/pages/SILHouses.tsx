@@ -61,14 +61,14 @@ export default function SILHouses() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">SIL Houses</h1>
-        {canEdit && (
-          <Button onClick={() => setShowAdd(true)}>
+      <PageHeader
+        title="SIL Houses"
+        action={canEdit ? (
+          <Button variant="accent" onClick={() => setShowAdd(true)}>
             <Plus className="mr-1 h-4 w-4" />Add SIL House
           </Button>
-        )}
-      </div>
+        ) : undefined}
+      />
 
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">

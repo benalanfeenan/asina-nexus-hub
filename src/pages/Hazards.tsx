@@ -105,10 +105,10 @@ export default function Hazards() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">Hazards</h1>
-        <Button onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Report Hazard</Button>
-      </div>
+      <PageHeader
+        title="Hazards"
+        action={<Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Report Hazard</Button>}
+      />
 
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">

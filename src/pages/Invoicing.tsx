@@ -136,10 +136,10 @@ export default function Invoicing() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">Invoicing</h1>
-        <Button onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Create Invoice</Button>
-      </div>
+      <PageHeader
+        title="Invoicing"
+        action={<Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Create Invoice</Button>}
+      />
 
       <Tabs defaultValue="ndis">
         <TabsList><TabsTrigger value="ndis">NDIS Invoices</TabsTrigger><TabsTrigger value="board">Board & Lodging</TabsTrigger></TabsList>
