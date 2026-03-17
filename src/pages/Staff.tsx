@@ -55,7 +55,7 @@ export default function Staff() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [empFilter, setEmpFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  
 
   const handleToggleActive = useCallback(async (id: string, currentlyActive: boolean) => {
     const { error } = await supabase.from("staff").update({ is_active: !currentlyActive }).eq("id", id);
