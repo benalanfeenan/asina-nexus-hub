@@ -43,6 +43,8 @@ export const PARTICIPANT_COMPLIANCE_ITEMS: ParticipantComplianceItem[] = [
   { item_key: "medication_staff_signoff", name: "Medication Competency Staff Sign-Off", description: "Staff competency sign-off for administering participant's medications", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "medications", display_order: 30 },
   { item_key: "medication_storage", name: "Medication Storage Requirements Documented", description: "Safe storage requirements documented (e.g. fridge, locked cupboard)", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "medications", display_order: 31 },
   { item_key: "prn_protocol", name: "PRN Protocol on File", description: "PRN (as needed) medication protocol documented with triggers and limits", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "medications", display_order: 32 },
+  { item_key: "manual_handling_risk_assessment", name: "Manual Handling Risk Assessment", description: "Individual manual handling risk assessment on file", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "manual_handling", display_order: 33 },
+  { item_key: "manual_handling_plan", name: "Manual Handling Plan on File", description: "Documented manual handling/transfer plan for the participant", category: "Higher Needs", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: "manual_handling", display_order: 34 },
 
   // Ongoing Review
   { item_key: "service_agreement_review", name: "Service Agreement Review (annual)", description: "Annual review of service agreement", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: null, display_order: 35 },
@@ -60,6 +62,7 @@ export const PARTICIPANT_NEEDS_FLAG_LABELS: Record<string, string> = {
   restrictive_practices: "Restrictive Practices",
   high_intensity: "High Intensity Supports",
   medications: "Medications",
+  manual_handling: "Manual Handling",
 };
 
 export const PARTICIPANT_NEEDS_FLAG_KEYS = Object.keys(PARTICIPANT_NEEDS_FLAG_LABELS);

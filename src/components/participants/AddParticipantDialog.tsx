@@ -41,7 +41,7 @@ const INITIAL_FORM = {
   communicationNeeds: "", communicationAids: "", decisionMaking: "",
   guardianName: "", guardianPhone: "", guardianRelationship: "", hasGuardianshipOrder: false,
   advocateName: "", advocatePhone: "",
-  allergies: false, bsp: false, mealtimePlan: false, restrictivePractices: false, highIntensity: false, medications: false,
+  allergies: false, bsp: false, mealtimePlan: false, restrictivePractices: false, highIntensity: false, medications: false, manualHandling: false,
   notes: "",
 };
 
@@ -82,7 +82,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         advocateName: p.advocate_name || "", advocatePhone: p.advocate_phone || "",
         allergies: alerts.allergies || false, bsp: alerts.bsp || false, mealtimePlan: alerts.mealtime_plan || false,
         restrictivePractices: alerts.restrictive_practices || false, highIntensity: alerts.high_intensity || false,
-        medications: alerts.medications || false,
+        medications: alerts.medications || false, manualHandling: alerts.manual_handling || false,
         notes: p.notes || "",
       });
     } else {
@@ -132,6 +132,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         alerts: {
           allergies: form.allergies, bsp: form.bsp, mealtime_plan: form.mealtimePlan,
           restrictive_practices: form.restrictivePractices, high_intensity: form.highIntensity, medications: form.medications,
+          manual_handling: form.manualHandling,
         },
       };
       if (isEdit) {
@@ -358,6 +359,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.restrictivePractices} onCheckedChange={(v) => setBool("restrictivePractices")(!!v)} />Restrictive Practices</label>
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.highIntensity} onCheckedChange={(v) => setBool("highIntensity")(!!v)} />High Intensity</label>
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.medications} onCheckedChange={(v) => setBool("medications")(!!v)} />Medications</label>
+                <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.manualHandling} onCheckedChange={(v) => setBool("manualHandling")(!!v)} />Manual Handling</label>
               </div>
             </CollapsibleContent>
           </Collapsible>
