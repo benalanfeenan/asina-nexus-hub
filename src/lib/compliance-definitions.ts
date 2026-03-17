@@ -82,7 +82,7 @@ export type RoleFlags = {
   supports_bsp_participants: boolean;
   delivers_high_intensity: boolean;
   uses_restrictive_practices: boolean;
-  transports_participants: boolean;
+  transports_in_own_vehicle: boolean;
   supports_under_18: boolean;
 };
 
