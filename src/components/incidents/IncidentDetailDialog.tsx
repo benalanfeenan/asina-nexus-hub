@@ -124,6 +124,10 @@ export function IncidentDetailDialog({ incident, onClose }: Props) {
               {incident.corrective_actions && <div><span className="text-muted-foreground font-medium">Corrective Actions:</span><p className="mt-1">{incident.corrective_actions}</p></div>}
             </>
           )}
+
+          <hr className="border-border" />
+          <h4 className="font-medium">Records</h4>
+          <IncidentSubRecordsTab incidentId={incident.id} />
         </div>
 
         <DialogFooter>
