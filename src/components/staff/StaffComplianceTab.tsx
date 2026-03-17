@@ -282,6 +282,7 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
                         <ComplianceItemForm
                           item={item}
                           record={record}
+                          isSaving={upsertItem.isPending}
                           onSave={(data) => upsertItem.mutate({ item_key: item.item_key, ...data })}
                           onUpload={async (file) => {
                             const url = await uploadDocument(file, item.item_key);
