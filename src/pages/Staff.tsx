@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { StaffTable, type StaffWithProfile } from "@/components/staff/StaffTable";
 import { AddStaffDialog } from "@/components/staff/AddStaffDialog";
 import { Plus, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 function computeComplianceStatus(
   checks: { staff_id: string; expiry_date: string | null }[],
