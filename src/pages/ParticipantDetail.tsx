@@ -123,6 +123,8 @@ export default function ParticipantDetail() {
         <TabsContent value="mar"><ParticipantMARTab participantId={id!} /></TabsContent>
         <TabsContent value="abc"><ParticipantABCDataTab participantId={id!} /></TabsContent>
         <TabsContent value="documents"><ParticipantDocumentsTab participantId={id!} /></TabsContent>
+        <TabsContent value="transitions"><ParticipantTransitionsTab participantId={id!} canEdit={canEdit} /></TabsContent>
+        <TabsContent value="surveys"><ParticipantSurveysTab participantId={id!} canEdit={canEdit} /></TabsContent>
       </Tabs>
 
       <AddParticipantDialog open={showEdit} onOpenChange={setShowEdit} silHouses={silHouses} editParticipant={participant} />

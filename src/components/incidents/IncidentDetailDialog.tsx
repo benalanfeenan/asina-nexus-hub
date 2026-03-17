@@ -126,6 +126,14 @@ export function IncidentDetailDialog({ incident, onClose }: Props) {
             </>
           )}
 
+          {incident.is_reportable && (
+            <>
+              <hr className="border-border" />
+              <h4 className="font-medium">Commission Reporting</h4>
+              <IncidentCommissionReports incidentId={incident.id} />
+            </>
+          )}
+
           <hr className="border-border" />
           <h4 className="font-medium">Records</h4>
           <IncidentSubRecordsTab incidentId={incident.id} />

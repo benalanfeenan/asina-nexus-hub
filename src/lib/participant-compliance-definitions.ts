@@ -51,6 +51,7 @@ export const PARTICIPANT_COMPLIANCE_ITEMS: ParticipantComplianceItem[] = [
   { item_key: "support_plan_review", name: "Support Plan Review (6-monthly)", description: "6-monthly review of individual support plan", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 6, is_mandatory: true, conditional_on: null, display_order: 36 },
   { item_key: "risk_assessment_review", name: "Risk Assessment Review (annual)", description: "Annual review of risk assessment", category: "Ongoing Review", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: null, display_order: 37 },
   { item_key: "goal_progress_review", name: "Goal Progress Review (quarterly)", description: "Quarterly review of participant goal progress", category: "Ongoing Review", requires_document: false, has_expiry: true, expiry_months: 3, is_mandatory: true, conditional_on: null, display_order: 38 },
+  { item_key: "exit_transition_plan", name: "Exit/Transition Plan on File", description: "Documented exit or transition plan outlining handover procedures", category: "Ongoing Review", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, display_order: 39 },
 ];
 
 export const PARTICIPANT_COMPLIANCE_CATEGORIES = ["Pre-Support", "Onboarding", "Higher Needs", "Ongoing Review"] as const;
