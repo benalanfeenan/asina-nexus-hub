@@ -3,10 +3,38 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AppLayout } from "@/components/AppLayout";
+
+import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+import Dashboard from "./pages/Dashboard";
+import Participants from "./pages/Participants";
+import Staff from "./pages/Staff";
+import SILHouses from "./pages/SILHouses";
+import Rostering from "./pages/Rostering";
+import Timesheets from "./pages/Timesheets";
+import ProgressNotes from "./pages/ProgressNotes";
+import Invoicing from "./pages/Invoicing";
+import Incidents from "./pages/Incidents";
+import Complaints from "./pages/Complaints";
+import RiskRegister from "./pages/RiskRegister";
+import Hazards from "./pages/Hazards";
+import RestrictivePractices from "./pages/RestrictivePractices";
+import QualityImprovement from "./pages/QualityImprovement";
+import ComplianceDashboard from "./pages/ComplianceDashboard";
+import Documents from "./pages/Documents";
+import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const ProtectedPage = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute>
+    <AppLayout>{children}</AppLayout>
+  </ProtectedRoute>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -14,11 +42,30 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/" element={<ProtectedPage><Dashboard /></ProtectedPage>} />
+            <Route path="/participants" element={<ProtectedPage><Participants /></ProtectedPage>} />
+            <Route path="/staff" element={<ProtectedPage><Staff /></ProtectedPage>} />
+            <Route path="/sil-houses" element={<ProtectedPage><SILHouses /></ProtectedPage>} />
+            <Route path="/rostering" element={<ProtectedPage><Rostering /></ProtectedPage>} />
+            <Route path="/timesheets" element={<ProtectedPage><Timesheets /></ProtectedPage>} />
+            <Route path="/progress-notes" element={<ProtectedPage><ProgressNotes /></ProtectedPage>} />
+            <Route path="/invoicing" element={<ProtectedPage><Invoicing /></ProtectedPage>} />
+            <Route path="/incidents" element={<ProtectedPage><Incidents /></ProtectedPage>} />
+            <Route path="/complaints" element={<ProtectedPage><Complaints /></ProtectedPage>} />
+            <Route path="/risk-register" element={<ProtectedPage><RiskRegister /></ProtectedPage>} />
+            <Route path="/hazards" element={<ProtectedPage><Hazards /></ProtectedPage>} />
+            <Route path="/restrictive-practices" element={<ProtectedPage><RestrictivePractices /></ProtectedPage>} />
+            <Route path="/quality-improvement" element={<ProtectedPage><QualityImprovement /></ProtectedPage>} />
+            <Route path="/compliance-dashboard" element={<ProtectedPage><ComplianceDashboard /></ProtectedPage>} />
+            <Route path="/documents" element={<ProtectedPage><Documents /></ProtectedPage>} />
+            <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
