@@ -190,7 +190,7 @@ export function AddStaffDialog({ open, onOpenChange, editStaff }: AddStaffDialog
         const { error } = await supabase.from("staff").update(payload).eq("id", editStaff!.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("staff").insert(payload);
+        const { error } = await supabase.from("staff").insert(payload as any);
         if (error) throw error;
       }
       if (form.profileId && (form.firstName || form.lastName)) {
