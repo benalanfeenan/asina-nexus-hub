@@ -11,15 +11,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Search, Eye, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, Eye, FileText, ChevronLeft, ChevronRight, ChevronDown, Clock, DollarSign, Send, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks } from "date-fns";
-
-const statusColors: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground", sent: "bg-blue-100 text-blue-800",
-  paid: "bg-green-100 text-green-800", overdue: "bg-red-100 text-red-800", cancelled: "bg-muted text-muted-foreground",
-};
+import { InvoicingStatsBar } from "@/components/invoicing/InvoicingStatsBar";
+import { ReadyToInvoiceCard } from "@/components/invoicing/ReadyToInvoiceCard";
+import { InvoiceDetailDialog } from "@/components/invoicing/InvoiceDetailDialog";
+import { AddInvoiceDialog } from "@/components/invoicing/AddInvoiceDialog";
+import { AddLineItemDialog } from "@/components/invoicing/AddLineItemDialog";
 
 function getHoursFromTime(start: string, end: string) {
   const [sh, sm] = start.split(":").map(Number);
@@ -37,19 +38,6 @@ export default function Invoicing() {
   const [showAdd, setShowAdd] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [showAddLine, setShowAddLine] = useState(false);
-
-  const [participantId, setParticipantId] = useState("");
-  const [invoiceNumber, setInvoiceNumber] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [notes, setNotes] = useState("");
-
-  // Line item state
-  const [lineDesc, setLineDesc] = useState("");
-  const [lineCode, setLineCode] = useState("");
-  const [lineQty, setLineQty] = useState("1");
-  const [lineRate, setLineRate] = useState("");
-
-  // Ready to Invoice week navigation
   const [invoiceWeekStart, setInvoiceWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const invoiceWeekEnd = endOfWeek(invoiceWeekStart, { weekStartsOn: 1 });
 
@@ -94,7 +82,6 @@ export default function Invoicing() {
     },
   });
 
-  // Ready to Invoice: completed shifts without invoice_id
   const { data: completedShifts = [] } = useQuery({
     queryKey: ["ready-to-invoice-shifts", format(invoiceWeekStart, "yyyy-MM-dd")],
     queryFn: async () => {
@@ -114,107 +101,51 @@ export default function Invoicing() {
     },
   });
 
-  // Group completed shifts by participant
   const readyByParticipant = useMemo(() => {
     const map: Record<string, { participant: { id: string; first_name: string; last_name: string }; shifts: any[]; totalHours: number; totalCost: number }> = {};
     for (const s of completedShifts) {
       const pid = s.participant_id;
       if (!map[pid]) {
-        map[pid] = {
-          participant: s.participants,
-          shifts: [],
-          totalHours: 0,
-          totalCost: 0,
-        };
+        map[pid] = { participant: s.participants, shifts: [], totalHours: 0, totalCost: 0 };
       }
       const hours = getHoursFromTime(s.start_time, s.end_time);
       const li = s.ndis_price_list;
       const cost = li ? (li.unit === "hour" || li.unit === "H" ? li.rate * hours : li.rate) : 0;
-      map[pid].shifts.push(s);
+      map[pid].shifts.push({ ...s, _hours: hours, _cost: cost });
       map[pid].totalHours += hours;
       map[pid].totalCost += cost;
     }
     return Object.values(map);
   }, [completedShifts]);
 
-  const addMutation = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.from("invoices").insert({ participant_id: participantId, invoice_number: invoiceNumber, due_date: dueDate || null, notes: notes || null, created_by: user?.id });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["invoices"] });
-      setShowAdd(false); setParticipantId(""); setInvoiceNumber(""); setDueDate(""); setNotes("");
-      toast({ title: "Invoice created" });
-    },
-    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
-  });
-
-  const addLineMutation = useMutation({
-    mutationFn: async () => {
-      const qty = parseFloat(lineQty) || 1;
-      const r = parseFloat(lineRate);
-      const { error } = await supabase.from("invoice_line_items").insert({
-        invoice_id: selectedInvoice.id, description: lineDesc, ndis_line_item_code: lineCode || null, quantity: qty, rate: r, amount: qty * r,
-      });
-      if (error) throw error;
-      const { data: items } = await supabase.from("invoice_line_items").select("amount").eq("invoice_id", selectedInvoice.id);
-      const total = (items || []).reduce((sum: number, i: any) => sum + Number(i.amount), 0);
-      await supabase.from("invoices").update({ total }).eq("id", selectedInvoice.id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["invoice-line-items"] });
-      queryClient.invalidateQueries({ queryKey: ["invoices"] });
-      setShowAddLine(false); setLineDesc(""); setLineCode(""); setLineQty("1"); setLineRate("");
-      toast({ title: "Line item added" });
-    },
-    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
-  });
+  // Stats
+  const stats = useMemo(() => {
+    const paid = invoices.filter((i: any) => i.status === "paid").reduce((s: number, i: any) => s + Number(i.total || 0), 0);
+    const outstanding = invoices.filter((i: any) => i.status === "sent" || i.status === "overdue").reduce((s: number, i: any) => s + Number(i.total || 0), 0);
+    const draftCount = invoices.filter((i: any) => i.status === "draft").length;
+    return { paid, outstanding, draftCount, readyCount: completedShifts.length };
+  }, [invoices, completedShifts]);
 
   const generateInvoiceMutation = useMutation({
     mutationFn: async (group: { participant: { id: string; first_name: string; last_name: string }; shifts: any[]; totalCost: number }) => {
-      // 1. Get auto invoice number
       const { data: refData, error: refError } = await supabase.rpc("next_reference", { ref_type: "invoice" });
       if (refError) throw refError;
-      const invNumber = refData as string;
-
-      // 2. Create invoice
       const { data: invData, error: invError } = await supabase.from("invoices").insert({
-        participant_id: group.participant.id,
-        invoice_number: invNumber,
-        created_by: user?.id,
-        status: "draft" as any,
-        total: 0,
+        participant_id: group.participant.id, invoice_number: refData as string, created_by: user?.id, status: "draft" as any, total: 0,
       }).select("id").single();
       if (invError) throw invError;
       const invoiceId = invData.id;
-
-      // 3. Create line items from shifts
       const lineItemRows = group.shifts.map((s: any) => {
         const li = s.ndis_price_list;
         const hours = getHoursFromTime(s.start_time, s.end_time);
         const isHourly = li.unit === "hour" || li.unit === "H";
         const qty = isHourly ? hours : 1;
-        const amount = qty * li.rate;
-        return {
-          invoice_id: invoiceId,
-          description: li.description,
-          ndis_line_item_code: li.item_code,
-          quantity: qty,
-          rate: li.rate,
-          amount,
-          service_date: s.date,
-        };
+        return { invoice_id: invoiceId, description: li.description, ndis_line_item_code: li.item_code, quantity: qty, rate: li.rate, amount: qty * li.rate, service_date: s.date };
       });
-
       const { error: liError } = await supabase.from("invoice_line_items").insert(lineItemRows);
       if (liError) throw liError;
-
-      // 4. Update invoice total
       const total = lineItemRows.reduce((sum, li) => sum + li.amount, 0);
       await supabase.from("invoices").update({ total }).eq("id", invoiceId);
-
-      // 5. Mark shifts as invoiced
       const shiftIds = group.shifts.map((s: any) => s.id);
       const { error: updateError } = await supabase.from("scheduler_shifts").update({ invoice_id: invoiceId } as any).in("id", shiftIds);
       if (updateError) throw updateError;
@@ -227,9 +158,12 @@ export default function Invoicing() {
     onError: (e: any) => toast({ title: "Error generating invoice", description: e.message, variant: "destructive" }),
   });
 
-  const handleNdisCodeSelect = (code: string) => {
-    const item = priceList.find((p) => p.item_code === code);
-    if (item) { setLineCode(item.item_code); setLineDesc(item.description); setLineRate(String(item.rate)); }
+  const statusColors: Record<string, string> = {
+    draft: "bg-muted text-muted-foreground",
+    sent: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+    paid: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+    overdue: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+    cancelled: "bg-muted text-muted-foreground",
   };
 
   const filtered = useMemo(() => {
@@ -251,6 +185,9 @@ export default function Invoicing() {
         action={<Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Create Invoice</Button>}
       />
 
+      {/* Stats Bar */}
+      <InvoicingStatsBar stats={stats} />
+
       <Tabs defaultValue="ready">
         <TabsList>
           <TabsTrigger value="ready">Ready to Invoice</TabsTrigger>
@@ -260,37 +197,40 @@ export default function Invoicing() {
 
         {/* Ready to Invoice Tab */}
         <TabsContent value="ready" className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setInvoiceWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))}>This Week</Button>
-            <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setInvoiceWeekStart(w => subWeeks(w, 1))}><ChevronLeft className="h-4 w-4" /></Button>
-            <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setInvoiceWeekStart(w => addWeeks(w, 1))}><ChevronRight className="h-4 w-4" /></Button>
-            <span className="text-sm font-medium text-muted-foreground">
-              {format(invoiceWeekStart, "d MMM")} – {format(invoiceWeekEnd, "d MMM yyyy")}
-            </span>
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => setInvoiceWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))}>This Week</Button>
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setInvoiceWeekStart(w => subWeeks(w, 1))}><ChevronLeft className="h-4 w-4" /></Button>
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setInvoiceWeekStart(w => addWeeks(w, 1))}><ChevronRight className="h-4 w-4" /></Button>
+              <span className="text-sm font-medium text-muted-foreground">
+                {format(invoiceWeekStart, "d MMM")} – {format(invoiceWeekEnd, "d MMM yyyy")}
+              </span>
+            </div>
+            {readyByParticipant.length > 1 && (
+              <Button
+                size="sm"
+                onClick={() => readyByParticipant.forEach(g => generateInvoiceMutation.mutate(g))}
+                disabled={generateInvoiceMutation.isPending}
+              >
+                <FileText className="h-4 w-4 mr-1" />Generate All ({readyByParticipant.length})
+              </Button>
+            )}
           </div>
 
           {readyByParticipant.length === 0 ? (
-            <div className="rounded-md border p-8 text-center text-muted-foreground">
+            <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
               No completed shifts ready to invoice for this week.
             </div>
           ) : (
             <div className="space-y-3">
               {readyByParticipant.map((group) => (
-                <div key={group.participant.id} className="rounded-lg border p-4 flex items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="font-medium">{group.participant.first_name} {group.participant.last_name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {group.shifts.length} completed shift{group.shifts.length !== 1 ? "s" : ""} · {group.totalHours.toFixed(1)}h · Est. ${group.totalCost.toFixed(2)}
-                    </div>
-                  </div>
-                  <Button
-                    onClick={() => generateInvoiceMutation.mutate(group)}
-                    disabled={generateInvoiceMutation.isPending}
-                  >
-                    <FileText className="h-4 w-4 mr-1" />
-                    {generateInvoiceMutation.isPending ? "Generating…" : "Generate Invoice"}
-                  </Button>
-                </div>
+                <ReadyToInvoiceCard
+                  key={group.participant.id}
+                  group={group}
+                  onGenerate={() => generateInvoiceMutation.mutate(group)}
+                  isPending={generateInvoiceMutation.isPending}
+                  getHoursFromTime={getHoursFromTime}
+                />
               ))}
             </div>
           )}
@@ -300,7 +240,7 @@ export default function Invoicing() {
           <div className="flex flex-wrap gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input className="pl-9" placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <Input className="pl-9" placeholder="Search invoices…" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
@@ -311,22 +251,29 @@ export default function Invoicing() {
             </Select>
           </div>
 
-          <div className="rounded-md border">
+          <div className="rounded-xl border overflow-hidden">
             <Table>
-              <TableHeader><TableRow>
+              <TableHeader><TableRow className="bg-muted/50">
                 <TableHead>Invoice #</TableHead><TableHead>Participant</TableHead><TableHead>Issue Date</TableHead>
                 <TableHead>Due Date</TableHead><TableHead>Total</TableHead><TableHead>Status</TableHead><TableHead></TableHead>
               </TableRow></TableHeader>
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No invoices found</TableCell></TableRow>
-                ) : filtered.map((i: any) => (
-                  <TableRow key={i.id}>
-                    <TableCell className="font-mono">{i.invoice_number}</TableCell>
-                    <TableCell className="font-medium">{(i.participants as any)?.first_name} {(i.participants as any)?.last_name}</TableCell>
-                    <TableCell>{format(new Date(i.issue_date), "dd/MM/yyyy")}</TableCell>
-                    <TableCell>{i.due_date ? format(new Date(i.due_date), "dd/MM/yyyy") : "—"}</TableCell>
-                    <TableCell>${Number(i.total || 0).toFixed(2)}</TableCell>
+                ) : filtered.map((i: any, idx: number) => (
+                  <TableRow key={i.id} className={idx % 2 === 0 ? "" : "bg-muted/20"}>
+                    <TableCell className="font-mono text-sm">{i.invoice_number}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
+                          {(i.participants as any)?.first_name?.[0]}{(i.participants as any)?.last_name?.[0]}
+                        </div>
+                        <span className="font-medium">{(i.participants as any)?.first_name} {(i.participants as any)?.last_name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">{format(new Date(i.issue_date), "dd/MM/yyyy")}</TableCell>
+                    <TableCell className="text-sm">{i.due_date ? format(new Date(i.due_date), "dd/MM/yyyy") : "—"}</TableCell>
+                    <TableCell className="font-semibold">${Number(i.total || 0).toFixed(2)}</TableCell>
                     <TableCell><Badge variant="secondary" className={statusColors[i.status] || ""}>{i.status}</Badge></TableCell>
                     <TableCell><Button size="icon" variant="ghost" onClick={() => setSelectedInvoice(i)}><Eye className="h-4 w-4" /></Button></TableCell>
                   </TableRow>
@@ -337,17 +284,24 @@ export default function Invoicing() {
         </TabsContent>
 
         <TabsContent value="board" className="space-y-4">
-          <div className="rounded-md border">
+          <div className="rounded-xl border overflow-hidden">
             <Table>
-              <TableHeader><TableRow><TableHead>Participant</TableHead><TableHead>Period</TableHead><TableHead>Amount</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow className="bg-muted/50"><TableHead>Participant</TableHead><TableHead>Period</TableHead><TableHead>Amount</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
               <TableBody>
                 {boardLodging.length === 0 ? (
                   <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">No board & lodging invoices</TableCell></TableRow>
-                ) : boardLodging.map((b: any) => (
-                  <TableRow key={b.id}>
-                    <TableCell className="font-medium">{(b.participants as any)?.first_name} {(b.participants as any)?.last_name}</TableCell>
-                    <TableCell>{format(new Date(b.period_start), "dd/MM")} – {format(new Date(b.period_end), "dd/MM/yyyy")}</TableCell>
-                    <TableCell>${Number(b.amount).toFixed(2)}</TableCell>
+                ) : boardLodging.map((b: any, idx: number) => (
+                  <TableRow key={b.id} className={idx % 2 === 0 ? "" : "bg-muted/20"}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
+                          {(b.participants as any)?.first_name?.[0]}{(b.participants as any)?.last_name?.[0]}
+                        </div>
+                        <span className="font-medium">{(b.participants as any)?.first_name} {(b.participants as any)?.last_name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">{format(new Date(b.period_start), "dd/MM")} – {format(new Date(b.period_end), "dd/MM/yyyy")}</TableCell>
+                    <TableCell className="font-semibold">${Number(b.amount).toFixed(2)}</TableCell>
                     <TableCell><Badge variant="secondary" className={statusColors[b.status] || ""}>{b.status}</Badge></TableCell>
                   </TableRow>
                 ))}
@@ -357,101 +311,27 @@ export default function Invoicing() {
         </TabsContent>
       </Tabs>
 
-      {/* Add Invoice Dialog */}
-      <Dialog open={showAdd} onOpenChange={setShowAdd}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Create Invoice</DialogTitle><DialogDescription>Create a new NDIS invoice</DialogDescription></DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label>Participant</Label>
-              <Select value={participantId} onValueChange={setParticipantId}>
-                <SelectTrigger><SelectValue placeholder="Select participant" /></SelectTrigger>
-                <SelectContent>{participants.map((p: any) => <SelectItem key={p.id} value={p.id}>{p.first_name} {p.last_name}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2"><Label>Invoice Number</Label><Input value={invoiceNumber} onChange={(e) => setInvoiceNumber(e.target.value)} /></div>
-            <div className="grid gap-2"><Label>Due Date</Label><Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} /></div>
-            <div className="grid gap-2"><Label>Notes</Label><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={() => addMutation.mutate()} disabled={!participantId || !invoiceNumber}>Create</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddInvoiceDialog
+        open={showAdd}
+        onOpenChange={setShowAdd}
+        participants={participants}
+        userId={user?.id}
+      />
 
-      {/* Invoice Detail Dialog */}
-      <Dialog open={!!selectedInvoice} onOpenChange={() => setSelectedInvoice(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Invoice {selectedInvoice?.invoice_number}</DialogTitle>
-            <DialogDescription>{(selectedInvoice?.participants as any)?.first_name} {(selectedInvoice?.participants as any)?.last_name}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div><span className="text-muted-foreground">Status:</span> <Badge variant="secondary" className={statusColors[selectedInvoice?.status] || ""}>{selectedInvoice?.status}</Badge></div>
-              <div><span className="text-muted-foreground">Total:</span> ${Number(selectedInvoice?.total || 0).toFixed(2)}</div>
-            </div>
-            <div className="flex justify-between items-center">
-              <h4 className="font-medium text-sm">Line Items</h4>
-              <Button size="sm" variant="outline" onClick={() => { setLineDesc(""); setLineCode(""); setLineQty("1"); setLineRate(""); setShowAddLine(true); }}>
-                <Plus className="mr-1 h-3 w-3" />Add Line
-              </Button>
-            </div>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader><TableRow>
-                  <TableHead>Description</TableHead><TableHead>Code</TableHead><TableHead>Qty</TableHead><TableHead>Rate</TableHead><TableHead>Amount</TableHead>
-                </TableRow></TableHeader>
-                <TableBody>
-                  {lineItems.length === 0 ? (
-                    <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-4">No line items</TableCell></TableRow>
-                  ) : lineItems.map((li: any) => (
-                    <TableRow key={li.id}>
-                      <TableCell>{li.description}</TableCell>
-                      <TableCell className="font-mono text-xs">{li.ndis_line_item_code || "—"}</TableCell>
-                      <TableCell>{li.quantity}</TableCell>
-                      <TableCell>${Number(li.rate).toFixed(2)}</TableCell>
-                      <TableCell>${Number(li.amount).toFixed(2)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-            {selectedInvoice?.notes && <div><Label className="text-muted-foreground">Notes</Label><p className="text-sm mt-1">{selectedInvoice.notes}</p></div>}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <InvoiceDetailDialog
+        invoice={selectedInvoice}
+        onClose={() => setSelectedInvoice(null)}
+        lineItems={lineItems}
+        onAddLine={() => setShowAddLine(true)}
+        statusColors={statusColors}
+      />
 
-      {/* Add Line Item Dialog */}
-      <Dialog open={showAddLine} onOpenChange={setShowAddLine}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Add Line Item</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>NDIS Code (auto-fill)</Label>
-              <Select value={lineCode} onValueChange={handleNdisCodeSelect}>
-                <SelectTrigger><SelectValue placeholder="Select NDIS code or enter manually" /></SelectTrigger>
-                <SelectContent>
-                  {priceList.map((p) => <SelectItem key={p.item_code} value={p.item_code}>{p.item_code} — {p.description} (${Number(p.rate).toFixed(2)})</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div><Label>Description *</Label><Input value={lineDesc} onChange={(e) => setLineDesc(e.target.value)} /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>Quantity</Label><Input type="number" step="0.01" value={lineQty} onChange={(e) => setLineQty(e.target.value)} /></div>
-              <div><Label>Rate *</Label><Input type="number" step="0.01" value={lineRate} onChange={(e) => setLineRate(e.target.value)} /></div>
-            </div>
-            {lineRate && lineQty && <p className="text-sm text-muted-foreground">Amount: ${(parseFloat(lineQty || "0") * parseFloat(lineRate || "0")).toFixed(2)}</p>}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddLine(false)}>Cancel</Button>
-            <Button onClick={() => addLineMutation.mutate()} disabled={!lineDesc || !lineRate || addLineMutation.isPending}>
-              {addLineMutation.isPending ? "Adding…" : "Add"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddLineItemDialog
+        open={showAddLine}
+        onOpenChange={setShowAddLine}
+        invoiceId={selectedInvoice?.id}
+        priceList={priceList}
+      />
     </div>
   );
 }
