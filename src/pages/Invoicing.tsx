@@ -16,11 +16,8 @@ import { Plus, Search, Eye } from "lucide-react";
 import { format } from "date-fns";
 
 const statusColors: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  sent: "bg-blue-100 text-blue-800",
-  paid: "bg-green-100 text-green-800",
-  overdue: "bg-red-100 text-red-800",
-  cancelled: "bg-muted text-muted-foreground",
+  draft: "bg-muted text-muted-foreground", sent: "bg-blue-100 text-blue-800",
+  paid: "bg-green-100 text-green-800", overdue: "bg-red-100 text-red-800", cancelled: "bg-muted text-muted-foreground",
 };
 
 export default function Invoicing() {
@@ -30,11 +27,18 @@ export default function Invoicing() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [showAddLine, setShowAddLine] = useState(false);
 
   const [participantId, setParticipantId] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [notes, setNotes] = useState("");
+
+  // Line item state
+  const [lineDesc, setLineDesc] = useState("");
+  const [lineCode, setLineCode] = useState("");
+  const [lineQty, setLineQty] = useState("1");
+  const [lineRate, setLineRate] = useState("");
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["invoices"],
@@ -69,25 +73,53 @@ export default function Invoicing() {
     },
   });
 
+  const { data: priceList = [] } = useQuery({
+    queryKey: ["ndis-price-list-active"],
+    queryFn: async () => {
+      const { data } = await supabase.from("ndis_price_list").select("item_code, description, rate").eq("is_active", true).order("item_code");
+      return data || [];
+    },
+  });
+
   const addMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("invoices").insert({
-        participant_id: participantId,
-        invoice_number: invoiceNumber,
-        due_date: dueDate || null,
-        notes: notes || null,
-        created_by: user?.id,
-      });
+      const { error } = await supabase.from("invoices").insert({ participant_id: participantId, invoice_number: invoiceNumber, due_date: dueDate || null, notes: notes || null, created_by: user?.id });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
-      setShowAdd(false);
-      setParticipantId(""); setInvoiceNumber(""); setDueDate(""); setNotes("");
+      setShowAdd(false); setParticipantId(""); setInvoiceNumber(""); setDueDate(""); setNotes("");
       toast({ title: "Invoice created" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
+
+  const addLineMutation = useMutation({
+    mutationFn: async () => {
+      const qty = parseFloat(lineQty) || 1;
+      const r = parseFloat(lineRate);
+      const { error } = await supabase.from("invoice_line_items").insert({
+        invoice_id: selectedInvoice.id, description: lineDesc, ndis_line_item_code: lineCode || null, quantity: qty, rate: r, amount: qty * r,
+      });
+      if (error) throw error;
+      // Update invoice total
+      const { data: items } = await supabase.from("invoice_line_items").select("amount").eq("invoice_id", selectedInvoice.id);
+      const total = (items || []).reduce((sum: number, i: any) => sum + Number(i.amount), 0);
+      await supabase.from("invoices").update({ total }).eq("id", selectedInvoice.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invoice-line-items"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      setShowAddLine(false); setLineDesc(""); setLineCode(""); setLineQty("1"); setLineRate("");
+      toast({ title: "Line item added" });
+    },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const handleNdisCodeSelect = (code: string) => {
+    const item = priceList.find((p) => p.item_code === code);
+    if (item) { setLineCode(item.item_code); setLineDesc(item.description); setLineRate(String(item.rate)); }
+  };
 
   const filtered = useMemo(() => {
     return invoices.filter((i: any) => {
@@ -109,10 +141,7 @@ export default function Invoicing() {
       </div>
 
       <Tabs defaultValue="ndis">
-        <TabsList>
-          <TabsTrigger value="ndis">NDIS Invoices</TabsTrigger>
-          <TabsTrigger value="board">Board & Lodging</TabsTrigger>
-        </TabsList>
+        <TabsList><TabsTrigger value="ndis">NDIS Invoices</TabsTrigger><TabsTrigger value="board">Board & Lodging</TabsTrigger></TabsList>
 
         <TabsContent value="ndis" className="space-y-4">
           <div className="flex flex-wrap gap-3">
@@ -146,9 +175,7 @@ export default function Invoicing() {
                     <TableCell>{i.due_date ? format(new Date(i.due_date), "dd/MM/yyyy") : "—"}</TableCell>
                     <TableCell>${Number(i.total || 0).toFixed(2)}</TableCell>
                     <TableCell><Badge variant="secondary" className={statusColors[i.status] || ""}>{i.status}</Badge></TableCell>
-                    <TableCell>
-                      <Button size="icon" variant="ghost" onClick={() => setSelectedInvoice(i)}><Eye className="h-4 w-4" /></Button>
-                    </TableCell>
+                    <TableCell><Button size="icon" variant="ghost" onClick={() => setSelectedInvoice(i)}><Eye className="h-4 w-4" /></Button></TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -159,9 +186,7 @@ export default function Invoicing() {
         <TabsContent value="board" className="space-y-4">
           <div className="rounded-md border">
             <Table>
-              <TableHeader><TableRow>
-                <TableHead>Participant</TableHead><TableHead>Period</TableHead><TableHead>Amount</TableHead><TableHead>Status</TableHead>
-              </TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead>Participant</TableHead><TableHead>Period</TableHead><TableHead>Amount</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
               <TableBody>
                 {boardLodging.length === 0 ? (
                   <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">No board & lodging invoices</TableCell></TableRow>
@@ -214,6 +239,12 @@ export default function Invoicing() {
               <div><span className="text-muted-foreground">Status:</span> <Badge variant="secondary" className={statusColors[selectedInvoice?.status] || ""}>{selectedInvoice?.status}</Badge></div>
               <div><span className="text-muted-foreground">Total:</span> ${Number(selectedInvoice?.total || 0).toFixed(2)}</div>
             </div>
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium text-sm">Line Items</h4>
+              <Button size="sm" variant="outline" onClick={() => { setLineDesc(""); setLineCode(""); setLineQty("1"); setLineRate(""); setShowAddLine(true); }}>
+                <Plus className="mr-1 h-3 w-3" />Add Line
+              </Button>
+            </div>
             <div className="rounded-md border">
               <Table>
                 <TableHeader><TableRow>
@@ -236,6 +267,36 @@ export default function Invoicing() {
             </div>
             {selectedInvoice?.notes && <div><Label className="text-muted-foreground">Notes</Label><p className="text-sm mt-1">{selectedInvoice.notes}</p></div>}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Line Item Dialog */}
+      <Dialog open={showAddLine} onOpenChange={setShowAddLine}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Add Line Item</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>NDIS Code (auto-fill)</Label>
+              <Select value={lineCode} onValueChange={handleNdisCodeSelect}>
+                <SelectTrigger><SelectValue placeholder="Select NDIS code or enter manually" /></SelectTrigger>
+                <SelectContent>
+                  {priceList.map((p) => <SelectItem key={p.item_code} value={p.item_code}>{p.item_code} — {p.description} (${Number(p.rate).toFixed(2)})</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div><Label>Description *</Label><Input value={lineDesc} onChange={(e) => setLineDesc(e.target.value)} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>Quantity</Label><Input type="number" step="0.01" value={lineQty} onChange={(e) => setLineQty(e.target.value)} /></div>
+              <div><Label>Rate *</Label><Input type="number" step="0.01" value={lineRate} onChange={(e) => setLineRate(e.target.value)} /></div>
+            </div>
+            {lineRate && lineQty && <p className="text-sm text-muted-foreground">Amount: ${(parseFloat(lineQty || "0") * parseFloat(lineRate || "0")).toFixed(2)}</p>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddLine(false)}>Cancel</Button>
+            <Button onClick={() => addLineMutation.mutate()} disabled={!lineDesc || !lineRate || addLineMutation.isPending}>
+              {addLineMutation.isPending ? "Adding…" : "Add"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

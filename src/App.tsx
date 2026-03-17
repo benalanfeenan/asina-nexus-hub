@@ -28,6 +28,7 @@ import RestrictivePractices from "./pages/RestrictivePractices";
 import QualityImprovement from "./pages/QualityImprovement";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import Documents from "./pages/Documents";
+import NDISPriceList from "./pages/NDISPriceList";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/quality-improvement" element={<ProtectedPage><QualityImprovement /></ProtectedPage>} />
             <Route path="/compliance-dashboard" element={<ProtectedPage><ComplianceDashboard /></ProtectedPage>} />
             <Route path="/documents" element={<ProtectedPage><Documents /></ProtectedPage>} />
+            <Route path="/ndis-price-list" element={<ProtectedPage><NDISPriceList /></ProtectedPage>} />
             <Route path="/settings" element={<ProtectedPage><Settings /></ProtectedPage>} />
             <Route path="*" element={<NotFound />} />
           </Routes>

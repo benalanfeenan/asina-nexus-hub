@@ -88,6 +88,7 @@ const navGroups: NavGroup[] = [
     label: "System",
     items: [
       { title: "Documents", url: "/documents", icon: FolderOpen },
+      { title: "NDIS Price List", url: "/ndis-price-list", icon: Receipt, roles: ["admin"] },
       { title: "Settings", url: "/settings", icon: Settings, roles: ["admin"] },
     ],
   },

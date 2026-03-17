@@ -14,6 +14,7 @@ import { ParticipantGoalsTab } from "@/components/participants/ParticipantGoalsT
 import { ParticipantRoutinesTab } from "@/components/participants/ParticipantRoutinesTab";
 import { ParticipantSupportNeedsTab } from "@/components/participants/ParticipantSupportNeedsTab";
 import { ParticipantMedicationsTab } from "@/components/participants/ParticipantMedicationsTab";
+import { ParticipantMARTab } from "@/components/participants/ParticipantMARTab";
 
 export default function ParticipantDetail() {
   const { id } = useParams<{ id: string }>();
@@ -25,11 +26,7 @@ export default function ParticipantDetail() {
   const { data: participant, isLoading } = useQuery({
     queryKey: ["participant", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("participants")
-        .select("*, sil_houses(name)")
-        .eq("id", id!)
-        .single();
+      const { data, error } = await supabase.from("participants").select("*, sil_houses(name)").eq("id", id!).single();
       if (error) throw error;
       return data;
     },
@@ -52,16 +49,11 @@ export default function ParticipantDetail() {
     return <div className="text-center py-12"><p className="text-muted-foreground">Participant not found.</p><Button variant="outline" className="mt-4" onClick={() => navigate("/participants")}>Back to Participants</Button></div>;
   }
 
-  const alerts = (participant.alerts && typeof participant.alerts === "object" && !Array.isArray(participant.alerts))
-    ? participant.alerts as Record<string, boolean>
-    : {};
+  const alerts = (participant.alerts && typeof participant.alerts === "object" && !Array.isArray(participant.alerts)) ? participant.alerts as Record<string, boolean> : {};
 
   return (
     <div className="space-y-6">
-      <Button variant="ghost" onClick={() => navigate("/participants")} className="gap-1">
-        <ArrowLeft className="h-4 w-4" />Back to Participants
-      </Button>
-
+      <Button variant="ghost" onClick={() => navigate("/participants")} className="gap-1"><ArrowLeft className="h-4 w-4" />Back to Participants</Button>
       <Card>
         <CardHeader className="flex flex-row items-start justify-between">
           <div>
@@ -83,13 +75,14 @@ export default function ParticipantDetail() {
       </Card>
 
       <Tabs defaultValue="overview">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="contacts">Contacts</TabsTrigger>
           <TabsTrigger value="goals">Goals</TabsTrigger>
           <TabsTrigger value="routines">Daily Routines</TabsTrigger>
           <TabsTrigger value="support">Support Needs</TabsTrigger>
           <TabsTrigger value="medications">Medications</TabsTrigger>
+          <TabsTrigger value="mar">MAR</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -110,6 +103,7 @@ export default function ParticipantDetail() {
         <TabsContent value="routines"><ParticipantRoutinesTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="support"><ParticipantSupportNeedsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="medications"><ParticipantMedicationsTab participantId={id!} canEdit={canEdit} /></TabsContent>
+        <TabsContent value="mar"><ParticipantMARTab participantId={id!} /></TabsContent>
       </Tabs>
 
       <AddParticipantDialog open={showEdit} onOpenChange={setShowEdit} silHouses={silHouses} editParticipant={participant} />
