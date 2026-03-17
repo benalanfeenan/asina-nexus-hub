@@ -359,6 +359,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.restrictivePractices} onCheckedChange={(v) => setBool("restrictivePractices")(!!v)} />Restrictive Practices</label>
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.highIntensity} onCheckedChange={(v) => setBool("highIntensity")(!!v)} />High Intensity</label>
                 <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.medications} onCheckedChange={(v) => setBool("medications")(!!v)} />Medications</label>
+                <label className="flex items-center gap-2 text-sm"><Checkbox checked={form.manualHandling} onCheckedChange={(v) => setBool("manualHandling")(!!v)} />Manual Handling</label>
               </div>
             </CollapsibleContent>
           </Collapsible>
