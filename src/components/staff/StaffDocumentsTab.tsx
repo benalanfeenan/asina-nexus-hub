@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Upload, ExternalLink } from "lucide-react";
-import { useState, useRef } from "react";
+import { Plus, Upload, ExternalLink, ShieldCheck } from "lucide-react";
+import { useState, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+
+interface UnifiedDoc {
+  id: string;
+  title: string;
+  type: string;
+  uploaded_date: string;
+  expiry_date: string | null;
+  file_url: string | null;
+  source: "documents" | "compliance";
+}
 
 export function StaffDocumentsTab({ staffId }: { staffId: string }) {
   const qc = useQueryClient();
@@ -20,13 +30,55 @@ export function StaffDocumentsTab({ staffId }: { staffId: string }) {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const { data: records = [] } = useQuery({
+  // Query staff_documents
+  const { data: staffDocs = [] } = useQuery({
     queryKey: ["staff-documents", staffId],
     queryFn: async () => {
       const { data } = await supabase.from("staff_documents").select("*").eq("staff_id", staffId).order("uploaded_date", { ascending: false });
       return data || [];
     },
   });
+
+  // Query compliance items with documents
+  const { data: complianceDocs = [] } = useQuery({
+    queryKey: ["staff-compliance-docs", staffId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("staff_compliance_items")
+        .select("id, item_key, document_url, date_completed, expiry_date, updated_at")
+        .eq("staff_id", staffId)
+        .not("document_url", "is", null);
+      return data || [];
+    },
+  });
+
+  // Merge into unified list
+  const allDocs = useMemo<UnifiedDoc[]>(() => {
+    const docs: UnifiedDoc[] = staffDocs.map((r: any) => ({
+      id: r.id,
+      title: r.title,
+      type: r.document_type?.replace(/_/g, " ") || "Other",
+      uploaded_date: r.uploaded_date,
+      expiry_date: r.expiry_date,
+      file_url: r.file_url,
+      source: "documents" as const,
+    }));
+
+    complianceDocs.forEach((r: any) => {
+      docs.push({
+        id: `compliance-${r.id}`,
+        title: r.item_key.replace(/_/g, " "),
+        type: "Compliance Evidence",
+        uploaded_date: r.date_completed || r.updated_at?.slice(0, 10) || "",
+        expiry_date: r.expiry_date,
+        file_url: r.document_url,
+        source: "compliance" as const,
+      });
+    });
+
+    docs.sort((a, b) => new Date(b.uploaded_date).getTime() - new Date(a.uploaded_date).getTime());
+    return docs;
+  }, [staffDocs, complianceDocs]);
 
   const handleUpload = async () => {
     const file = fileRef.current?.files?.[0];
@@ -68,10 +120,25 @@ export function StaffDocumentsTab({ staffId }: { staffId: string }) {
         </Dialog>
       </CardHeader>
       <CardContent>
-        {records.length === 0 ? <p className="text-sm text-muted-foreground">No documents uploaded.</p> : (
-          <Table><TableHeader><TableRow><TableHead>Title</TableHead><TableHead>Type</TableHead><TableHead>Uploaded</TableHead><TableHead>Expiry</TableHead><TableHead></TableHead></TableRow></TableHeader>
-            <TableBody>{records.map((r: any) => (
-              <TableRow key={r.id}><TableCell>{r.title}</TableCell><TableCell className="capitalize">{r.document_type.replace(/_/g, " ")}</TableCell><TableCell>{format(new Date(r.uploaded_date), "dd/MM/yyyy")}</TableCell><TableCell>{r.expiry_date ? format(new Date(r.expiry_date), "dd/MM/yyyy") : "—"}</TableCell><TableCell>{r.file_url && <a href={r.file_url} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4 text-primary" /></a>}</TableCell></TableRow>
+        {allDocs.length === 0 ? <p className="text-sm text-muted-foreground">No documents uploaded.</p> : (
+          <Table><TableHeader><TableRow><TableHead>Title</TableHead><TableHead>Type</TableHead><TableHead>Source</TableHead><TableHead>Uploaded</TableHead><TableHead>Expiry</TableHead><TableHead></TableHead></TableRow></TableHeader>
+            <TableBody>{allDocs.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell className="capitalize">{r.title}</TableCell>
+                <TableCell className="capitalize">{r.type}</TableCell>
+                <TableCell>
+                  {r.source === "compliance" ? (
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 border-emerald-200 text-xs gap-1">
+                      <ShieldCheck className="h-3 w-3" />Compliance
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-xs">Direct</Badge>
+                  )}
+                </TableCell>
+                <TableCell>{r.uploaded_date ? format(new Date(r.uploaded_date), "dd/MM/yyyy") : "—"}</TableCell>
+                <TableCell>{r.expiry_date ? format(new Date(r.expiry_date), "dd/MM/yyyy") : "—"}</TableCell>
+                <TableCell>{r.file_url && <a href={r.file_url} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4 text-primary" /></a>}</TableCell>
+              </TableRow>
             ))}</TableBody></Table>
         )}
       </CardContent>

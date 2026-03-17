@@ -13,6 +13,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { COMPETENCY_TO_COMPLIANCE, upsertComplianceItem, calcExpiryDate } from "@/lib/compliance-definitions";
 
 export function StaffCompetenciesTab({ staffId }: { staffId: string }) {
   const qc = useQueryClient();
@@ -34,8 +35,26 @@ export function StaffCompetenciesTab({ staffId }: { staffId: string }) {
         result: form.result, next_due: form.next_due || null, notes: form.notes || null,
       } as any);
       if (error) throw error;
+
+      // Auto-update compliance item if competent
+      const complianceKey = COMPETENCY_TO_COMPLIANCE[form.competency_type];
+      if (complianceKey && form.result === "competent") {
+        const expiryDate = calcExpiryDate(form.date, 12);
+        await upsertComplianceItem(supabase, staffId, complianceKey, {
+          status: "completed",
+          date_completed: form.date,
+          expiry_date: expiryDate,
+          notes: `Assessed by ${form.assessor || "unknown"}`,
+        });
+      }
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["staff-competencies", staffId] }); setOpen(false); toast.success("Assessment added"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["staff-competencies", staffId] });
+      qc.invalidateQueries({ queryKey: ["staff-compliance-items", staffId] });
+      setOpen(false);
+      setForm({ competency_type: "", date: new Date().toISOString().slice(0, 10), assessor: "", result: "competent", next_due: "", notes: "" });
+      toast.success("Assessment added & compliance updated");
+    },
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -56,7 +75,8 @@ export function StaffCompetenciesTab({ staffId }: { staffId: string }) {
               <div><Label>Assessor</Label><Input value={form.assessor} onChange={e => setForm(f => ({ ...f, assessor: e.target.value }))} /></div>
               <div><Label>Next Due</Label><Input type="date" value={form.next_due} onChange={e => setForm(f => ({ ...f, next_due: e.target.value }))} /></div>
               <div><Label>Notes</Label><Textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} /></div>
-              <Button onClick={() => addMutation.mutate()} disabled={!form.competency_type}>Save</Button>
+              <p className="text-xs text-muted-foreground">If competent, the matching compliance item will be auto-updated.</p>
+              <Button onClick={() => addMutation.mutate()} disabled={!form.competency_type || addMutation.isPending}>{addMutation.isPending ? "Saving..." : "Save"}</Button>
             </div>
           </DialogContent>
         </Dialog>

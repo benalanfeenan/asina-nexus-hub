@@ -1,0 +1,1 @@
+ALTER TABLE public.staff ADD COLUMN IF NOT EXISTS supervision_frequency_months integer NOT NULL DEFAULT 1;

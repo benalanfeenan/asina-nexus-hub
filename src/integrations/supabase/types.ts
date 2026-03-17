@@ -2404,6 +2404,7 @@ export type Database = {
           profile_id: string
           start_date: string | null
           status: string
+          supervision_frequency_months: number
           updated_at: string
         }
         Insert: {
@@ -2421,6 +2422,7 @@ export type Database = {
           profile_id: string
           start_date?: string | null
           status?: string
+          supervision_frequency_months?: number
           updated_at?: string
         }
         Update: {
@@ -2438,6 +2440,7 @@ export type Database = {
           profile_id?: string
           start_date?: string | null
           status?: string
+          supervision_frequency_months?: number
           updated_at?: string
         }
         Relationships: [
