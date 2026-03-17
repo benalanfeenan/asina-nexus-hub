@@ -2223,6 +2223,47 @@ export type Database = {
           },
         ]
       }
+      sil_house_competency_requirements: {
+        Row: {
+          administers_medication: boolean
+          created_at: string
+          delivers_high_intensity: boolean
+          id: string
+          sil_house_id: string
+          supports_bsp_participants: boolean
+          supports_mealtime_assessed: boolean
+          uses_restrictive_practices: boolean
+        }
+        Insert: {
+          administers_medication?: boolean
+          created_at?: string
+          delivers_high_intensity?: boolean
+          id?: string
+          sil_house_id: string
+          supports_bsp_participants?: boolean
+          supports_mealtime_assessed?: boolean
+          uses_restrictive_practices?: boolean
+        }
+        Update: {
+          administers_medication?: boolean
+          created_at?: string
+          delivers_high_intensity?: boolean
+          id?: string
+          sil_house_id?: string
+          supports_bsp_participants?: boolean
+          supports_mealtime_assessed?: boolean
+          uses_restrictive_practices?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sil_house_competency_requirements_sil_house_id_fkey"
+            columns: ["sil_house_id"]
+            isOneToOne: true
+            referencedRelation: "sil_houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sil_house_participants: {
         Row: {
           id: string
