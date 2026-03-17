@@ -80,7 +80,13 @@ export default function ParticipantDetail() {
               {alerts.allergies && <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />Allergies</Badge>}
               {alerts.bsp && <Badge className="gap-1"><FileText className="h-3 w-3" />BSP</Badge>}
               {alerts.mealtime_plan && <Badge variant="outline" className="gap-1"><UtensilsCrossed className="h-3 w-3" />Mealtime Plan</Badge>}
+              {(participant as any).client_portal_enabled ? (
+                <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200 hover:bg-emerald-500/15 gap-1"><Globe className="h-3 w-3" />Portal On</Badge>
+              ) : (
+                <Badge variant="outline" className="text-muted-foreground gap-1"><Globe className="h-3 w-3" />Portal Off</Badge>
+              )}
             </div>
+          </div>
           </div>
           {canEdit && <Button variant="outline" onClick={() => setShowEdit(true)}>Edit</Button>}
         </CardHeader>
