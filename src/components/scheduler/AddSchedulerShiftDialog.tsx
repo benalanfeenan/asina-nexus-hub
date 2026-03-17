@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2 } from "lucide-react";
+import { Trash2, Copy } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const SERVICE_TYPES = ["SIL", "Personal Care", "Community Access", "Respite", "Transport", "Domestic Assistance", "Social & Community", "Other"];
 const STATUSES = ["draft", "published", "confirmed", "completed", "cancelled"];
@@ -49,6 +50,9 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
   const { user } = useAuth();
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [showDuplicate, setShowDuplicate] = useState(false);
+  const [dupDate, setDupDate] = useState("");
+  const [dupDays, setDupDays] = useState<number[]>([]);
 
   const [form, setForm] = useState<ShiftData>({
     staff_id: "",
@@ -175,6 +179,54 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
     }
   };
 
+  const handleDuplicate = async () => {
+    if (!editShift) return;
+    setSaving(true);
+    try {
+      const payload = {
+        staff_id: form.staff_id,
+        participant_id: form.participant_id || null,
+        sil_house_id: form.sil_house_id || null,
+        start_time: form.start_time,
+        end_time: form.end_time,
+        service_type: form.service_type,
+        status: "draft",
+        notes: form.notes || null,
+        created_by: user?.id || null,
+        ndis_line_item_id: form.ndis_line_item_id || null,
+      };
+
+      if (dupDays.length > 0) {
+        // Duplicate to selected days of week (0=Mon .. 6=Sun)
+        const baseDate = new Date(form.date + "T00:00:00");
+        const baseDay = (baseDate.getDay() + 6) % 7; // convert to Mon=0
+        const rows = dupDays.filter(d => d !== baseDay).map(dayIdx => {
+          const diff = dayIdx - baseDay;
+          const targetDate = new Date(baseDate);
+          targetDate.setDate(targetDate.getDate() + diff);
+          const dateStr = targetDate.toISOString().slice(0, 10);
+          return { ...payload, date: dateStr };
+        });
+        if (rows.length > 0) {
+          const { error } = await supabase.from("scheduler_shifts").insert(rows);
+          if (error) throw error;
+          toast({ title: `${rows.length} shift(s) duplicated` });
+        }
+      } else if (dupDate) {
+        const { error } = await supabase.from("scheduler_shifts").insert({ ...payload, date: dupDate });
+        if (error) throw error;
+        toast({ title: "Shift duplicated" });
+      }
+      onSaved();
+      setShowDuplicate(false);
+      onOpenChange(false);
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const set = (k: keyof ShiftData, v: string | null) => setForm(prev => ({ ...prev, [k]: v }));
 
   return (
@@ -290,11 +342,52 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
           </div>
         </div>
 
+        {/* Duplicate section */}
+        {editShift?.id && showDuplicate && (
+          <div className="border rounded-lg p-3 space-y-3 bg-muted/30">
+            <Label className="text-sm font-medium">Duplicate to…</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Specific date</Label>
+              <Input type="date" value={dupDate} onChange={e => { setDupDate(e.target.value); setDupDays([]); }} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Or select days of the week</Label>
+              <div className="flex gap-2 flex-wrap">
+                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, i) => (
+                  <label key={day} className="flex items-center gap-1 text-xs">
+                    <Checkbox
+                      checked={dupDays.includes(i)}
+                      onCheckedChange={checked => {
+                        setDupDate("");
+                        setDupDays(prev => checked ? [...prev, i] : prev.filter(d => d !== i));
+                      }}
+                    />
+                    {day}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleDuplicate} disabled={saving || (!dupDate && dupDays.length === 0)}>
+                {saving ? "Duplicating…" : "Confirm Duplicate"}
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setShowDuplicate(false)}>Cancel</Button>
+            </div>
+          </div>
+        )}
+
         <DialogFooter className="flex justify-between">
           {editShift?.id && (
-            <Button variant="destructive" size="sm" onClick={handleDelete} disabled={saving}>
-              <Trash2 className="h-4 w-4 mr-1" /> Delete
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="destructive" size="sm" onClick={handleDelete} disabled={saving}>
+                <Trash2 className="h-4 w-4 mr-1" /> Delete
+              </Button>
+              {!showDuplicate && (
+                <Button variant="outline" size="sm" onClick={() => setShowDuplicate(true)}>
+                  <Copy className="h-4 w-4 mr-1" /> Duplicate
+                </Button>
+              )}
+            </div>
           )}
           <div className="flex gap-2 ml-auto">
             <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
