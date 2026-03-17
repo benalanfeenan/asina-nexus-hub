@@ -33,6 +33,8 @@ function computeComplianceFromItems(
       }
     : DEFAULT_ROLE_FLAGS;
 
+  const mergedFlags = getMergedFlags ? getMergedFlags(staffId, flags) : flags;
+
   const map = new Map<string, { status: string; expiry_date: string | null }>();
   staffItems.forEach((i) => map.set(i.item_key, i));
   const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
