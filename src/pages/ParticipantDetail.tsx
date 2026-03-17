@@ -20,6 +20,8 @@ import { ParticipantMARTab } from "@/components/participants/ParticipantMARTab";
 import { ParticipantABCDataTab } from "@/components/participants/ParticipantABCDataTab";
 import { ParticipantDocumentsTab } from "@/components/participants/ParticipantDocumentsTab";
 import { ParticipantComplianceTab } from "@/components/participants/ParticipantComplianceTab";
+import { ParticipantTransitionsTab } from "@/components/participants/ParticipantTransitionsTab";
+import { ParticipantSurveysTab } from "@/components/participants/ParticipantSurveysTab";
 
 export default function ParticipantDetail() {
   const { id } = useParams<{ id: string }>();
