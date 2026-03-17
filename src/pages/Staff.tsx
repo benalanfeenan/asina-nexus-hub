@@ -170,8 +170,16 @@ export default function Staff() {
         </Select>
       </div>
 
-      <StaffTable staff={filtered} />
+      <StaffTable staff={filtered} canEdit={canEdit} onToggleActive={handleToggleActive} onDelete={setDeleteId} />
       <AddStaffDialog open={showAdd} onOpenChange={setShowAdd} />
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+        title="Delete Staff Member"
+        description="This will permanently remove this staff member and all associated records. This action cannot be undone."
+        onConfirm={handleDelete}
+        confirmText="Delete"
+      />
     </div>
   );
 }
