@@ -1485,6 +1485,68 @@ export type Database = {
         }
         Relationships: []
       }
+      participant_communications: {
+        Row: {
+          contact_name: string | null
+          contact_role: string | null
+          created_at: string
+          created_by: string | null
+          date: string
+          direction: string
+          document_url: string | null
+          follow_up_completed: boolean
+          follow_up_date: string | null
+          follow_up_required: boolean
+          id: string
+          participant_id: string
+          subject: string
+          summary: string
+          type: string
+        }
+        Insert: {
+          contact_name?: string | null
+          contact_role?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          direction?: string
+          document_url?: string | null
+          follow_up_completed?: boolean
+          follow_up_date?: string | null
+          follow_up_required?: boolean
+          id?: string
+          participant_id: string
+          subject: string
+          summary: string
+          type?: string
+        }
+        Update: {
+          contact_name?: string | null
+          contact_role?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          direction?: string
+          document_url?: string | null
+          follow_up_completed?: boolean
+          follow_up_date?: string | null
+          follow_up_required?: boolean
+          id?: string
+          participant_id?: string
+          subject?: string
+          summary?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_communications_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       participant_compliance_items: {
         Row: {
           created_at: string

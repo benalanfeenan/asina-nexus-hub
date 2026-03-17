@@ -22,6 +22,7 @@ import { ParticipantDocumentsTab } from "@/components/participants/ParticipantDo
 import { ParticipantComplianceTab } from "@/components/participants/ParticipantComplianceTab";
 import { ParticipantTransitionsTab } from "@/components/participants/ParticipantTransitionsTab";
 import { ParticipantSurveysTab } from "@/components/participants/ParticipantSurveysTab";
+import { ParticipantCommunicationsTab } from "@/components/participants/ParticipantCommunicationsTab";
 
 export default function ParticipantDetail() {
   const { id } = useParams<{ id: string }>();
@@ -106,6 +107,7 @@ export default function ParticipantDetail() {
           <TabsTrigger value="mar">MAR</TabsTrigger>
           <TabsTrigger value="abc">ABC Data</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="communications">Communications</TabsTrigger>
           <TabsTrigger value="transitions">Transitions</TabsTrigger>
           <TabsTrigger value="surveys">Surveys</TabsTrigger>
         </TabsList>
@@ -123,6 +125,7 @@ export default function ParticipantDetail() {
         <TabsContent value="mar"><ParticipantMARTab participantId={id!} /></TabsContent>
         <TabsContent value="abc"><ParticipantABCDataTab participantId={id!} /></TabsContent>
         <TabsContent value="documents"><ParticipantDocumentsTab participantId={id!} /></TabsContent>
+        <TabsContent value="communications"><ParticipantCommunicationsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="transitions"><ParticipantTransitionsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="surveys"><ParticipantSurveysTab participantId={id!} canEdit={canEdit} /></TabsContent>
       </Tabs>
