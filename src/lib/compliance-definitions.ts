@@ -70,7 +70,7 @@ export const ROLE_FLAG_LABELS: Record<string, string> = {
   supports_bsp_participants: "Supports participants with Behaviour Support Plans",
   delivers_high_intensity: "Delivers high intensity supports",
   uses_restrictive_practices: "Uses restrictive practices (trained)",
-  transports_participants: "Transports participants",
+  transports_in_own_vehicle: "Transports clients in own vehicle",
   supports_under_18: "Supports participants under 18",
 };
 
