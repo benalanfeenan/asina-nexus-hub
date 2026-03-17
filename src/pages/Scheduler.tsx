@@ -388,7 +388,7 @@ export default function Scheduler() {
                                         shift={shift}
                                         label={label}
                                         staffLabel={sLabel}
-                                        onClick={e => { e.stopPropagation(); openEdit(shift); }}
+                                        onClick={e => { e.stopPropagation(); openDetail(shift); }}
                                       />
                                     </div>
                                   )}
