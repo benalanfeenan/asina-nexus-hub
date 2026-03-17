@@ -7,6 +7,7 @@ import { Users, UserCog, AlertTriangle, Clock, CalendarDays, ShieldAlert } from 
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/PageHeader";
+import { AlertsWidget } from "@/components/dashboard/AlertsWidget";
 
 export default function Dashboard() {
   const { user, role } = useAuth();
@@ -92,7 +93,6 @@ export default function Dashboard() {
     <div className="space-y-6">
       <PageHeader title="Dashboard" subtitle="Welcome back to Asina — NDIS All in One" />
 
-      {/* Stat cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {statCards.map((s) => (
           <Card key={s.path} className="cursor-pointer group border-l-4 border-l-primary" onClick={() => navigate(s.path)}>
@@ -107,8 +107,7 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Recent Incidents */}
+      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-primary" />Recent Incidents</CardTitle></CardHeader>
           <CardContent>
@@ -116,10 +115,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 {recentIncidents.map((i: any) => (
                   <div key={i.id} className="flex items-center justify-between text-sm">
-                    <div>
-                      <p className="font-medium">{i.title}</p>
-                      <p className="text-xs text-muted-foreground">{i.reference_number} · {format(new Date(i.date_occurred), "dd/MM")}</p>
-                    </div>
+                    <div><p className="font-medium">{i.title}</p><p className="text-xs text-muted-foreground">{i.reference_number} · {format(new Date(i.date_occurred), "dd/MM")}</p></div>
                     <Badge variant="secondary" className={severityColors[i.severity] || ""}>{i.severity}</Badge>
                   </div>
                 ))}
@@ -128,7 +124,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Today's Shifts */}
         <Card>
           <CardHeader><CardTitle className="text-base flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" />Today's Shifts</CardTitle></CardHeader>
           <CardContent>
@@ -136,10 +131,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 {todayShifts.slice(0, 6).map((s: any) => (
                   <div key={s.id} className="flex items-center justify-between text-sm">
-                    <div>
-                      <p className="font-medium capitalize">{s.shift_type.replace("_", " ")}</p>
-                      <p className="text-xs text-muted-foreground">{(s.sil_houses as any)?.name}</p>
-                    </div>
+                    <div><p className="font-medium capitalize">{s.shift_type.replace("_", " ")}</p><p className="text-xs text-muted-foreground">{(s.sil_houses as any)?.name}</p></div>
                     <span className="text-xs">{(s.staff as any)?.profiles?.full_name || "Unassigned"}</span>
                   </div>
                 ))}
@@ -148,9 +140,8 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Compliance Alerts */}
         <Card>
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><ShieldAlert className="h-4 w-4 text-primary" />Compliance Alerts</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><ShieldAlert className="h-4 w-4 text-primary" />Compliance Expiring</CardTitle></CardHeader>
           <CardContent>
             {expiringCompliance.length === 0 ? <p className="text-sm text-muted-foreground">All clear</p> : (
               <div className="space-y-3">
@@ -158,13 +149,8 @@ export default function Dashboard() {
                   const isExpired = new Date(c.expiry_date) < new Date();
                   return (
                     <div key={idx} className="flex items-center justify-between text-sm">
-                      <div>
-                        <p className="font-medium">{(c.staff as any)?.profiles?.full_name}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{c.check_type.replace("_", " ")}</p>
-                      </div>
-                      <Badge variant="secondary" className={isExpired ? "bg-destructive/15 text-destructive" : "bg-warning/15 text-warning"}>
-                        {isExpired ? "Expired" : format(new Date(c.expiry_date), "dd/MM")}
-                      </Badge>
+                      <div><p className="font-medium">{(c.staff as any)?.profiles?.full_name}</p><p className="text-xs text-muted-foreground capitalize">{c.check_type.replace("_", " ")}</p></div>
+                      <Badge variant="secondary" className={isExpired ? "bg-destructive/15 text-destructive" : "bg-warning/15 text-warning"}>{isExpired ? "Expired" : format(new Date(c.expiry_date), "dd/MM")}</Badge>
                     </div>
                   );
                 })}
@@ -172,6 +158,8 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
+
+        <AlertsWidget />
       </div>
     </div>
   );

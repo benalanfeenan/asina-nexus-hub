@@ -8,6 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft } from "lucide-react";
 import { StaffTrainingTab } from "@/components/staff/StaffTrainingTab";
 import { StaffComplianceTab } from "@/components/staff/StaffComplianceTab";
+import { StaffSupervisionsTab } from "@/components/staff/StaffSupervisionsTab";
+import { StaffCompetenciesTab } from "@/components/staff/StaffCompetenciesTab";
+import { StaffAcknowledgementsTab } from "@/components/staff/StaffAcknowledgementsTab";
+import { StaffDocumentsTab } from "@/components/staff/StaffDocumentsTab";
 
 export default function StaffDetail() {
   const { id } = useParams<{ id: string }>();
@@ -80,10 +84,14 @@ export default function StaffDetail() {
       </Card>
 
       <Tabs defaultValue="training">
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="training">Training</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="supervisions">Supervisions</TabsTrigger>
+          <TabsTrigger value="competencies">Competencies</TabsTrigger>
+          <TabsTrigger value="acknowledgements">Acknowledgements</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -109,13 +117,12 @@ export default function StaffDetail() {
           )}
         </TabsContent>
 
-        <TabsContent value="training">
-          <StaffTrainingTab staffId={id!} />
-        </TabsContent>
-
-        <TabsContent value="compliance">
-          <StaffComplianceTab staffId={id!} />
-        </TabsContent>
+        <TabsContent value="training"><StaffTrainingTab staffId={id!} /></TabsContent>
+        <TabsContent value="compliance"><StaffComplianceTab staffId={id!} /></TabsContent>
+        <TabsContent value="supervisions"><StaffSupervisionsTab staffId={id!} /></TabsContent>
+        <TabsContent value="competencies"><StaffCompetenciesTab staffId={id!} /></TabsContent>
+        <TabsContent value="acknowledgements"><StaffAcknowledgementsTab staffId={id!} /></TabsContent>
+        <TabsContent value="documents"><StaffDocumentsTab staffId={id!} /></TabsContent>
       </Tabs>
     </div>
   );
