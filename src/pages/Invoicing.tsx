@@ -12,14 +12,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Search, Eye } from "lucide-react";
+import { Plus, Search, Eye, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import { format } from "date-fns";
+import { format, startOfWeek, endOfWeek, addWeeks, subWeeks } from "date-fns";
 
 const statusColors: Record<string, string> = {
   draft: "bg-muted text-muted-foreground", sent: "bg-blue-100 text-blue-800",
   paid: "bg-green-100 text-green-800", overdue: "bg-red-100 text-red-800", cancelled: "bg-muted text-muted-foreground",
 };
+
+function getHoursFromTime(start: string, end: string) {
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  let diff = (eh * 60 + em) - (sh * 60 + sm);
+  if (diff < 0) diff += 24 * 60;
+  return diff / 60;
+}
 
 export default function Invoicing() {
   const { user } = useAuth();
@@ -40,6 +48,10 @@ export default function Invoicing() {
   const [lineCode, setLineCode] = useState("");
   const [lineQty, setLineQty] = useState("1");
   const [lineRate, setLineRate] = useState("");
+
+  // Ready to Invoice week navigation
+  const [invoiceWeekStart, setInvoiceWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const invoiceWeekEnd = endOfWeek(invoiceWeekStart, { weekStartsOn: 1 });
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["invoices"],
@@ -77,10 +89,53 @@ export default function Invoicing() {
   const { data: priceList = [] } = useQuery({
     queryKey: ["ndis-price-list-active"],
     queryFn: async () => {
-      const { data } = await supabase.from("ndis_price_list").select("item_code, description, rate").eq("is_active", true).order("item_code");
+      const { data } = await supabase.from("ndis_price_list").select("id, item_code, description, rate").eq("is_active", true).order("item_code");
       return data || [];
     },
   });
+
+  // Ready to Invoice: completed shifts without invoice_id
+  const { data: completedShifts = [] } = useQuery({
+    queryKey: ["ready-to-invoice-shifts", format(invoiceWeekStart, "yyyy-MM-dd")],
+    queryFn: async () => {
+      const from = format(invoiceWeekStart, "yyyy-MM-dd");
+      const to = format(invoiceWeekEnd, "yyyy-MM-dd");
+      const { data } = await supabase
+        .from("scheduler_shifts")
+        .select("*, participants(first_name, last_name), ndis_price_list(id, item_code, description, rate, unit)")
+        .eq("status", "completed")
+        .is("invoice_id", null)
+        .not("participant_id", "is", null)
+        .not("ndis_line_item_id", "is", null)
+        .gte("date", from)
+        .lte("date", to)
+        .order("date");
+      return (data || []) as any[];
+    },
+  });
+
+  // Group completed shifts by participant
+  const readyByParticipant = useMemo(() => {
+    const map: Record<string, { participant: { id: string; first_name: string; last_name: string }; shifts: any[]; totalHours: number; totalCost: number }> = {};
+    for (const s of completedShifts) {
+      const pid = s.participant_id;
+      if (!map[pid]) {
+        map[pid] = {
+          participant: s.participants,
+          shifts: [],
+          totalHours: 0,
+          totalCost: 0,
+        };
+      }
+      const hours = getHoursFromTime(s.start_time, s.end_time);
+      const li = s.ndis_price_list;
+      const cost = li ? (li.unit === "hour" || li.unit === "H" ? li.rate * hours : li.rate) : 0;
+      map[pid].shifts.push(s);
+      map[pid].totalHours += hours;
+      map[pid].totalCost += cost;
+    }
+    return Object.values(map);
+  }, [completedShifts]);
 
   const addMutation = useMutation({
     mutationFn: async () => {
@@ -103,7 +158,6 @@ export default function Invoicing() {
         invoice_id: selectedInvoice.id, description: lineDesc, ndis_line_item_code: lineCode || null, quantity: qty, rate: r, amount: qty * r,
       });
       if (error) throw error;
-      // Update invoice total
       const { data: items } = await supabase.from("invoice_line_items").select("amount").eq("invoice_id", selectedInvoice.id);
       const total = (items || []).reduce((sum: number, i: any) => sum + Number(i.amount), 0);
       await supabase.from("invoices").update({ total }).eq("id", selectedInvoice.id);
@@ -115,6 +169,62 @@ export default function Invoicing() {
       toast({ title: "Line item added" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const generateInvoiceMutation = useMutation({
+    mutationFn: async (group: { participant: { id: string; first_name: string; last_name: string }; shifts: any[]; totalCost: number }) => {
+      // 1. Get auto invoice number
+      const { data: refData, error: refError } = await supabase.rpc("next_reference", { ref_type: "invoice" });
+      if (refError) throw refError;
+      const invNumber = refData as string;
+
+      // 2. Create invoice
+      const { data: invData, error: invError } = await supabase.from("invoices").insert({
+        participant_id: group.participant.id,
+        invoice_number: invNumber,
+        created_by: user?.id,
+        status: "draft" as any,
+        total: 0,
+      }).select("id").single();
+      if (invError) throw invError;
+      const invoiceId = invData.id;
+
+      // 3. Create line items from shifts
+      const lineItemRows = group.shifts.map((s: any) => {
+        const li = s.ndis_price_list;
+        const hours = getHoursFromTime(s.start_time, s.end_time);
+        const isHourly = li.unit === "hour" || li.unit === "H";
+        const qty = isHourly ? hours : 1;
+        const amount = qty * li.rate;
+        return {
+          invoice_id: invoiceId,
+          description: li.description,
+          ndis_line_item_code: li.item_code,
+          quantity: qty,
+          rate: li.rate,
+          amount,
+          service_date: s.date,
+        };
+      });
+
+      const { error: liError } = await supabase.from("invoice_line_items").insert(lineItemRows);
+      if (liError) throw liError;
+
+      // 4. Update invoice total
+      const total = lineItemRows.reduce((sum, li) => sum + li.amount, 0);
+      await supabase.from("invoices").update({ total }).eq("id", invoiceId);
+
+      // 5. Mark shifts as invoiced
+      const shiftIds = group.shifts.map((s: any) => s.id);
+      const { error: updateError } = await supabase.from("scheduler_shifts").update({ invoice_id: invoiceId } as any).in("id", shiftIds);
+      if (updateError) throw updateError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["ready-to-invoice-shifts"] });
+      toast({ title: "Invoice generated successfully" });
+    },
+    onError: (e: any) => toast({ title: "Error generating invoice", description: e.message, variant: "destructive" }),
   });
 
   const handleNdisCodeSelect = (code: string) => {
@@ -141,8 +251,50 @@ export default function Invoicing() {
         action={<Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Create Invoice</Button>}
       />
 
-      <Tabs defaultValue="ndis">
-        <TabsList><TabsTrigger value="ndis">NDIS Invoices</TabsTrigger><TabsTrigger value="board">Board & Lodging</TabsTrigger></TabsList>
+      <Tabs defaultValue="ready">
+        <TabsList>
+          <TabsTrigger value="ready">Ready to Invoice</TabsTrigger>
+          <TabsTrigger value="ndis">NDIS Invoices</TabsTrigger>
+          <TabsTrigger value="board">Board & Lodging</TabsTrigger>
+        </TabsList>
+
+        {/* Ready to Invoice Tab */}
+        <TabsContent value="ready" className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setInvoiceWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }))}>This Week</Button>
+            <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setInvoiceWeekStart(w => subWeeks(w, 1))}><ChevronLeft className="h-4 w-4" /></Button>
+            <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setInvoiceWeekStart(w => addWeeks(w, 1))}><ChevronRight className="h-4 w-4" /></Button>
+            <span className="text-sm font-medium text-muted-foreground">
+              {format(invoiceWeekStart, "d MMM")} – {format(invoiceWeekEnd, "d MMM yyyy")}
+            </span>
+          </div>
+
+          {readyByParticipant.length === 0 ? (
+            <div className="rounded-md border p-8 text-center text-muted-foreground">
+              No completed shifts ready to invoice for this week.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {readyByParticipant.map((group) => (
+                <div key={group.participant.id} className="rounded-lg border p-4 flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="font-medium">{group.participant.first_name} {group.participant.last_name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {group.shifts.length} completed shift{group.shifts.length !== 1 ? "s" : ""} · {group.totalHours.toFixed(1)}h · Est. ${group.totalCost.toFixed(2)}
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => generateInvoiceMutation.mutate(group)}
+                    disabled={generateInvoiceMutation.isPending}
+                  >
+                    <FileText className="h-4 w-4 mr-1" />
+                    {generateInvoiceMutation.isPending ? "Generating…" : "Generate Invoice"}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
 
         <TabsContent value="ndis" className="space-y-4">
           <div className="flex flex-wrap gap-3">

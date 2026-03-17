@@ -126,8 +126,8 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
     : null;
 
   const handleSave = async () => {
-    if (!form.staff_id || !form.date || !form.start_time || !form.end_time) {
-      toast({ title: "Missing fields", description: "Staff, date and times are required.", variant: "destructive" });
+    if (!form.staff_id || !form.date || !form.start_time || !form.end_time || !form.participant_id || !form.ndis_line_item_id) {
+      toast({ title: "Missing fields", description: "Staff, date, times, participant and NDIS line item are required.", variant: "destructive" });
       return;
     }
     setSaving(true);
@@ -288,11 +288,10 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
           </div>
 
           <div className="space-y-1.5">
-            <Label>Participant (optional)</Label>
-            <Select value={form.participant_id || "__none__"} onValueChange={v => set("participant_id", v === "__none__" ? null : v)}>
-              <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+            <Label>Participant *</Label>
+            <Select value={form.participant_id || ""} onValueChange={v => set("participant_id", v)}>
+              <SelectTrigger><SelectValue placeholder="Select participant" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none__">None</SelectItem>
                 {participants?.map(p => (
                   <SelectItem key={p.id} value={p.id}>{p.first_name} {p.last_name}</SelectItem>
                 ))}
@@ -316,11 +315,10 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
           )}
 
           <div className="space-y-1.5">
-            <Label>NDIS Line Item (optional)</Label>
-            <Select value={form.ndis_line_item_id || "__none__"} onValueChange={v => set("ndis_line_item_id", v === "__none__" ? null : v)}>
-              <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+            <Label>NDIS Line Item *</Label>
+            <Select value={form.ndis_line_item_id || ""} onValueChange={v => set("ndis_line_item_id", v)}>
+              <SelectTrigger><SelectValue placeholder="Select NDIS line item" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none__">None</SelectItem>
                 {ndisLineItems?.map(li => (
                   <SelectItem key={li.id} value={li.id}>
                     {li.item_code} – {li.description} (${Number(li.rate).toFixed(2)}/{li.unit || "ea"})
