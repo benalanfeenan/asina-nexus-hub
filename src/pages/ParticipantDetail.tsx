@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, AlertTriangle, FileText, UtensilsCrossed } from "lucide-react";
+import { ArrowLeft, AlertTriangle, FileText, UtensilsCrossed } from "lucide-react";
 import { useState } from "react";
 import { AddParticipantDialog } from "@/components/participants/AddParticipantDialog";
 import { ParticipantContactsTab } from "@/components/participants/ParticipantContactsTab";
