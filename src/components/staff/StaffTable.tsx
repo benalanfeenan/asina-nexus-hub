@@ -109,9 +109,6 @@ export function StaffTable({ staff, canEdit, onToggleActive }: StaffTableProps) 
                         {s.is_active ? <Archive className="mr-2 h-4 w-4" /> : <ArchiveRestore className="mr-2 h-4 w-4" />}
                         {s.is_active ? "Archive" : "Reactivate"}
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => onDelete?.(s.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" />Delete
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
