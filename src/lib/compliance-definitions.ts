@@ -20,8 +20,10 @@ export const COMPLIANCE_ITEMS: ComplianceItemDefinition[] = [
   { item_key: "reference_check_1", name: "Reference Check 1 (completed)", description: "First professional reference check completed", category: "Pre-Employment", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 4 },
   { item_key: "reference_check_2", name: "Reference Check 2 (completed)", description: "Second professional reference check completed", category: "Pre-Employment", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 5 },
   { item_key: "qualifications", name: "Qualifications Verified (Cert III/IV or equivalent)", description: "Qualifications verified", category: "Pre-Employment", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 6 },
-  { item_key: "drivers_licence", name: "Current Driver's Licence", description: "Required if transporting participants", category: "Pre-Employment", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: "transports_participants", linked_to: null, display_order: 7 },
-  { item_key: "vehicle_rego_insurance", name: "Vehicle Registration and Insurance", description: "Required if transporting participants", category: "Pre-Employment", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: "transports_participants", linked_to: null, display_order: 8 },
+  { item_key: "hundred_points_id", name: "100 Points of ID Verified", description: "100 points of identification verified (e.g. passport, licence, birth certificate)", category: "Pre-Employment", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 4 },
+  { item_key: "drivers_licence", name: "Current Driver's Licence", description: "Current driver's licence required for all staff", category: "Pre-Employment", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 7 },
+  { item_key: "vehicle_registration", name: "Vehicle Registration", description: "Required if transporting clients in own vehicle", category: "Pre-Employment", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: "transports_in_own_vehicle", linked_to: null, display_order: 8 },
+  { item_key: "vehicle_insurance", name: "Vehicle Insurance", description: "Required if transporting clients in own vehicle", category: "Pre-Employment", requires_document: true, has_expiry: true, expiry_months: 12, is_mandatory: true, conditional_on: "transports_in_own_vehicle", linked_to: null, display_order: 8.5 },
   // Induction
   { item_key: "ndis_orientation", name: "NDIS Worker Orientation Module Certificate", description: "Completion of NDIS Worker Orientation Module", category: "Induction", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 9 },
   { item_key: "employment_contract", name: "Signed Employment Contract", description: "Signed employment contract on file", category: "Induction", requires_document: true, has_expiry: false, expiry_months: null, is_mandatory: true, conditional_on: null, linked_to: null, display_order: 10 },
@@ -68,7 +70,7 @@ export const ROLE_FLAG_LABELS: Record<string, string> = {
   supports_bsp_participants: "Supports participants with Behaviour Support Plans",
   delivers_high_intensity: "Delivers high intensity supports",
   uses_restrictive_practices: "Uses restrictive practices (trained)",
-  transports_participants: "Transports participants",
+  transports_in_own_vehicle: "Transports clients in own vehicle",
   supports_under_18: "Supports participants under 18",
 };
 
@@ -80,7 +82,7 @@ export type RoleFlags = {
   supports_bsp_participants: boolean;
   delivers_high_intensity: boolean;
   uses_restrictive_practices: boolean;
-  transports_participants: boolean;
+  transports_in_own_vehicle: boolean;
   supports_under_18: boolean;
 };
 
@@ -90,7 +92,7 @@ export const DEFAULT_ROLE_FLAGS: RoleFlags = {
   supports_bsp_participants: false,
   delivers_high_intensity: false,
   uses_restrictive_practices: false,
-  transports_participants: false,
+  transports_in_own_vehicle: false,
   supports_under_18: false,
 };
 

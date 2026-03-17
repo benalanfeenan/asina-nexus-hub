@@ -92,7 +92,7 @@ export default function StaffDetail() {
       supports_bsp_participants: roleFlags.supports_bsp_participants,
       delivers_high_intensity: roleFlags.delivers_high_intensity,
       uses_restrictive_practices: roleFlags.uses_restrictive_practices,
-      transports_participants: roleFlags.transports_participants,
+      transports_in_own_vehicle: roleFlags.transports_in_own_vehicle,
       supports_under_18: roleFlags.supports_under_18,
     };
   }, [roleFlags]);

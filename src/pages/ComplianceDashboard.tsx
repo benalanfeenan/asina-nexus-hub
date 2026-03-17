@@ -80,7 +80,7 @@ export default function ComplianceDashboard() {
             supports_bsp_participants: flagRow.supports_bsp_participants,
             delivers_high_intensity: flagRow.delivers_high_intensity,
             uses_restrictive_practices: flagRow.uses_restrictive_practices,
-            transports_participants: flagRow.transports_participants,
+            transports_in_own_vehicle: flagRow.transports_in_own_vehicle,
             supports_under_18: flagRow.supports_under_18,
           }
         : DEFAULT_ROLE_FLAGS;

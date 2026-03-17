@@ -2755,7 +2755,7 @@ export type Database = {
           supports_bsp_participants: boolean
           supports_mealtime_assessed: boolean
           supports_under_18: boolean
-          transports_participants: boolean
+          transports_in_own_vehicle: boolean
           uses_restrictive_practices: boolean
         }
         Insert: {
@@ -2767,7 +2767,7 @@ export type Database = {
           supports_bsp_participants?: boolean
           supports_mealtime_assessed?: boolean
           supports_under_18?: boolean
-          transports_participants?: boolean
+          transports_in_own_vehicle?: boolean
           uses_restrictive_practices?: boolean
         }
         Update: {
@@ -2779,7 +2779,7 @@ export type Database = {
           supports_bsp_participants?: boolean
           supports_mealtime_assessed?: boolean
           supports_under_18?: boolean
-          transports_participants?: boolean
+          transports_in_own_vehicle?: boolean
           uses_restrictive_practices?: boolean
         }
         Relationships: [
