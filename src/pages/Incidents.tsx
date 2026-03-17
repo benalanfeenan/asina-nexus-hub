@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, AlertTriangle } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { AddIncidentDialog } from "@/components/incidents/AddIncidentDialog";
 import { IncidentDetailDialog } from "@/components/incidents/IncidentDetailDialog";
 
@@ -52,12 +53,12 @@ export default function Incidents() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">Incidents</h1>
-        {canCreate && (
-          <Button onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Report Incident</Button>
-        )}
-      </div>
+      <PageHeader
+        title="Incidents"
+        action={canCreate ? (
+          <Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Report Incident</Button>
+        ) : undefined}
+      />
 
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">

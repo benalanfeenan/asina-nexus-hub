@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { format } from "date-fns";
 
 const practiceTypes = ["chemical", "mechanical", "physical", "seclusion", "environmental"] as const;
@@ -96,10 +97,10 @@ export default function RestrictivePractices() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">Restrictive Practices</h1>
-        <Button onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Record Practice</Button>
-      </div>
+      <PageHeader
+        title="Restrictive Practices"
+        action={<Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Record Practice</Button>}
+      />
 
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">

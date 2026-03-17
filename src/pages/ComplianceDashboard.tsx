@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMemo } from "react";
+import { PageHeader } from "@/components/PageHeader";
 
 function getCheckStatus(expiryDate: string | null): "green" | "amber" | "red" | "none" {
   if (!expiryDate) return "none";
@@ -66,7 +67,7 @@ export default function ComplianceDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-heading font-bold">Compliance Dashboard</h1>
+      <PageHeader title="Compliance Dashboard" />
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Active Staff</CardTitle></CardHeader>

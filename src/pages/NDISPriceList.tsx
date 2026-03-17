@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { 	useToast } from "@/hooks/use-toast";
 import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function NDISPriceList() {
   const { role } = useAuth();
@@ -86,10 +87,10 @@ export default function NDISPriceList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">NDIS Price List</h1>
-        {isAdmin && <Button onClick={openAdd}><Plus className="mr-1 h-4 w-4" />Add Item</Button>}
-      </div>
+      <PageHeader
+        title="NDIS Price List"
+        action={isAdmin ? <Button variant="accent" onClick={openAdd}><Plus className="mr-1 h-4 w-4" />Add Item</Button> : undefined}
+      />
 
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

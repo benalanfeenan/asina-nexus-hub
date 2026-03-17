@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Plus, ArrowRightLeft, Moon, Settings2, Wand2 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { useToast } from "@/hooks/use-toast";
 import { AddShiftDialog } from "@/components/rostering/AddShiftDialog";
 import { ShiftHandoverDialog } from "@/components/rostering/ShiftHandoverDialog";
@@ -129,20 +130,20 @@ export default function Rostering() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="text-3xl font-heading font-bold">Rostering</h1>
-        {canEdit && selectedHouse && (
+      <PageHeader
+        title="Rostering"
+        action={canEdit && selectedHouse ? (
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" size="sm" onClick={() => setShowHandover(true)}><ArrowRightLeft className="mr-1 h-4 w-4" />Handovers</Button>
-            <Button variant="outline" size="sm" onClick={() => setShowSleepover(true)}><Moon className="mr-1 h-4 w-4" />Sleepover Logs</Button>
-            <Button variant="outline" size="sm" onClick={() => setShowPatterns(true)}><Settings2 className="mr-1 h-4 w-4" />Patterns</Button>
-            <Button variant="outline" size="sm" onClick={() => generateWeekMutation.mutate()} disabled={generateWeekMutation.isPending}>
+            <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10" onClick={() => setShowHandover(true)}><ArrowRightLeft className="mr-1 h-4 w-4" />Handovers</Button>
+            <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10" onClick={() => setShowSleepover(true)}><Moon className="mr-1 h-4 w-4" />Sleepover Logs</Button>
+            <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10" onClick={() => setShowPatterns(true)}><Settings2 className="mr-1 h-4 w-4" />Patterns</Button>
+            <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10" onClick={() => generateWeekMutation.mutate()} disabled={generateWeekMutation.isPending}>
               <Wand2 className="mr-1 h-4 w-4" />{generateWeekMutation.isPending ? "Generating…" : "Generate Week"}
             </Button>
-            <Button onClick={() => { setPrefillDate(""); setPrefillType(""); setShowAdd(true); }}><Plus className="mr-1 h-4 w-4" />Add Shift</Button>
+            <Button variant="accent" onClick={() => { setPrefillDate(""); setPrefillType(""); setShowAdd(true); }}><Plus className="mr-1 h-4 w-4" />Add Shift</Button>
           </div>
-        )}
-      </div>
+        ) : undefined}
+      />
 
       <div className="flex flex-wrap gap-3 items-center">
         <Select value={selectedHouse} onValueChange={setSelectedHouse}>

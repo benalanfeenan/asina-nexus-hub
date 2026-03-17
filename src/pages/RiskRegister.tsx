@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 const likelihoodValues = ["rare", "unlikely", "possible", "likely", "almost_certain"] as const;
 const consequenceValues = ["insignificant", "minor", "moderate", "major", "catastrophic"] as const;
@@ -93,10 +94,10 @@ export default function RiskRegister() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">Risk Register</h1>
-        <Button onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Risk</Button>
-      </div>
+      <PageHeader
+        title="Risk Register"
+        action={<Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Risk</Button>}
+      />
 
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

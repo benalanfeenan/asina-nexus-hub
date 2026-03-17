@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Search, ExternalLink } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { format } from "date-fns";
 
 const categories = ["policy", "procedure", "form", "template", "training", "compliance", "other"] as const;
@@ -71,10 +72,10 @@ export default function Documents() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-heading font-bold">Documents</h1>
-        {canManage && <Button onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Document</Button>}
-      </div>
+      <PageHeader
+        title="Documents"
+        action={canManage ? <Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Document</Button> : undefined}
+      />
 
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">

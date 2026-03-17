@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PageHeader } from "@/components/PageHeader";
 
 interface UserProfile {
   id: string;
@@ -151,7 +152,7 @@ export default function Settings() {
   if (role !== "admin") {
     return (
       <div className="space-y-4">
-        <h1 className="text-3xl font-heading font-bold">Settings</h1>
+        <PageHeader title="Settings" />
         <p className="text-muted-foreground">You don't have permission to access settings.</p>
       </div>
     );
@@ -159,7 +160,7 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-heading font-bold">Settings</h1>
+      <PageHeader title="Settings" />
       <Tabs defaultValue="users">
         <TabsList>
           <TabsTrigger value="users">User Management</TabsTrigger>
