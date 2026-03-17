@@ -7,7 +7,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { Eye, MoreHorizontal, Archive, ArchiveRestore, Trash2 } from "lucide-react";
+import { Eye, MoreHorizontal, Archive, ArchiveRestore } from "lucide-react";
 
 export interface StaffWithProfile {
   id: string;
