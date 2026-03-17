@@ -71,7 +71,7 @@ export default function Scheduler() {
       const to = format(weekDates[6], "yyyy-MM-dd");
       const { data } = await supabase
         .from("scheduler_shifts")
-        .select("*, participants(first_name, last_name), sil_houses(name)")
+        .select("*, participants(first_name, last_name), sil_houses(name), ndis_price_list(item_code)")
         .gte("date", from)
         .lte("date", to)
         .order("start_time");
@@ -242,6 +242,7 @@ export default function Scheduler() {
                         >
                           <div className="font-semibold">{shift.start_time.slice(0, 5)}–{shift.end_time.slice(0, 5)}</div>
                           <div className="truncate">{shift.service_type}</div>
+                          {shift.ndis_price_list?.item_code && <div className="truncate text-[10px] opacity-70 font-mono">{shift.ndis_price_list.item_code}</div>}
                           {label && <div className="truncate text-[10px] opacity-80">{label}</div>}
                           {shift.status === "draft" && <Badge variant="outline" className="mt-0.5 text-[9px] px-1 py-0 h-4">Draft</Badge>}
                         </div>
