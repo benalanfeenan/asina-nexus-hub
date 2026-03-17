@@ -113,15 +113,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border p-4 bg-brand-gradient-dark">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
         {!collapsed ? (
-          <img src={asinaLogo} alt="Asina" className="h-8 w-auto" />
+          <img src={asinaLogo} alt="Asina" className="h-10 w-auto object-contain" />
         ) : (
-          <img src={asinaFavicon} alt="Asina" className="h-8 w-8 mx-auto" />
+          <img src={asinaFavicon} alt="Asina" className="h-8 w-8 mx-auto object-contain" />
         )}
       </SidebarHeader>
 
-      <SidebarContent className="bg-brand-gradient-dark">
+      <SidebarContent className="overflow-y-auto overflow-x-hidden scrollbar-hidden">
         {navGroups.map((group) => {
           const visibleItems = group.items.filter(canSee);
           if (visibleItems.length === 0) return null;
@@ -137,7 +137,7 @@ export function AppSidebar() {
                           to={item.url}
                           end={item.url === "/"}
                           className="hover:bg-sidebar-accent/60 rounded-lg transition-colors"
-                          activeClassName="bg-sidebar-accent text-sidebar-primary font-medium border-l-2 border-sidebar-primary"
+                          activeClassName="bg-sidebar-primary/20 text-sidebar-primary font-medium"
                         >
                           <item.icon className="h-4 w-4" />
                           {!collapsed && <span>{item.title}</span>}
@@ -152,7 +152,7 @@ export function AppSidebar() {
         })}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-2 bg-brand-gradient-dark">
+      <SidebarFooter className="border-t border-sidebar-border p-2">
         <Button
           variant="ghost"
           size={collapsed ? "icon" : "default"}
