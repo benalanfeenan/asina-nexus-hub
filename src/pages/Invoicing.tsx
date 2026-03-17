@@ -106,7 +106,7 @@ export default function Invoicing() {
     for (const s of completedShifts) {
       const pid = s.participant_id;
       if (!map[pid]) {
-        map[pid] = { participant: s.participants, shifts: [], totalHours: 0, totalCost: 0 };
+        map[pid] = { participant: { id: pid, ...s.participants }, shifts: [], totalHours: 0, totalCost: 0 };
       }
       const hours = getHoursFromTime(s.start_time, s.end_time);
       const li = s.ndis_price_list;
