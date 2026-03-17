@@ -15,6 +15,7 @@ import { ParticipantRoutinesTab } from "@/components/participants/ParticipantRou
 import { ParticipantSupportNeedsTab } from "@/components/participants/ParticipantSupportNeedsTab";
 import { ParticipantMedicationsTab } from "@/components/participants/ParticipantMedicationsTab";
 import { ParticipantMARTab } from "@/components/participants/ParticipantMARTab";
+import { ParticipantABCDataTab } from "@/components/participants/ParticipantABCDataTab";
 
 export default function ParticipantDetail() {
   const { id } = useParams<{ id: string }>();
