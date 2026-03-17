@@ -118,6 +118,60 @@ export default function Documents() {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  // Bulk upload state
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [bulkCategory, setBulkCategory] = useState<string>("policy");
+  const [bulkReviewDate, setBulkReviewDate] = useState("");
+  const [bulkRequiresAck, setBulkRequiresAck] = useState(true);
+  const [bulkProgress, setBulkProgress] = useState<{ current: number; total: number } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBulkFiles = useCallback((files: FileList | null) => {
+    if (files) setBulkFiles(Array.from(files));
+  }, []);
+
+  const bulkMutation = useMutation({
+    mutationFn: async () => {
+      const total = bulkFiles.length;
+      let uploaded = 0;
+      for (const file of bulkFiles) {
+        setBulkProgress({ current: uploaded + 1, total });
+        const ts = Date.now();
+        const path = `bulk/${ts}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
+        if (uploadErr) throw new Error(`Failed to upload ${file.name}: ${uploadErr.message}`);
+        const { data: urlData } = supabase.storage.from("documents").getPublicUrl(path);
+        const title = file.name.replace(/\.[^/.]+$/, "");
+        const { error: insertErr } = await supabase.from("documents").insert({
+          title,
+          category: bulkCategory as any,
+          version: "1.0",
+          review_date: bulkReviewDate || null,
+          file_url: urlData.publicUrl,
+          uploaded_by: user?.id,
+          requires_acknowledgement: bulkRequiresAck,
+        } as any);
+        if (insertErr) throw new Error(`Failed to save ${file.name}: ${insertErr.message}`);
+        uploaded++;
+      }
+      setBulkProgress({ current: total, total });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      setShowBulk(false);
+      setBulkFiles([]);
+      setBulkCategory("policy");
+      setBulkReviewDate("");
+      setBulkRequiresAck(true);
+      setBulkProgress(null);
+      toast({ title: `${bulkFiles.length} documents uploaded` });
+    },
+    onError: (e: any) => {
+      setBulkProgress(null);
+      toast({ title: "Bulk upload error", description: e.message, variant: "destructive" });
+    },
+  });
+
   const filtered = useMemo(() => {
     return docs.filter((d: any) => {
       if (catFilter !== "all" && d.category !== catFilter) return false;
