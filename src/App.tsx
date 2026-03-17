@@ -30,6 +30,8 @@ import ComplianceDashboard from "./pages/ComplianceDashboard";
 import Documents from "./pages/Documents";
 import NDISPriceList from "./pages/NDISPriceList";
 import Settings from "./pages/Settings";
+import Feedback from "./pages/Feedback";
+import FireSafety from "./pages/FireSafety";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
