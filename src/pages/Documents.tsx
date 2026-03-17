@@ -329,6 +329,73 @@ export default function Documents() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Bulk Upload Dialog */}
+      <Dialog open={showBulk} onOpenChange={(o) => { if (!bulkMutation.isPending) setShowBulk(o); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Bulk Upload Documents</DialogTitle><DialogDescription>Upload multiple files at once with shared settings</DialogDescription></DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div
+              className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleBulkFiles(e.dataTransfer.files); }}
+            >
+              <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                {bulkFiles.length > 0
+                  ? `${bulkFiles.length} file(s) selected`
+                  : "Click or drag & drop files here"}
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={(e) => handleBulkFiles(e.target.files)}
+              />
+            </div>
+            {bulkFiles.length > 0 && (
+              <div className="max-h-[120px] overflow-y-auto text-xs space-y-1">
+                {bulkFiles.map((f, i) => (
+                  <div key={i} className="flex justify-between px-2 py-1 rounded bg-muted">
+                    <span className="truncate">{f.name}</span>
+                    <span className="text-muted-foreground ml-2 shrink-0">{(f.size / 1024).toFixed(0)} KB</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Category (all files)</Label>
+                <Select value={bulkCategory} onValueChange={setBulkCategory}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{categories.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label>Review Date</Label>
+                <Input type="date" value={bulkReviewDate} onChange={(e) => setBulkReviewDate(e.target.value)} />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox id="bulk-ack" checked={bulkRequiresAck} onCheckedChange={(v) => setBulkRequiresAck(!!v)} />
+              <Label htmlFor="bulk-ack" className="text-sm font-normal">Requires staff acknowledgement</Label>
+            </div>
+            {bulkProgress && (
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Uploading {bulkProgress.current} of {bulkProgress.total}…</p>
+                <Progress value={(bulkProgress.current / bulkProgress.total) * 100} className="h-2" />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulk(false)} disabled={bulkMutation.isPending}>Cancel</Button>
+            <Button onClick={() => bulkMutation.mutate()} disabled={bulkFiles.length === 0 || bulkMutation.isPending}>
+              Upload {bulkFiles.length} File{bulkFiles.length !== 1 ? "s" : ""}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
