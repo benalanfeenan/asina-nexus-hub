@@ -82,7 +82,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
         advocateName: p.advocate_name || "", advocatePhone: p.advocate_phone || "",
         allergies: alerts.allergies || false, bsp: alerts.bsp || false, mealtimePlan: alerts.mealtime_plan || false,
         restrictivePractices: alerts.restrictive_practices || false, highIntensity: alerts.high_intensity || false,
-        medications: alerts.medications || false,
+        medications: alerts.medications || false, manualHandling: alerts.manual_handling || false,
         notes: p.notes || "",
       });
     } else {
