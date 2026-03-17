@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SILHouseTable } from "@/components/sil-houses/SILHouseTable";
 import { AddSILHouseDialog } from "@/components/sil-houses/AddSILHouseDialog";
 import { Plus, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function SILHouses() {
   const { role } = useAuth();
