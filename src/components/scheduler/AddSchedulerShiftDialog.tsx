@@ -315,11 +315,10 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
           )}
 
           <div className="space-y-1.5">
-            <Label>NDIS Line Item (optional)</Label>
-            <Select value={form.ndis_line_item_id || "__none__"} onValueChange={v => set("ndis_line_item_id", v === "__none__" ? null : v)}>
-              <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+            <Label>NDIS Line Item *</Label>
+            <Select value={form.ndis_line_item_id || ""} onValueChange={v => set("ndis_line_item_id", v)}>
+              <SelectTrigger><SelectValue placeholder="Select NDIS line item" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none__">None</SelectItem>
                 {ndisLineItems?.map(li => (
                   <SelectItem key={li.id} value={li.id}>
                     {li.item_code} – {li.description} (${Number(li.rate).toFixed(2)}/{li.unit || "ea"})
