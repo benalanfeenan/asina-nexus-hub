@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StaffTable, type StaffWithProfile } from "@/components/staff/StaffTable";
 import { AddStaffDialog } from "@/components/staff/AddStaffDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { useToast } from "@/hooks/use-toast";
 import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
 } from "@/lib/compliance-definitions";
@@ -48,10 +50,35 @@ function computeComplianceFromItems(
 export default function Staff() {
   const { role } = useAuth();
   const canEdit = role === "admin" || role === "house_manager";
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [empFilter, setEmpFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const handleToggleActive = useCallback(async (id: string, currentlyActive: boolean) => {
+    const { error } = await supabase.from("staff").update({ is_active: !currentlyActive }).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: currentlyActive ? "Staff archived" : "Staff reactivated" });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    }
+  }, [queryClient, toast]);
+
+  const handleDelete = useCallback(async () => {
+    if (!deleteId) return;
+    const { error } = await supabase.from("staff").delete().eq("id", deleteId);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Staff member deleted" });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    }
+    setDeleteId(null);
+  }, [deleteId, queryClient, toast]);
 
   const { data: staffRaw = [] } = useQuery({
     queryKey: ["staff"],
@@ -143,8 +170,16 @@ export default function Staff() {
         </Select>
       </div>
 
-      <StaffTable staff={filtered} />
+      <StaffTable staff={filtered} canEdit={canEdit} onToggleActive={handleToggleActive} onDelete={setDeleteId} />
       <AddStaffDialog open={showAdd} onOpenChange={setShowAdd} />
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+        title="Delete Staff Member"
+        description="This will permanently remove this staff member and all associated records. This action cannot be undone."
+        onConfirm={handleDelete}
+        confirmText="Delete"
+      />
     </div>
   );
 }
