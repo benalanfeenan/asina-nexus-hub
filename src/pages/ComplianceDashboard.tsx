@@ -97,14 +97,14 @@ export default function ComplianceDashboard() {
       for (const key of DASHBOARD_COLUMNS) {
         const def = COMPLIANCE_ITEMS.find((d) => d.item_key === key);
         if (!def) { colStatuses[key] = "not_started"; continue; }
-        colStatuses[key] = getItemStatus(def, map.get(key), flags);
+        colStatuses[key] = getItemStatus(def, map.get(key), mergedFlags);
       }
 
       const name = s.first_name || s.last_name
         ? [s.first_name, s.last_name].filter(Boolean).join(" ")
         : (s.profiles as any)?.full_name || "Unknown";
 
-      return { ...s, name, score, colStatuses, flags };
+      return { ...s, name, score, colStatuses, flags: mergedFlags };
     });
   }, [staff, complianceItems, allFlags]);
 
