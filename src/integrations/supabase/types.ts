@@ -1396,6 +1396,53 @@ export type Database = {
         }
         Relationships: []
       }
+      participant_compliance_items: {
+        Row: {
+          created_at: string
+          date_completed: string | null
+          document_url: string | null
+          expiry_date: string | null
+          id: string
+          item_key: string
+          notes: string | null
+          participant_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_completed?: string | null
+          document_url?: string | null
+          expiry_date?: string | null
+          id?: string
+          item_key: string
+          notes?: string | null
+          participant_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_completed?: string | null
+          document_url?: string | null
+          expiry_date?: string | null
+          id?: string
+          item_key?: string
+          notes?: string | null
+          participant_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_compliance_items_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       participant_contacts: {
         Row: {
           contact_type: Database["public"]["Enums"]["contact_type"]
