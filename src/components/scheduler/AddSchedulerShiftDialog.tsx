@@ -82,8 +82,8 @@ export function AddSchedulerShiftDialog({ open, onOpenChange, onSaved, defaultSt
   const { data: participants } = useQuery({
     queryKey: ["participants-list"],
     queryFn: async () => {
-      const { data } = await supabase.from("participants").select("id, first_name, last_name").eq("status", "active").order("first_name") as any;
-      return (data || []) as { id: string; first_name: string; last_name: string }[];
+      const result = await (supabase.from("participants").select("id, first_name, last_name").eq("status", "active").order("first_name") as any);
+      return (result.data || []) as { id: string; first_name: string; last_name: string }[];
     },
   });
 
