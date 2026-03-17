@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StaffTable, type StaffWithProfile } from "@/components/staff/StaffTable";
 import { AddStaffDialog } from "@/components/staff/AddStaffDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Plus, Search } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { useToast } from "@/hooks/use-toast";
 import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
 } from "@/lib/compliance-definitions";

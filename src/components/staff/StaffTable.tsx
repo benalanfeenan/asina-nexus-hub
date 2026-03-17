@@ -1,8 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import { Eye, MoreHorizontal, Archive, ArchiveRestore, Trash2 } from "lucide-react";
 
 export interface StaffWithProfile {
   id: string;
@@ -38,7 +43,14 @@ const complianceBadge = (status: string, score?: number) => {
   }
 };
 
-export function StaffTable({ staff }: { staff: StaffWithProfile[] }) {
+interface StaffTableProps {
+  staff: StaffWithProfile[];
+  canEdit?: boolean;
+  onToggleActive?: (id: string, currentlyActive: boolean) => void;
+  onDelete?: (id: string) => void;
+}
+
+export function StaffTable({ staff, canEdit, onToggleActive, onDelete }: StaffTableProps) {
   const navigate = useNavigate();
 
   return (
@@ -50,12 +62,13 @@ export function StaffTable({ staff }: { staff: StaffWithProfile[] }) {
           <TableHead>Employment</TableHead>
           <TableHead>Compliance</TableHead>
           <TableHead>Status</TableHead>
+          {canEdit && <TableHead className="w-[60px]" />}
         </TableRow>
       </TableHeader>
       <TableBody>
         {staff.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+            <TableCell colSpan={canEdit ? 6 : 5} className="text-center text-muted-foreground py-8">
               No staff members found.
             </TableCell>
           </TableRow>
@@ -80,6 +93,30 @@ export function StaffTable({ staff }: { staff: StaffWithProfile[] }) {
                   {s.is_active ? "Active" : "Inactive"}
                 </Badge>
               </TableCell>
+              {canEdit && (
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenuItem onClick={() => navigate(`/staff/${s.id}`)}>
+                        <Eye className="mr-2 h-4 w-4" />View / Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => onToggleActive?.(s.id, s.is_active)}>
+                        {s.is_active ? <Archive className="mr-2 h-4 w-4" /> : <ArchiveRestore className="mr-2 h-4 w-4" />}
+                        {s.is_active ? "Archive" : "Reactivate"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => onDelete?.(s.id)}>
+                        <Trash2 className="mr-2 h-4 w-4" />Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              )}
             </TableRow>
           ))
         )}
