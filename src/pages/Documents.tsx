@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,8 +11,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Search, ExternalLink, CheckCircle2, Clock, Users } from "lucide-react";
+import { Plus, Search, ExternalLink, CheckCircle2, Clock, Users, Upload } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { format } from "date-fns";
 
@@ -25,6 +26,7 @@ export default function Documents() {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
+  const [showBulk, setShowBulk] = useState(false);
   const [ackStatusDocId, setAckStatusDocId] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
@@ -116,6 +118,60 @@ export default function Documents() {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  // Bulk upload state
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [bulkCategory, setBulkCategory] = useState<string>("policy");
+  const [bulkReviewDate, setBulkReviewDate] = useState("");
+  const [bulkRequiresAck, setBulkRequiresAck] = useState(true);
+  const [bulkProgress, setBulkProgress] = useState<{ current: number; total: number } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBulkFiles = useCallback((files: FileList | null) => {
+    if (files) setBulkFiles(Array.from(files));
+  }, []);
+
+  const bulkMutation = useMutation({
+    mutationFn: async () => {
+      const total = bulkFiles.length;
+      let uploaded = 0;
+      for (const file of bulkFiles) {
+        setBulkProgress({ current: uploaded + 1, total });
+        const ts = Date.now();
+        const path = `bulk/${ts}_${file.name}`;
+        const { error: uploadErr } = await supabase.storage.from("documents").upload(path, file);
+        if (uploadErr) throw new Error(`Failed to upload ${file.name}: ${uploadErr.message}`);
+        const { data: urlData } = supabase.storage.from("documents").getPublicUrl(path);
+        const title = file.name.replace(/\.[^/.]+$/, "");
+        const { error: insertErr } = await supabase.from("documents").insert({
+          title,
+          category: bulkCategory as any,
+          version: "1.0",
+          review_date: bulkReviewDate || null,
+          file_url: urlData.publicUrl,
+          uploaded_by: user?.id,
+          requires_acknowledgement: bulkRequiresAck,
+        } as any);
+        if (insertErr) throw new Error(`Failed to save ${file.name}: ${insertErr.message}`);
+        uploaded++;
+      }
+      setBulkProgress({ current: total, total });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      setShowBulk(false);
+      setBulkFiles([]);
+      setBulkCategory("policy");
+      setBulkReviewDate("");
+      setBulkRequiresAck(true);
+      setBulkProgress(null);
+      toast({ title: `${bulkFiles.length} documents uploaded` });
+    },
+    onError: (e: any) => {
+      setBulkProgress(null);
+      toast({ title: "Bulk upload error", description: e.message, variant: "destructive" });
+    },
+  });
+
   const filtered = useMemo(() => {
     return docs.filter((d: any) => {
       if (catFilter !== "all" && d.category !== catFilter) return false;
@@ -133,7 +189,12 @@ export default function Documents() {
     <div className="space-y-6">
       <PageHeader
         title="Documents"
-        action={canManage ? <Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Document</Button> : undefined}
+        action={canManage ? (
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowBulk(true)}><Upload className="mr-1 h-4 w-4" />Bulk Upload</Button>
+            <Button variant="accent" onClick={() => setShowAdd(true)}><Plus className="mr-1 h-4 w-4" />Add Document</Button>
+          </div>
+        ) : undefined}
       />
 
       <div className="flex flex-wrap gap-3">
@@ -266,6 +327,73 @@ export default function Documents() {
               </TableBody>
             </Table>
           </div>
+        </DialogContent>
+      </Dialog>
+      {/* Bulk Upload Dialog */}
+      <Dialog open={showBulk} onOpenChange={(o) => { if (!bulkMutation.isPending) setShowBulk(o); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Bulk Upload Documents</DialogTitle><DialogDescription>Upload multiple files at once with shared settings</DialogDescription></DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div
+              className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleBulkFiles(e.dataTransfer.files); }}
+            >
+              <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                {bulkFiles.length > 0
+                  ? `${bulkFiles.length} file(s) selected`
+                  : "Click or drag & drop files here"}
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={(e) => handleBulkFiles(e.target.files)}
+              />
+            </div>
+            {bulkFiles.length > 0 && (
+              <div className="max-h-[120px] overflow-y-auto text-xs space-y-1">
+                {bulkFiles.map((f, i) => (
+                  <div key={i} className="flex justify-between px-2 py-1 rounded bg-muted">
+                    <span className="truncate">{f.name}</span>
+                    <span className="text-muted-foreground ml-2 shrink-0">{(f.size / 1024).toFixed(0)} KB</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Category (all files)</Label>
+                <Select value={bulkCategory} onValueChange={setBulkCategory}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{categories.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label>Review Date</Label>
+                <Input type="date" value={bulkReviewDate} onChange={(e) => setBulkReviewDate(e.target.value)} />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox id="bulk-ack" checked={bulkRequiresAck} onCheckedChange={(v) => setBulkRequiresAck(!!v)} />
+              <Label htmlFor="bulk-ack" className="text-sm font-normal">Requires staff acknowledgement</Label>
+            </div>
+            {bulkProgress && (
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Uploading {bulkProgress.current} of {bulkProgress.total}…</p>
+                <Progress value={(bulkProgress.current / bulkProgress.total) * 100} className="h-2" />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulk(false)} disabled={bulkMutation.isPending}>Cancel</Button>
+            <Button onClick={() => bulkMutation.mutate()} disabled={bulkFiles.length === 0 || bulkMutation.isPending}>
+              Upload {bulkFiles.length} File{bulkFiles.length !== 1 ? "s" : ""}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
