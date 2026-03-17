@@ -77,9 +77,11 @@ export default function Staff() {
     },
   });
 
+  const getMergedFlags = useBatchHouseCompetencyFlags();
+
   const staff: StaffWithProfile[] = useMemo(() => {
     return staffRaw.map((s) => {
-      const { status, score } = computeComplianceFromItems(complianceItems, allFlags, s.id);
+      const { status, score } = computeComplianceFromItems(complianceItems, allFlags, s.id, getMergedFlags);
       return {
         ...s,
         profiles: s.profiles as { full_name: string; email: string | null } | null,
@@ -87,7 +89,7 @@ export default function Staff() {
         complianceScore: score,
       };
     });
-  }, [staffRaw, complianceItems, allFlags]);
+  }, [staffRaw, complianceItems, allFlags, getMergedFlags]);
 
   const filtered = useMemo(() => {
     return staff.filter((s) => {
