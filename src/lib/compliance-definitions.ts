@@ -82,7 +82,6 @@ export type RoleFlags = {
   delivers_high_intensity: boolean;
   uses_restrictive_practices: boolean;
   transports_in_own_vehicle: boolean;
-  supports_under_18: boolean;
 };
 
 export const DEFAULT_ROLE_FLAGS: RoleFlags = {
