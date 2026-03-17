@@ -92,7 +92,7 @@ export const DEFAULT_ROLE_FLAGS: RoleFlags = {
   supports_bsp_participants: false,
   delivers_high_intensity: false,
   uses_restrictive_practices: false,
-  transports_participants: false,
+  transports_in_own_vehicle: false,
   supports_under_18: false,
 };
 

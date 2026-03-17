@@ -1,0 +1,1 @@
+ALTER TABLE public.staff_role_flags RENAME COLUMN transports_participants TO transports_in_own_vehicle;
