@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import asinaLogo from "@/assets/asina-logo.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -50,9 +51,7 @@ export default function Login() {
 
       <Card className="w-full max-w-md border-0 shadow-brand-lg backdrop-blur-sm bg-card/95 relative z-10">
         <CardHeader className="text-center pb-2">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gradient shadow-brand text-primary-foreground font-heading text-3xl font-bold">
-            A
-          </div>
+          <img src={asinaLogo} alt="Asina Disability Services" className="mx-auto mb-2 h-14 w-auto" />
           <CardTitle className="text-2xl font-heading">
             {showForgot ? "Reset Password" : "Welcome Back"}
           </CardTitle>
