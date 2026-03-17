@@ -17,6 +17,7 @@ import {
   calculateComplianceScore, type ComplianceItemDefinition,
 } from "@/lib/compliance-definitions";
 import { Upload, FileText, ChevronRight, ChevronDown } from "lucide-react";
+import { useMergedRoleFlags } from "@/hooks/use-merged-role-flags";
 
 const STATUS_DOT: Record<string, string> = {
   completed: "bg-emerald-500",

@@ -37,7 +37,7 @@ function computeComplianceFromItems(
 
   const map = new Map<string, { status: string; expiry_date: string | null }>();
   staffItems.forEach((i) => map.set(i.item_key, i));
-  const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
+  const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, mergedFlags);
 
   if (staffItems.length === 0) return { status: "none", score: 0 };
   if (score === 100) return { status: "green", score };

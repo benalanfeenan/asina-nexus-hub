@@ -63,6 +63,8 @@ export default function SILHouseDetail() {
         </CardContent>
       </Card>
 
+      <SILHouseCompetencyCard houseId={id!} />
+
       <Tabs defaultValue="participants">
         <TabsList className="flex-wrap">
           <TabsTrigger value="participants">Participants</TabsTrigger>
