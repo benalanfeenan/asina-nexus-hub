@@ -89,7 +89,7 @@ export default function Invoicing() {
       const to = format(invoiceWeekEnd, "yyyy-MM-dd");
       const { data } = await supabase
         .from("scheduler_shifts")
-        .select("*, participants(first_name, last_name), ndis_price_list(id, item_code, description, rate, unit)")
+        .select("*, participants(id, first_name, last_name), ndis_price_list(id, item_code, description, rate, unit)")
         .eq("status", "completed")
         .is("invoice_id", null)
         .not("participant_id", "is", null)
@@ -106,7 +106,7 @@ export default function Invoicing() {
     for (const s of completedShifts) {
       const pid = s.participant_id;
       if (!map[pid]) {
-        map[pid] = { participant: s.participants, shifts: [], totalHours: 0, totalCost: 0 };
+        map[pid] = { participant: { id: pid, ...s.participants }, shifts: [], totalHours: 0, totalCost: 0 };
       }
       const hours = getHoursFromTime(s.start_time, s.end_time);
       const li = s.ndis_price_list;
