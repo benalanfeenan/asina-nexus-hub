@@ -80,6 +80,7 @@ export default function ParticipantDetail() {
       <Tabs defaultValue="overview">
         <TabsList className="flex-wrap">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="contacts">Contacts</TabsTrigger>
           <TabsTrigger value="goals">Goals</TabsTrigger>
           <TabsTrigger value="routines">Daily Routines</TabsTrigger>
@@ -87,7 +88,6 @@ export default function ParticipantDetail() {
           <TabsTrigger value="medications">Medications</TabsTrigger>
           <TabsTrigger value="mar">MAR</TabsTrigger>
           <TabsTrigger value="abc">ABC Data</TabsTrigger>
-          <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
@@ -104,6 +104,7 @@ export default function ParticipantDetail() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="compliance"><ParticipantComplianceTab participantId={id!} canEdit={canEdit} alerts={alerts} /></TabsContent>
         <TabsContent value="contacts"><ParticipantContactsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="goals"><ParticipantGoalsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="routines"><ParticipantRoutinesTab participantId={id!} canEdit={canEdit} /></TabsContent>
@@ -111,7 +112,6 @@ export default function ParticipantDetail() {
         <TabsContent value="medications"><ParticipantMedicationsTab participantId={id!} canEdit={canEdit} /></TabsContent>
         <TabsContent value="mar"><ParticipantMARTab participantId={id!} /></TabsContent>
         <TabsContent value="abc"><ParticipantABCDataTab participantId={id!} /></TabsContent>
-        <TabsContent value="compliance"><ParticipantComplianceTab participantId={id!} canEdit={canEdit} alerts={alerts} /></TabsContent>
         <TabsContent value="documents"><ParticipantDocumentsTab participantId={id!} /></TabsContent>
       </Tabs>
 
