@@ -61,7 +61,14 @@ export default function ParticipantDetail() {
       <Button variant="ghost" onClick={() => navigate("/participants")} className="gap-1"><ArrowLeft className="h-4 w-4" />Back to Participants</Button>
       <Card>
         <CardHeader className="flex flex-row items-start justify-between">
-          <div>
+          <div className="flex items-start gap-4">
+            <Avatar className="h-14 w-14">
+              {participant.photo_url && <AvatarImage src={participant.photo_url} alt={`${participant.first_name} ${participant.last_name}`} />}
+              <AvatarFallback className="text-lg font-semibold bg-primary/10 text-primary">
+                {participant.first_name.charAt(0)}{participant.last_name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
             <CardTitle className="text-2xl">{participant.first_name} {participant.last_name}</CardTitle>
             <div className="flex flex-wrap gap-2 mt-2 text-sm text-muted-foreground">
               {participant.ndis_number && <span>NDIS: {participant.ndis_number}</span>}
