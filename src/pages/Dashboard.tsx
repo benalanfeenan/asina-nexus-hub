@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, UserCog, AlertTriangle, Clock, CalendarDays, ShieldAlert } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import asinaLogo from "@/assets/asina-logo.png";
 
 export default function Dashboard() {
   const { user, role } = useAuth();
