@@ -71,7 +71,6 @@ export const ROLE_FLAG_LABELS: Record<string, string> = {
   delivers_high_intensity: "Delivers high intensity supports",
   uses_restrictive_practices: "Uses restrictive practices (trained)",
   transports_in_own_vehicle: "Transports clients in own vehicle",
-  supports_under_18: "Supports participants under 18",
 };
 
 export const ROLE_FLAG_KEYS = Object.keys(ROLE_FLAG_LABELS);
