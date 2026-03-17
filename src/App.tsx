@@ -28,6 +28,7 @@ import RestrictivePractices from "./pages/RestrictivePractices";
 import QualityImprovement from "./pages/QualityImprovement";
 import ComplianceDashboard from "./pages/ComplianceDashboard";
 import Documents from "./pages/Documents";
+import NDISPriceList from "./pages/NDISPriceList";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
