@@ -112,7 +112,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="bg-gradient-to-b from-[hsl(173_72%_36%)] to-[hsl(200_50%_30%)] border-r-0">
       <SidebarHeader className="border-b border-sidebar-border p-4">
         {!collapsed ? (
           <img src={asinaLogo} alt="Asina" className="h-10 w-auto object-contain" />
