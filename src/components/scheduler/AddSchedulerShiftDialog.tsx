@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2 } from "lucide-react";
+import { Trash2, Copy } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const SERVICE_TYPES = ["SIL", "Personal Care", "Community Access", "Respite", "Transport", "Domestic Assistance", "Social & Community", "Other"];
 const STATUSES = ["draft", "published", "confirmed", "completed", "cancelled"];
