@@ -2390,58 +2390,130 @@ export type Database = {
       }
       staff: {
         Row: {
+          address: string | null
+          award_level: string | null
+          bank_details_on_file: boolean
+          country_of_birth: string | null
           created_at: string
+          date_of_birth: string | null
+          disability_status: string | null
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
           employment_type: string | null
           end_date: string | null
           first_name: string | null
+          gender: string | null
           id: string
+          indigenous_status: string | null
+          interpreter_required: boolean
           is_active: boolean
+          is_cald: boolean
+          languages_spoken: string | null
           last_name: string | null
+          ndis_screening_number: string | null
+          ndis_worker_id: string | null
           notes: string | null
+          pay_rate: number | null
           phone: string | null
           photo_url: string | null
           position: string | null
+          probation_end_date: string | null
           profile_id: string
+          pronouns: string | null
+          sexuality: string | null
           start_date: string | null
           status: string
+          superannuation_fund: string | null
           supervision_frequency_months: number
+          tax_file_number_on_file: boolean
           updated_at: string
+          working_with_children_number: string | null
         }
         Insert: {
+          address?: string | null
+          award_level?: string | null
+          bank_details_on_file?: boolean
+          country_of_birth?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          disability_status?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
           employment_type?: string | null
           end_date?: string | null
           first_name?: string | null
+          gender?: string | null
           id?: string
+          indigenous_status?: string | null
+          interpreter_required?: boolean
           is_active?: boolean
+          is_cald?: boolean
+          languages_spoken?: string | null
           last_name?: string | null
+          ndis_screening_number?: string | null
+          ndis_worker_id?: string | null
           notes?: string | null
+          pay_rate?: number | null
           phone?: string | null
           photo_url?: string | null
           position?: string | null
+          probation_end_date?: string | null
           profile_id: string
+          pronouns?: string | null
+          sexuality?: string | null
           start_date?: string | null
           status?: string
+          superannuation_fund?: string | null
           supervision_frequency_months?: number
+          tax_file_number_on_file?: boolean
           updated_at?: string
+          working_with_children_number?: string | null
         }
         Update: {
+          address?: string | null
+          award_level?: string | null
+          bank_details_on_file?: boolean
+          country_of_birth?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          disability_status?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
           employment_type?: string | null
           end_date?: string | null
           first_name?: string | null
+          gender?: string | null
           id?: string
+          indigenous_status?: string | null
+          interpreter_required?: boolean
           is_active?: boolean
+          is_cald?: boolean
+          languages_spoken?: string | null
           last_name?: string | null
+          ndis_screening_number?: string | null
+          ndis_worker_id?: string | null
           notes?: string | null
+          pay_rate?: number | null
           phone?: string | null
           photo_url?: string | null
           position?: string | null
+          probation_end_date?: string | null
           profile_id?: string
+          pronouns?: string | null
+          sexuality?: string | null
           start_date?: string | null
           status?: string
+          superannuation_fund?: string | null
           supervision_frequency_months?: number
+          tax_file_number_on_file?: boolean
           updated_at?: string
+          working_with_children_number?: string | null
         }
         Relationships: [
           {
