@@ -41,7 +41,7 @@ const INITIAL_FORM = {
   communicationNeeds: "", communicationAids: "", decisionMaking: "",
   guardianName: "", guardianPhone: "", guardianRelationship: "", hasGuardianshipOrder: false,
   advocateName: "", advocatePhone: "",
-  allergies: false, bsp: false, mealtimePlan: false, restrictivePractices: false, highIntensity: false, medications: false,
+  allergies: false, bsp: false, mealtimePlan: false, restrictivePractices: false, highIntensity: false, medications: false, manualHandling: false,
   notes: "",
 };
 
