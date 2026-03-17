@@ -47,7 +47,6 @@ interface StaffTableProps {
   staff: StaffWithProfile[];
   canEdit?: boolean;
   onToggleActive?: (id: string, currentlyActive: boolean) => void;
-  onDelete?: (id: string) => void;
 }
 
 export function StaffTable({ staff, canEdit, onToggleActive, onDelete }: StaffTableProps) {
