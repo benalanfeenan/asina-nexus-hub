@@ -12,6 +12,7 @@ import { PageHeader } from "@/components/PageHeader";
 import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
 } from "@/lib/compliance-definitions";
+import { useBatchHouseCompetencyFlags } from "@/hooks/use-merged-role-flags";
 
 function computeComplianceFromItems(
   items: { staff_id: string; item_key: string; status: string; expiry_date: string | null }[],
