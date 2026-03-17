@@ -171,6 +171,7 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["staff-compliance-items", staffId] });
+      setExpandedItem(null);
       toast({ title: "Compliance item updated" });
     },
     onError: (e: Error) => {
