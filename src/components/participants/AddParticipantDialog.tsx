@@ -57,6 +57,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
       setFirstName(""); setLastName(""); setDob(""); setNdisNumber("");
       setPhone(""); setEmail(""); setAddress(""); setSilHouseId("none");
       setNotes(""); setAllergies(false); setBsp(false); setMealtimePlan(false);
+      setRestrictivePractices(false); setHighIntensity(false);
     }
   }, [editParticipant, open]);
 
