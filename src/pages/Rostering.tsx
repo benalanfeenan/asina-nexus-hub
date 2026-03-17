@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Plus, ArrowRightLeft, Moon, Settings2, Wand2 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { useToast } from "@/hooks/use-toast";
 import { AddShiftDialog } from "@/components/rostering/AddShiftDialog";
 import { ShiftHandoverDialog } from "@/components/rostering/ShiftHandoverDialog";
