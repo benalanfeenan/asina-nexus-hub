@@ -50,10 +50,35 @@ function computeComplianceFromItems(
 export default function Staff() {
   const { role } = useAuth();
   const canEdit = role === "admin" || role === "house_manager";
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [empFilter, setEmpFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const handleToggleActive = useCallback(async (id: string, currentlyActive: boolean) => {
+    const { error } = await supabase.from("staff").update({ is_active: !currentlyActive }).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: currentlyActive ? "Staff archived" : "Staff reactivated" });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    }
+  }, [queryClient, toast]);
+
+  const handleDelete = useCallback(async () => {
+    if (!deleteId) return;
+    const { error } = await supabase.from("staff").delete().eq("id", deleteId);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Staff member deleted" });
+      queryClient.invalidateQueries({ queryKey: ["staff"] });
+    }
+    setDeleteId(null);
+  }, [deleteId, queryClient, toast]);
 
   const { data: staffRaw = [] } = useQuery({
     queryKey: ["staff"],
