@@ -1,21 +1,30 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
+import { Plus, Syringe } from "lucide-react";
 
 export function ParticipantMedicationsTab({ participantId, canEdit }: { participantId: string; canEdit: boolean }) {
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
+  const [showPrn, setShowPrn] = useState(false);
+  const [prnMedId, setPrnMedId] = useState("");
+  const [prnReason, setPrnReason] = useState("");
+  const [prnOutcome, setPrnOutcome] = useState("");
+  const [prnFollowUp, setPrnFollowUp] = useState(false);
+
   const [name, setName] = useState("");
   const [dose, setDose] = useState("");
   const [frequency, setFrequency] = useState("");
@@ -32,17 +41,22 @@ export function ParticipantMedicationsTab({ participantId, canEdit }: { particip
     },
   });
 
+  const { data: prnRecords = [] } = useQuery({
+    queryKey: ["prn-records", participantId],
+    queryFn: async () => {
+      const medIds = medications.filter((m) => m.is_prn).map((m) => m.id);
+      if (medIds.length === 0) return [];
+      const { data } = await supabase.from("prn_records").select("*, medications(name)").in("medication_id", medIds).order("administered_at", { ascending: false }).limit(20);
+      return data || [];
+    },
+    enabled: medications.some((m) => m.is_prn),
+  });
+
   const mutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("medications").insert({
-        participant_id: participantId,
-        name: name.trim(),
-        dose: dose.trim() || null,
-        frequency: frequency.trim() || null,
-        route: route.trim() || null,
-        prescriber: prescriber.trim() || null,
-        is_prn: isPrn,
-        instructions: instructions.trim() || null,
+        participant_id: participantId, name: name.trim(), dose: dose.trim() || null, frequency: frequency.trim() || null,
+        route: route.trim() || null, prescriber: prescriber.trim() || null, is_prn: isPrn, instructions: instructions.trim() || null,
       });
       if (error) throw error;
     },
@@ -55,6 +69,27 @@ export function ParticipantMedicationsTab({ participantId, canEdit }: { particip
     onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  const prnMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("prn_records").insert({
+        medication_id: prnMedId, reason: prnReason, outcome: prnOutcome || null, follow_up_required: prnFollowUp, administered_by: user?.id,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["prn-records"] });
+      toast({ title: "PRN recorded" });
+      setShowPrn(false); setPrnMedId(""); setPrnReason(""); setPrnOutcome(""); setPrnFollowUp(false);
+    },
+    onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const openPrnRecord = (medId: string) => {
+    setPrnMedId(medId);
+    setPrnReason(""); setPrnOutcome(""); setPrnFollowUp(false);
+    setShowPrn(true);
+  };
+
   return (
     <Card>
       <CardContent className="pt-6">
@@ -65,7 +100,7 @@ export function ParticipantMedicationsTab({ participantId, canEdit }: { particip
         {medications.length === 0 ? <p className="text-muted-foreground text-sm">No medications recorded.</p> : (
           <Table>
             <TableHeader><TableRow>
-              <TableHead>Medication</TableHead><TableHead>Dose</TableHead><TableHead>Frequency</TableHead><TableHead>Route</TableHead><TableHead>PRN</TableHead><TableHead>Status</TableHead>
+              <TableHead>Medication</TableHead><TableHead>Dose</TableHead><TableHead>Frequency</TableHead><TableHead>Route</TableHead><TableHead>PRN</TableHead><TableHead>Status</TableHead><TableHead></TableHead>
             </TableRow></TableHeader>
             <TableBody>
               {medications.map((m) => (
@@ -76,12 +111,43 @@ export function ParticipantMedicationsTab({ participantId, canEdit }: { particip
                   <TableCell>{m.route || "—"}</TableCell>
                   <TableCell>{m.is_prn ? <Badge variant="secondary">PRN</Badge> : ""}</TableCell>
                   <TableCell><Badge variant={m.is_active ? "default" : "secondary"}>{m.is_active ? "Active" : "Inactive"}</Badge></TableCell>
+                  <TableCell>
+                    {m.is_prn && m.is_active && (
+                      <Button size="sm" variant="outline" onClick={() => openPrnRecord(m.id)} className="gap-1">
+                        <Syringe className="h-3 w-3" />Record PRN
+                      </Button>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
 
+        {/* PRN History */}
+        {prnRecords.length > 0 && (
+          <div className="mt-6">
+            <h4 className="font-medium text-sm mb-2">Recent PRN Records</h4>
+            <Table>
+              <TableHeader><TableRow>
+                <TableHead>Date</TableHead><TableHead>Medication</TableHead><TableHead>Reason</TableHead><TableHead>Outcome</TableHead><TableHead>Follow-up</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
+                {prnRecords.map((r: any) => (
+                  <TableRow key={r.id}>
+                    <TableCell className="text-sm">{new Date(r.administered_at).toLocaleString("en-AU", { dateStyle: "short", timeStyle: "short" })}</TableCell>
+                    <TableCell>{(r.medications as any)?.name}</TableCell>
+                    <TableCell>{r.reason}</TableCell>
+                    <TableCell>{r.outcome || "—"}</TableCell>
+                    <TableCell>{r.follow_up_required ? <Badge variant="destructive">Yes</Badge> : "No"}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        {/* Add Medication Dialog */}
         <Dialog open={showAdd} onOpenChange={setShowAdd}>
           <DialogContent>
             <DialogHeader><DialogTitle>Add Medication</DialogTitle></DialogHeader>
@@ -101,6 +167,22 @@ export function ParticipantMedicationsTab({ participantId, canEdit }: { particip
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
               <Button onClick={() => mutation.mutate()} disabled={!name.trim() || mutation.isPending}>{mutation.isPending ? "Saving..." : "Add"}</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* PRN Record Dialog */}
+        <Dialog open={showPrn} onOpenChange={setShowPrn}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Record PRN Administration</DialogTitle></DialogHeader>
+            <div className="space-y-4">
+              <div><Label>Reason *</Label><Textarea value={prnReason} onChange={(e) => setPrnReason(e.target.value)} placeholder="Why was this PRN medication given?" /></div>
+              <div><Label>Outcome</Label><Textarea value={prnOutcome} onChange={(e) => setPrnOutcome(e.target.value)} placeholder="What was the outcome?" /></div>
+              <label className="flex items-center gap-2 text-sm"><Checkbox checked={prnFollowUp} onCheckedChange={(v) => setPrnFollowUp(!!v)} />Follow-up required</label>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowPrn(false)}>Cancel</Button>
+              <Button onClick={() => prnMutation.mutate()} disabled={!prnReason.trim() || prnMutation.isPending}>{prnMutation.isPending ? "Saving…" : "Record"}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
