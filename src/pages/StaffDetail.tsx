@@ -20,6 +20,7 @@ import { addMonths } from "date-fns";
 import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
 } from "@/lib/compliance-definitions";
+import { useMergedRoleFlags } from "@/hooks/use-merged-role-flags";
 
 export default function StaffDetail() {
   const { id } = useParams<{ id: string }>();
