@@ -132,6 +132,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={mealtimePlan} onCheckedChange={(v) => setMealtimePlan(!!v)} />Mealtime Plan</label>
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={restrictivePractices} onCheckedChange={(v) => setRestrictivePractices(!!v)} />Restrictive Practices</label>
               <label className="flex items-center gap-2 text-sm"><Checkbox checked={highIntensity} onCheckedChange={(v) => setHighIntensity(!!v)} />High Intensity</label>
+              <label className="flex items-center gap-2 text-sm"><Checkbox checked={medications} onCheckedChange={(v) => setMedications(!!v)} />Medications</label>
             </div>
           </div>
           <div><Label>Notes</Label><Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional notes" /></div>

@@ -59,6 +59,7 @@ export const PARTICIPANT_NEEDS_FLAG_LABELS: Record<string, string> = {
   mealtime_plan: "Mealtime Plan",
   restrictive_practices: "Restrictive Practices",
   high_intensity: "High Intensity Supports",
+  medications: "Medications",
 };
 
 export const PARTICIPANT_NEEDS_FLAG_KEYS = Object.keys(PARTICIPANT_NEEDS_FLAG_LABELS);
