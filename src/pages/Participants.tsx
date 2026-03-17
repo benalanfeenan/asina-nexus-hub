@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ParticipantTable } from "@/components/participants/ParticipantTable";
 import { AddParticipantDialog } from "@/components/participants/AddParticipantDialog";
 import { Plus, Search } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function Participants() {
   const { role } = useAuth();
