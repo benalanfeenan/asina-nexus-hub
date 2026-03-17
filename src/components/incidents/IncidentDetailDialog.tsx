@@ -71,7 +71,7 @@ export function IncidentDetailDialog({ incident, onClose }: Props) {
 
   return (
     <Dialog open={!!incident} onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span className="font-mono text-sm text-muted-foreground">{incident.reference_number}</span>
