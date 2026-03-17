@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { StaffTrainingTab } from "@/components/staff/StaffTrainingTab";
 import { StaffComplianceTab } from "@/components/staff/StaffComplianceTab";
 import { StaffSupervisionsTab } from "@/components/staff/StaffSupervisionsTab";
@@ -14,6 +14,7 @@ import { StaffCompetenciesTab } from "@/components/staff/StaffCompetenciesTab";
 import { StaffAcknowledgementsTab } from "@/components/staff/StaffAcknowledgementsTab";
 import { StaffDocumentsTab } from "@/components/staff/StaffDocumentsTab";
 import { useMemo } from "react";
+import { addMonths } from "date-fns";
 import {
   COMPLIANCE_ITEMS, DEFAULT_ROLE_FLAGS, calculateComplianceScore, type RoleFlags,
 } from "@/lib/compliance-definitions";
@@ -65,6 +66,22 @@ export default function StaffDetail() {
     enabled: !!id,
   });
 
+  // Fetch latest supervision for overdue check
+  const { data: latestSupervision } = useQuery({
+    queryKey: ["staff-latest-supervision", id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("staff_supervisions")
+        .select("date")
+        .eq("staff_id", id!)
+        .order("date", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!id,
+  });
+
   const flags: RoleFlags = useMemo(() => {
     if (!roleFlags) return DEFAULT_ROLE_FLAGS;
     return {
@@ -83,6 +100,15 @@ export default function StaffDetail() {
     complianceRecords.forEach((r) => map.set(r.item_key, r));
     return calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
   }, [complianceRecords, flags]);
+
+  const supervisionFrequency = (staff as any)?.supervision_frequency_months ?? 1;
+
+  const isSupervisionOverdue = useMemo(() => {
+    const baseDate = latestSupervision?.date || staff?.start_date;
+    if (!baseDate) return false;
+    const nextDue = addMonths(new Date(baseDate), supervisionFrequency);
+    return new Date() > nextDue;
+  }, [latestSupervision, staff?.start_date, supervisionFrequency]);
 
   const scoreColor = score === 100 ? "text-emerald-600" : score >= 80 ? "text-amber-600" : "text-destructive";
 
@@ -117,6 +143,12 @@ export default function StaffDetail() {
               <p className="text-muted-foreground">{staff.position || "No position"} · {staff.employment_type?.replace("_", " ") || "Casual"}</p>
             </div>
             <div className="flex items-center gap-4">
+              {isSupervisionOverdue && (
+                <div className="flex items-center gap-1 text-destructive text-xs">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span>Supervision Overdue</span>
+                </div>
+              )}
               <div className="text-center">
                 <div className={`text-2xl font-bold ${scoreColor}`}>{score}%</div>
                 <p className="text-xs text-muted-foreground">Compliance</p>
@@ -144,7 +176,10 @@ export default function StaffDetail() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="training">Training</TabsTrigger>
-          <TabsTrigger value="supervisions">Supervisions</TabsTrigger>
+          <TabsTrigger value="supervisions" className="relative">
+            Supervisions
+            {isSupervisionOverdue && <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />}
+          </TabsTrigger>
           <TabsTrigger value="competencies">Competencies</TabsTrigger>
           <TabsTrigger value="acknowledgements">Acknowledgements</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
@@ -175,7 +210,13 @@ export default function StaffDetail() {
 
         <TabsContent value="compliance"><StaffComplianceTab staffId={id!} /></TabsContent>
         <TabsContent value="training"><StaffTrainingTab staffId={id!} /></TabsContent>
-        <TabsContent value="supervisions"><StaffSupervisionsTab staffId={id!} /></TabsContent>
+        <TabsContent value="supervisions">
+          <StaffSupervisionsTab
+            staffId={id!}
+            staffStartDate={staff.start_date}
+            supervisionFrequencyMonths={supervisionFrequency}
+          />
+        </TabsContent>
         <TabsContent value="competencies"><StaffCompetenciesTab staffId={id!} /></TabsContent>
         <TabsContent value="acknowledgements"><StaffAcknowledgementsTab staffId={id!} /></TabsContent>
         <TabsContent value="documents"><StaffDocumentsTab staffId={id!} /></TabsContent>

@@ -133,3 +133,84 @@ export function calculateComplianceScore(
   });
   return Math.round((compliant.length / applicable.length) * 100);
 }
+
+// === Cross-tab mapping constants ===
+
+/** Maps acknowledgement document_type → compliance item_key */
+export const ACKNOWLEDGEMENT_TO_COMPLIANCE: Record<string, string> = {
+  code_of_conduct: "code_of_conduct",
+  confidentiality_agreement: "confidentiality_agreement",
+  induction_checklist: "induction_checklist",
+  whs_policy: "whs_induction",
+};
+
+/** Maps competency_type → compliance item_key */
+export const COMPETENCY_TO_COMPLIANCE: Record<string, string> = {
+  medication: "medication_competency",
+  mealtime: "mealtime_competency",
+  high_intensity: "high_intensity_competency",
+};
+
+/** Maps training name (lowercase) → { compliance_key, expiry_months } */
+export const TRAINING_TO_COMPLIANCE: Record<string, { key: string; expiry_months: number | null }> = {
+  "first aid": { key: "first_aid", expiry_months: 36 },
+  "cpr": { key: "cpr", expiry_months: 12 },
+  "manual handling": { key: "manual_handling", expiry_months: 12 },
+  "fire safety": { key: "fire_safety", expiry_months: 12 },
+  "infection control": { key: "infection_control", expiry_months: 12 },
+  "ndis orientation": { key: "ndis_orientation", expiry_months: null },
+  "ndis worker orientation": { key: "ndis_orientation", expiry_months: null },
+  "incident reporting": { key: "incident_reporting", expiry_months: null },
+  "medication administration": { key: "medication_training", expiry_months: 12 },
+  "mealtime management": { key: "mealtime_training", expiry_months: 12 },
+  "behaviour support": { key: "bsp_training", expiry_months: null },
+  "restrictive practice": { key: "restrictive_practice_training", expiry_months: null },
+  "high intensity": { key: "high_intensity_training", expiry_months: 12 },
+  "code of conduct": { key: "code_of_conduct_training", expiry_months: null },
+  "participant rights": { key: "participant_rights", expiry_months: null },
+};
+
+/** Supervision type → compliance item_key */
+export const SUPERVISION_TO_COMPLIANCE: Record<string, string> = {
+  supervision: "supervision_records",
+  performance_review: "performance_review",
+};
+
+/** Helper: upsert a compliance item via supabase */
+export async function upsertComplianceItem(
+  supabase: any,
+  staffId: string,
+  itemKey: string,
+  data: {
+    status: string;
+    date_completed?: string | null;
+    expiry_date?: string | null;
+    document_url?: string | null;
+    notes?: string | null;
+  }
+) {
+  const { data: existing } = await supabase
+    .from("staff_compliance_items")
+    .select("id")
+    .eq("staff_id", staffId)
+    .eq("item_key", itemKey)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase
+      .from("staff_compliance_items")
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq("id", existing.id);
+  } else {
+    await supabase
+      .from("staff_compliance_items")
+      .insert({ staff_id: staffId, item_key: itemKey, ...data });
+  }
+}
+
+/** Calculate expiry date from a completion date and expiry_months */
+export function calcExpiryDate(completionDate: string, expiryMonths: number): string {
+  const d = new Date(completionDate);
+  d.setMonth(d.getMonth() + expiryMonths);
+  return d.toISOString().slice(0, 10);
+}
