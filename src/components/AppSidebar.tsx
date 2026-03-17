@@ -35,6 +35,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import asinaLogo from "@/assets/asina-logo.png";
+import asinaFavicon from "/favicon.png";
 
 interface NavItem {
   title: string;
