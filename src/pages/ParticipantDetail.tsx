@@ -17,6 +17,7 @@ import { ParticipantMedicationsTab } from "@/components/participants/Participant
 import { ParticipantMARTab } from "@/components/participants/ParticipantMARTab";
 import { ParticipantABCDataTab } from "@/components/participants/ParticipantABCDataTab";
 import { ParticipantDocumentsTab } from "@/components/participants/ParticipantDocumentsTab";
+import { ParticipantComplianceTab } from "@/components/participants/ParticipantComplianceTab";
 
 export default function ParticipantDetail() {
   const { id } = useParams<{ id: string }>();
