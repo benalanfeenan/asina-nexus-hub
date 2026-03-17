@@ -152,7 +152,7 @@ export default function Settings() {
   if (role !== "admin") {
     return (
       <div className="space-y-4">
-        <h1 className="text-3xl font-heading font-bold">Settings</h1>
+        <PageHeader title="Settings" />
         <p className="text-muted-foreground">You don't have permission to access settings.</p>
       </div>
     );
