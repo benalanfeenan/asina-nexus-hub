@@ -91,7 +91,7 @@ export default function ComplianceDashboard() {
 
       const map = new Map<string, any>();
       items.forEach((i: any) => map.set(i.item_key, i));
-      const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, flags);
+      const score = calculateComplianceScore(COMPLIANCE_ITEMS, map, mergedFlags);
 
       const colStatuses: Record<string, string> = {};
       for (const key of DASHBOARD_COLUMNS) {
