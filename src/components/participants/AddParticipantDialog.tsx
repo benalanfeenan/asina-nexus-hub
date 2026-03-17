@@ -42,6 +42,7 @@ const INITIAL_FORM = {
   guardianName: "", guardianPhone: "", guardianRelationship: "", hasGuardianshipOrder: false,
   advocateName: "", advocatePhone: "",
   allergies: false, bsp: false, mealtimePlan: false, restrictivePractices: false, highIntensity: false, medications: false, manualHandling: false,
+  clientPortalEnabled: false,
   notes: "",
 };
 
