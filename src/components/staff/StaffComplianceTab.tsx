@@ -93,10 +93,10 @@ export function StaffComplianceTab({ staffId }: { staffId: string }) {
   const toggleFlag = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: boolean }) => {
       if (roleFlags) {
-        const { error } = await supabase.from("staff_role_flags").update({ [key]: value }).eq("staff_id", staffId);
+        const { error } = await supabase.from("staff_role_flags").update({ [key]: value } as any).eq("staff_id", staffId);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("staff_role_flags").insert({ staff_id: staffId, [key]: value });
+        const { error } = await supabase.from("staff_role_flags").insert({ staff_id: staffId, [key]: value } as any);
         if (error) throw error;
       }
     },

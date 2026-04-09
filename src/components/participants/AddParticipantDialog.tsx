@@ -101,7 +101,7 @@ export function AddParticipantDialog({ open, onOpenChange, silHouses, editPartic
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload: Record<string, unknown> = {
+      const payload = {
         first_name: form.firstName.trim(), last_name: form.lastName.trim(),
         date_of_birth: form.dob || null, ndis_number: form.ndisNumber.trim() || null,
         phone: form.phone.trim() || null, email: form.email.trim() || null,

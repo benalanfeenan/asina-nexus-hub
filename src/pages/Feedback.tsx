@@ -62,7 +62,7 @@ export default function Feedback() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
-      const { error } = await supabase.from("feedback").update(updates).eq("id", id);
+      const { error } = await supabase.from("feedback").update(updates as any).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

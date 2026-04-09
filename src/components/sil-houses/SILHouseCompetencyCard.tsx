@@ -54,7 +54,7 @@ export function SILHouseCompetencyCard({ houseId }: { houseId: string }) {
       if (reqs) {
         const { error } = await supabase
           .from("sil_house_competency_requirements")
-          .update(localFlags)
+          .update(localFlags as any)
           .eq("sil_house_id", houseId);
         if (error) throw error;
       } else {
