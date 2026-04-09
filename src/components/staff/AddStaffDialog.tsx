@@ -151,7 +151,7 @@ export function AddStaffDialog({ open, onOpenChange, editStaff }: AddStaffDialog
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload: Record<string, unknown> = {
+      const payload = {
         profile_id: form.profileId,
         first_name: form.firstName || null,
         last_name: form.lastName || null,
